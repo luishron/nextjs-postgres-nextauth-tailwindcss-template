@@ -1,57 +1,43 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { File, PlusCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { ProductsTable } from './products-table';
-import { getProducts } from '@/lib/db';
-
 export const dynamic = 'force-dynamic';
 
-export default async function ProductsPage(
-  props: {
-    searchParams: Promise<{ q: string; offset: string }>;
-  }
-) {
-  const searchParams = await props.searchParams;
-  const search = searchParams.q ?? '';
-  const offset = searchParams.offset ?? 0;
-  const { products, newOffset, totalProducts } = await getProducts(
-    search,
-    Number(offset)
-  );
-
+export default async function DashboardPage() {
   return (
-    <Tabs defaultValue="all">
-      <div className="flex items-center">
-        <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="active">Active</TabsTrigger>
-          <TabsTrigger value="draft">Draft</TabsTrigger>
-          <TabsTrigger value="archived" className="hidden sm:flex">
-            Archived
-          </TabsTrigger>
-        </TabsList>
-        <div className="ml-auto flex items-center gap-2">
-          <Button size="sm" variant="outline" className="h-8 gap-1">
-            <File className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Export
-            </span>
-          </Button>
-          <Button size="sm" className="h-8 gap-1">
-            <PlusCircle className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Add Product
-            </span>
-          </Button>
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Dashboard de Gastos</h1>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-lg border bg-card p-6">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Total Gastos
+          </h3>
+          <p className="mt-2 text-3xl font-bold">$0.00</p>
+        </div>
+        <div className="rounded-lg border bg-card p-6">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Total Ingresos
+          </h3>
+          <p className="mt-2 text-3xl font-bold">$0.00</p>
+        </div>
+        <div className="rounded-lg border bg-card p-6">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Balance
+          </h3>
+          <p className="mt-2 text-3xl font-bold">$0.00</p>
+        </div>
+        <div className="rounded-lg border bg-card p-6">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Presupuesto
+          </h3>
+          <p className="mt-2 text-3xl font-bold">$0.00</p>
         </div>
       </div>
-      <TabsContent value="all">
-        <ProductsTable
-          products={products}
-          offset={newOffset ?? 0}
-          totalProducts={totalProducts}
-        />
-      </TabsContent>
-    </Tabs>
+      <div className="rounded-lg border bg-card p-6">
+        <h2 className="text-xl font-semibold mb-4">Resumen</h2>
+        <p className="text-muted-foreground">
+          Conecta tu base de datos Supabase para comenzar a registrar tus gastos.
+        </p>
+      </div>
+    </div>
   );
 }

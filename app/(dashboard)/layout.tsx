@@ -2,12 +2,12 @@ import Link from 'next/link';
 import {
   Home,
   LineChart,
-  Package,
-  Package2,
+  Wallet,
+  FolderOpen,
+  DollarSign,
+  TrendingUp,
   PanelLeft,
-  Settings,
-  ShoppingCart,
-  Users2
+  Settings
 } from 'lucide-react';
 
 import {
@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/tooltip';
 import { Analytics } from '@vercel/analytics/react';
 import { User } from './user';
-import { VercelLogo } from '@/components/icons';
 import Providers from './providers';
 import { NavItem } from './nav-item';
 import { SearchInput } from './search';
@@ -63,30 +62,30 @@ function DesktopNav() {
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
         <Link
-          href="https://vercel.com/templates/next.js/admin-dashboard-tailwind-postgres-react-nextjs"
+          href="/"
           className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
         >
-          <VercelLogo className="h-3 w-3 transition-all group-hover:scale-110" />
-          <span className="sr-only">Acme Inc</span>
+          <Wallet className="h-4 w-4 transition-all group-hover:scale-110" />
+          <span className="sr-only">Control de Gastos</span>
         </Link>
 
-        <NavItem href="#" label="Dashboard">
+        <NavItem href="/" label="Dashboard">
           <Home className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="#" label="Orders">
-          <ShoppingCart className="h-5 w-5" />
+        <NavItem href="/gastos" label="Gastos">
+          <DollarSign className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/" label="Products">
-          <Package className="h-5 w-5" />
+        <NavItem href="/categorias" label="Categorías">
+          <FolderOpen className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/customers" label="Customers">
-          <Users2 className="h-5 w-5" />
+        <NavItem href="/ingresos" label="Ingresos">
+          <TrendingUp className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="#" label="Analytics">
+        <NavItem href="/reportes" label="Reportes">
           <LineChart className="h-5 w-5" />
         </NavItem>
       </nav>
@@ -94,14 +93,14 @@ function DesktopNav() {
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
-              href="#"
+              href="/configuracion"
               className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
             >
               <Settings className="h-5 w-5" />
-              <span className="sr-only">Settings</span>
+              <span className="sr-only">Configuración</span>
             </Link>
           </TooltipTrigger>
-          <TooltipContent side="right">Settings</TooltipContent>
+          <TooltipContent side="right">Configuración</TooltipContent>
         </Tooltip>
       </nav>
     </aside>
@@ -120,46 +119,53 @@ function MobileNav() {
       <SheetContent side="left" className="sm:max-w-xs">
         <nav className="grid gap-6 text-lg font-medium">
           <Link
-            href="#"
+            href="/"
             className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
           >
-            <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
-            <span className="sr-only">Vercel</span>
+            <Wallet className="h-5 w-5 transition-all group-hover:scale-110" />
+            <span className="sr-only">Control de Gastos</span>
           </Link>
           <Link
-            href="#"
-            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+            href="/"
+            className="flex items-center gap-4 px-2.5 text-foreground"
           >
             <Home className="h-5 w-5" />
             Dashboard
           </Link>
           <Link
-            href="#"
+            href="/gastos"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
-            <ShoppingCart className="h-5 w-5" />
-            Orders
+            <DollarSign className="h-5 w-5" />
+            Gastos
           </Link>
           <Link
-            href="#"
-            className="flex items-center gap-4 px-2.5 text-foreground"
-          >
-            <Package className="h-5 w-5" />
-            Products
-          </Link>
-          <Link
-            href="#"
+            href="/categorias"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
-            <Users2 className="h-5 w-5" />
-            Customers
+            <FolderOpen className="h-5 w-5" />
+            Categorías
           </Link>
           <Link
-            href="#"
+            href="/ingresos"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <TrendingUp className="h-5 w-5" />
+            Ingresos
+          </Link>
+          <Link
+            href="/reportes"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <LineChart className="h-5 w-5" />
-            Settings
+            Reportes
+          </Link>
+          <Link
+            href="/configuracion"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <Settings className="h-5 w-5" />
+            Configuración
           </Link>
         </nav>
       </SheetContent>
@@ -173,18 +179,12 @@ function DashboardBreadcrumb() {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="#">Dashboard</Link>
+            <Link href="/">Dashboard</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="#">Products</Link>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>All Products</BreadcrumbPage>
+          <BreadcrumbPage>Control de Gastos</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
