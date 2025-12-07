@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,7 +8,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
+  DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,56 +21,33 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { updateExpense } from '../actions';
+import { PlusCircle } from 'lucide-react';
+import { saveIncome } from '../actions';
 import { useRouter } from 'next/navigation';
-import type { SelectExpense, Category, PaymentMethod } from '@/lib/db';
 
-interface EditExpenseDialogProps {
-  expense: SelectExpense;
-  categories: Category[];
-  paymentMethods: PaymentMethod[];
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+type IncomeCategory = {
+  id: number;
+  name: string;
+  color: string;
+  icon?: string | null;
+};
 
-export function EditExpenseDialog({
-  expense,
+export function AddIncomeDialog({
   categories,
-  paymentMethods,
-  open,
-  onOpenChange
-}: EditExpenseDialogProps) {
-  const [isRecurring, setIsRecurring] = useState(expense.is_recurring === 1);
-  const [categoryId, setCategoryId] = useState(String(expense.category_id));
-
-  // Determinar método de pago inicial
-  const defaultPaymentMethod = paymentMethods.find((pm) => pm.is_default);
-  const initialPaymentMethodId = expense.payment_method
-    ? expense.payment_method
-    : defaultPaymentMethod
-    ? String(defaultPaymentMethod.id)
-    : paymentMethods.length > 0
-    ? String(paymentMethods[0].id)
-    : '';
-
-  const [paymentMethodId, setPaymentMethodId] = useState(initialPaymentMethodId);
-  const [paymentStatus, setPaymentStatus] = useState<'pagado' | 'pendiente' | 'vencido'>(
-    (expense.payment_status as 'pagado' | 'pendiente' | 'vencido') || 'pendiente'
-  );
-  const [frequency, setFrequency] = useState<'weekly' | 'monthly' | 'yearly'>(
-    (expense.recurrence_frequency as 'weekly' | 'monthly' | 'yearly') || 'monthly'
-  );
+  trigger
+}: {
+  categories: IncomeCategory[];
+  trigger?: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [categoryId, setCategoryId] = useState('');
+  const [frequency, setFrequency] = useState('monthly');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  // Reset form when expense changes
-  useEffect(() => {
-    setIsRecurring(expense.is_recurring === 1);
-    setCategoryId(String(expense.category_id));
-    setPaymentMethodId(expense.payment_method || initialPaymentMethodId);
-    setPaymentStatus((expense.payment_status as 'pagado' | 'pendiente' | 'vencido') || 'pendiente');
-    setFrequency((expense.recurrence_frequency as 'weekly' | 'monthly' | 'yearly') || 'monthly');
-  }, [expense]);
+  // Obtener fecha actual en formato YYYY-MM-DD
+  const today = new Date().toISOString().split('T')[0];
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -85,45 +63,53 @@ export function EditExpenseDialog({
       return;
     }
 
-    formData.set('id', String(expense.id));
     formData.set('categoryId', categoryId);
-    formData.set('paymentMethodId', paymentMethodId);
-    formData.set('paymentStatus', paymentStatus);
     formData.set('isRecurring', String(isRecurring));
     if (isRecurring) {
       formData.set('recurrenceFrequency', frequency);
     }
 
-    const result = await updateExpense(formData);
+    const result = await saveIncome(formData);
 
     if (result?.error) {
       alert(result.error);
       setIsSubmitting(false);
     } else {
-      // Close dialog and refresh
-      onOpenChange(false);
+      // Reset form state
+      form.reset();
+      setIsRecurring(false);
+      setCategoryId('');
+      setFrequency('monthly');
       setIsSubmitting(false);
+      setOpen(false);
       router.refresh();
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        {trigger || (
+          <Button>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Agregar Ingreso
+          </Button>
+        )}
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Editar Gasto</DialogTitle>
+          <DialogTitle>Agregar Nuevo Ingreso</DialogTitle>
           <DialogDescription>
-            Modifica los detalles de este gasto.
+            Registra un ingreso en tu historial financiero.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="description">Descripción</Label>
+            <Label htmlFor="source">Fuente de Ingreso</Label>
             <Input
-              id="description"
-              name="description"
-              placeholder="ej. Factura de luz"
-              defaultValue={expense.description || ''}
+              id="source"
+              name="source"
+              placeholder="ej. Salario Mensual, Freelance Proyecto X"
               required
             />
           </div>
@@ -137,7 +123,6 @@ export function EditExpenseDialog({
                 type="number"
                 step="0.01"
                 placeholder="0.00"
-                defaultValue={expense.amount}
                 required
               />
             </div>
@@ -147,7 +132,7 @@ export function EditExpenseDialog({
                 id="date"
                 name="date"
                 type="date"
-                defaultValue={expense.date}
+                defaultValue={today}
                 required
               />
             </div>
@@ -155,15 +140,15 @@ export function EditExpenseDialog({
 
           <div className="grid gap-2">
             <Label htmlFor="category">Categoría</Label>
-            <Select value={categoryId} onValueChange={setCategoryId} required>
+            <Select value={categoryId} onValueChange={setCategoryId}>
               <SelectTrigger id="category">
                 <SelectValue placeholder="Selecciona una categoría" />
               </SelectTrigger>
               <SelectContent>
                 {categories.length === 0 ? (
-                  <div className="px-2 py-6 text-center text-sm text-muted-foreground">
-                    No hay categorías. Por favor crea una primero.
-                  </div>
+                  <SelectItem value="none" disabled>
+                    No hay categorías disponibles
+                  </SelectItem>
                 ) : (
                   categories.map((category) => (
                     <SelectItem key={category.id} value={String(category.id)}>
@@ -177,51 +162,21 @@ export function EditExpenseDialog({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="paymentMethod">Método de Pago</Label>
-            <Select value={paymentMethodId} onValueChange={setPaymentMethodId}>
-              <SelectTrigger id="paymentMethod">
-                <SelectValue placeholder="Selecciona un método de pago" />
-              </SelectTrigger>
-              <SelectContent>
-                {paymentMethods.length === 0 ? (
-                  <div className="px-2 py-6 text-center text-sm text-muted-foreground">
-                    No hay métodos de pago configurados.
-                  </div>
-                ) : (
-                  paymentMethods.map((method) => (
-                    <SelectItem key={method.id} value={String(method.id)}>
-                      {method.name}
-                      {method.bank && ` - ${method.bank}`}
-                      {method.last_four_digits && ` (••${method.last_four_digits})`}
-                      {method.is_default && ' ⭐'}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="paymentMethod">Método de Pago (opcional)</Label>
+            <Input
+              id="paymentMethod"
+              name="paymentMethod"
+              placeholder="ej. Transferencia bancaria, Efectivo"
+            />
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="paymentStatus">Estado de Pago</Label>
-            <Select value={paymentStatus} onValueChange={(value) => setPaymentStatus(value as 'pagado' | 'pendiente' | 'vencido')}>
-              <SelectTrigger id="paymentStatus">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pendiente">Pendiente</SelectItem>
-                <SelectItem value="pagado">Pagado</SelectItem>
-                <SelectItem value="vencido">Vencido</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="expenseType">Tipo de Gasto</Label>
+            <Label htmlFor="incomeType">Tipo de Ingreso</Label>
             <Select
               value={isRecurring ? 'recurrente' : 'unico'}
               onValueChange={(value) => setIsRecurring(value === 'recurrente')}
             >
-              <SelectTrigger id="expenseType">
+              <SelectTrigger id="incomeType">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -248,12 +203,20 @@ export function EditExpenseDialog({
           )}
 
           <div className="grid gap-2">
+            <Label htmlFor="description">Descripción (opcional)</Label>
+            <Input
+              id="description"
+              name="description"
+              placeholder="Detalles adicionales..."
+            />
+          </div>
+
+          <div className="grid gap-2">
             <Label htmlFor="notes">Notas (opcional)</Label>
             <Textarea
               id="notes"
               name="notes"
-              placeholder="Agrega notas adicionales..."
-              defaultValue={expense.notes || ''}
+              placeholder="Notas adicionales..."
               rows={3}
             />
           </div>
@@ -262,13 +225,13 @@ export function EditExpenseDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => setOpen(false)}
               disabled={isSubmitting}
             >
               Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
+              {isSubmitting ? 'Guardando...' : 'Guardar Ingreso'}
             </Button>
           </DialogFooter>
         </form>

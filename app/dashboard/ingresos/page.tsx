@@ -4,6 +4,7 @@ import { PlusCircle } from 'lucide-react';
 import { getUser } from '@/lib/auth';
 import { getIncomesByUser, getIncomeCategoriesByUser } from '@/lib/db';
 import Link from 'next/link';
+import { AddIncomeDialog } from './add-income-dialog';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,12 +42,17 @@ export default async function IngresosPage() {
                 </Button>
               </Link>
             ) : (
-              <Button size="sm" className="h-8 gap-1">
-                <PlusCircle className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Agregar Ingreso
-                </span>
-              </Button>
+              <AddIncomeDialog
+                categories={categories}
+                trigger={
+                  <Button size="sm" className="h-8 gap-1">
+                    <PlusCircle className="h-3.5 w-3.5" />
+                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                      Agregar Ingreso
+                    </span>
+                  </Button>
+                }
+              />
             )}
           </div>
         </div>
@@ -60,10 +66,24 @@ export default async function IngresosPage() {
             {incomes.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">No hay ingresos registrados</p>
-                <Button className="mt-4" size="sm">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Agregar Primer Ingreso
-                </Button>
+                {categories.length === 0 ? (
+                  <Link href="/dashboard/ingresos/categorias">
+                    <Button className="mt-4" size="sm">
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Crear Categoría Primero
+                    </Button>
+                  </Link>
+                ) : (
+                  <AddIncomeDialog
+                    categories={categories}
+                    trigger={
+                      <Button className="mt-4" size="sm">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Agregar Primer Ingreso
+                      </Button>
+                    }
+                  />
+                )}
               </div>
             ) : (
               <div className="space-y-2">

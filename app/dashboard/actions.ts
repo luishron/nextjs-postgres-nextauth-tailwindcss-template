@@ -40,6 +40,11 @@ export async function saveExpense(formData: FormData) {
     const recurrenceFrequency = formData.get('recurrenceFrequency') as string;
     const notes = formData.get('notes') as string;
 
+    // Validar paymentStatus
+    if (!['pagado', 'pendiente', 'vencido'].includes(paymentStatus)) {
+      return { error: 'Estado de pago inválido' };
+    }
+
     await createExpense({
       user_id: userId,
       category_id: parseInt(categoryId),
@@ -47,17 +52,24 @@ export async function saveExpense(formData: FormData) {
       description,
       date,
       payment_method: paymentMethodId,
-      payment_status: paymentStatus as any,
+      payment_status: paymentStatus as 'pagado' | 'pendiente' | 'vencido',
       is_recurring: isRecurring ? 1 : 0,
       recurrence_frequency: isRecurring ? recurrenceFrequency : null,
       notes
     });
 
-    revalidatePath('/gastos');
+    revalidatePath('/dashboard/gastos');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
-    console.error('Error al guardar gasto:', error);
-    return { error: 'Error al guardar el gasto' };
+    const message = error instanceof Error ? error.message : 'Error desconocido';
+    console.error('[saveExpense]', { error: message });
+
+    if (message.includes('constraint') || message.includes('foreign key')) {
+      return { error: 'Datos inválidos. Verifica la categoría y método de pago.' };
+    }
+
+    return { error: 'Error al guardar el gasto. Intenta nuevamente.' };
   }
 }
 
@@ -80,36 +92,62 @@ export async function updateExpense(formData: FormData) {
     const recurrenceFrequency = formData.get('recurrenceFrequency') as string;
     const notes = formData.get('notes') as string;
 
+    // Validar paymentStatus
+    if (!['pagado', 'pendiente', 'vencido'].includes(paymentStatus)) {
+      return { error: 'Estado de pago inválido' };
+    }
+
     await updateExpenseInDb(id, {
       category_id: parseInt(categoryId),
       amount,
       description,
       date,
       payment_method: paymentMethodId,
-      payment_status: paymentStatus as any,
+      payment_status: paymentStatus as 'pagado' | 'pendiente' | 'vencido',
       is_recurring: isRecurring ? 1 : 0,
       recurrence_frequency: isRecurring ? recurrenceFrequency : null,
       notes
     });
 
-    revalidatePath('/gastos');
+    revalidatePath('/dashboard/gastos');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
-    console.error('Error al actualizar gasto:', error);
-    return { error: 'Error al actualizar el gasto' };
+    const message = error instanceof Error ? error.message : 'Error desconocido';
+    console.error('[updateExpense]', { error: message });
+
+    if (message.includes('constraint') || message.includes('foreign key')) {
+      return { error: 'Datos inválidos. Verifica la categoría y método de pago.' };
+    }
+
+    return { error: 'Error al actualizar el gasto. Intenta nuevamente.' };
   }
 }
 
 export async function deleteExpense(formData: FormData) {
-  let id = Number(formData.get('id'));
+  const user = await getUser();
+
+  if (!user) {
+    return { error: 'No estás autenticado' };
+  }
+
+  const id = Number(formData.get('id'));
   await deleteExpenseById(id);
-  revalidatePath('/gastos');
+  revalidatePath('/dashboard/gastos');
+  revalidatePath('/dashboard');
 }
 
 export async function deleteCategory(formData: FormData) {
-  let id = Number(formData.get('id'));
+  const user = await getUser();
+
+  if (!user) {
+    return { error: 'No estás autenticado' };
+  }
+
+  const id = Number(formData.get('id'));
   await deleteCategoryById(id);
-  revalidatePath('/categorias');
+  revalidatePath('/dashboard/categorias');
+  revalidatePath('/dashboard');
 }
 
 export async function updateCategory(formData: FormData) {
@@ -133,7 +171,8 @@ export async function updateCategory(formData: FormData) {
       description
     });
 
-    revalidatePath('/categorias');
+    revalidatePath('/dashboard/categorias');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
     console.error('Error al actualizar categoría:', error);
@@ -164,7 +203,8 @@ export async function saveCategory(formData: FormData) {
       description
     });
 
-    revalidatePath('/categorias');
+    revalidatePath('/dashboard/categorias');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
     console.error('Error al guardar categoría:', error);
@@ -182,14 +222,12 @@ export async function payRecurringExpense(formData: FormData) {
 
     const userId = user.id;
 
-    const templateId = formData.get('templateId') as string;
     const nextDate = formData.get('nextDate') as string;
     const amount = formData.get('amount') as string;
     const description = formData.get('description') as string;
     const categoryId = formData.get('categoryId') as string;
     const paymentMethodId = formData.get('paymentMethodId') as string;
     const notes = formData.get('notes') as string;
-    const recurrenceFrequency = formData.get('recurrenceFrequency') as string;
 
     // Crear el gasto real para esta instancia recurrente
     await createExpense({
@@ -205,7 +243,8 @@ export async function payRecurringExpense(formData: FormData) {
       notes
     });
 
-    revalidatePath('/gastos');
+    revalidatePath('/dashboard/gastos');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
     console.error('Error al pagar gasto recurrente:', error);
@@ -231,10 +270,16 @@ export async function savePaymentMethod(formData: FormData) {
     const color = formData.get('color') as string;
     const isDefault = formData.get('isDefault') === 'true';
 
+    // Validar tipo de método de pago
+    const validTypes = ['tarjeta_credito', 'tarjeta_debito', 'efectivo', 'transferencia', 'otro'];
+    if (!validTypes.includes(type)) {
+      return { error: 'Tipo de método de pago inválido' };
+    }
+
     await createPaymentMethod({
       user_id: userId,
       name,
-      type: type as any,
+      type: type as 'tarjeta_credito' | 'tarjeta_debito' | 'efectivo' | 'transferencia' | 'otro',
       bank: bank || null,
       last_four_digits: lastFourDigits || null,
       icon: icon || null,
@@ -242,7 +287,8 @@ export async function savePaymentMethod(formData: FormData) {
       is_default: isDefault
     });
 
-    revalidatePath('/metodos-pago');
+    revalidatePath('/dashboard/metodos-pago');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
     console.error('Error al guardar método de pago:', error);
@@ -267,9 +313,15 @@ export async function updatePaymentMethod(formData: FormData) {
     const color = formData.get('color') as string;
     const isDefault = formData.get('isDefault') === 'true';
 
+    // Validar tipo de método de pago
+    const validTypes = ['tarjeta_credito', 'tarjeta_debito', 'efectivo', 'transferencia', 'otro'];
+    if (!validTypes.includes(type)) {
+      return { error: 'Tipo de método de pago inválido' };
+    }
+
     await updatePaymentMethodInDb(id, {
       name,
-      type: type as any,
+      type: type as 'tarjeta_credito' | 'tarjeta_debito' | 'efectivo' | 'transferencia' | 'otro',
       bank: bank || null,
       last_four_digits: lastFourDigits || null,
       icon: icon || null,
@@ -277,7 +329,8 @@ export async function updatePaymentMethod(formData: FormData) {
       is_default: isDefault
     });
 
-    revalidatePath('/metodos-pago');
+    revalidatePath('/dashboard/metodos-pago');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
     console.error('Error al actualizar método de pago:', error);
@@ -286,9 +339,16 @@ export async function updatePaymentMethod(formData: FormData) {
 }
 
 export async function deletePaymentMethod(formData: FormData) {
-  let id = Number(formData.get('id'));
+  const user = await getUser();
+
+  if (!user) {
+    return { error: 'No estás autenticado' };
+  }
+
+  const id = Number(formData.get('id'));
   await deletePaymentMethodById(id);
-  revalidatePath('/metodos-pago');
+  revalidatePath('/dashboard/metodos-pago');
+  revalidatePath('/dashboard');
 }
 
 //==============================================================================
@@ -328,7 +388,8 @@ export async function saveIncome(formData: FormData) {
       notes: notes || null
     });
 
-    revalidatePath('/ingresos');
+    revalidatePath('/dashboard/ingresos');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
     console.error('Error al guardar ingreso:', error);
@@ -367,7 +428,8 @@ export async function updateIncome(formData: FormData) {
       notes: notes || null
     });
 
-    revalidatePath('/ingresos');
+    revalidatePath('/dashboard/ingresos');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
     console.error('Error al actualizar ingreso:', error);
@@ -376,9 +438,16 @@ export async function updateIncome(formData: FormData) {
 }
 
 export async function deleteIncome(formData: FormData) {
-  let id = Number(formData.get('id'));
+  const user = await getUser();
+
+  if (!user) {
+    return { error: 'No estás autenticado' };
+  }
+
+  const id = Number(formData.get('id'));
   await deleteIncomeById(id);
-  revalidatePath('/ingresos');
+  revalidatePath('/dashboard/ingresos');
+  revalidatePath('/dashboard');
 }
 
 //==============================================================================
@@ -408,7 +477,8 @@ export async function saveIncomeCategory(formData: FormData) {
       description: description || null
     });
 
-    revalidatePath('/ingresos');
+    revalidatePath('/dashboard/ingresos');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
     console.error('Error al guardar categoría de ingreso:', error);
@@ -437,7 +507,8 @@ export async function updateIncomeCategoryAction(formData: FormData) {
       description: description || null
     });
 
-    revalidatePath('/ingresos');
+    revalidatePath('/dashboard/ingresos');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
     console.error('Error al actualizar categoría de ingreso:', error);
@@ -446,7 +517,14 @@ export async function updateIncomeCategoryAction(formData: FormData) {
 }
 
 export async function deleteIncomeCategory(formData: FormData) {
-  let id = Number(formData.get('id'));
+  const user = await getUser();
+
+  if (!user) {
+    return { error: 'No estás autenticado' };
+  }
+
+  const id = Number(formData.get('id'));
   await deleteIncomeCategoryById(id);
-  revalidatePath('/ingresos');
+  revalidatePath('/dashboard/ingresos');
+  revalidatePath('/dashboard');
 }
