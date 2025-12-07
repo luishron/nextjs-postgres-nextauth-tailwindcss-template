@@ -104,13 +104,6 @@ export function PaymentMethodCard({
               </span>
             </div>
           )}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <div
-              className="h-3 w-3 rounded-full"
-              style={{ backgroundColor: paymentMethod.color }}
-            />
-            <span>{paymentMethod.color}</span>
-          </div>
         </div>
       </CardContent>
     </Card>

@@ -35,7 +35,7 @@ export default async function IngresosPage() {
           </TabsList>
           <div className="flex items-center gap-2">
             {categories.length === 0 ? (
-              <Link href="/ingresos/categorias">
+              <Link href="/dashboard/ingresos/categorias">
                 <Button size="sm" className="h-8 gap-1">
                   <span>Crear Categoría Primero</span>
                 </Button>

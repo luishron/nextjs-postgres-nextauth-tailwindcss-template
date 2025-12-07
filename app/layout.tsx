@@ -4,9 +4,9 @@ import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Control de Gastos',
+  title: 'homelas',
   description:
-    'Aplicación de control de gastos personales con Next.js, Supabase y Tailwind CSS.'
+    'Gestiona tus finanzas personales de forma simple y efectiva.'
 };
 
 export default function RootLayout({

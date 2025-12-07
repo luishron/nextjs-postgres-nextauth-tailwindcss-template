@@ -42,17 +42,19 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Proteger rutas del dashboard
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+  const { pathname } = request.nextUrl;
+
+  // Proteger todas las rutas del dashboard
+  if (!user && pathname.startsWith('/dashboard')) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
 
-  // Si el usuario está autenticado y trata de acceder a /login, redirigir al dashboard
-  if (user && request.nextUrl.pathname === '/login') {
+  // Si el usuario está autenticado, redirigir desde login o home al dashboard
+  if (user && (pathname === '/login' || pathname === '/')) {
     const url = request.nextUrl.clone();
-    url.pathname = '/';
+    url.pathname = '/dashboard';
     return NextResponse.redirect(url);
   }
 

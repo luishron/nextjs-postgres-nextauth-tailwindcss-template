@@ -47,7 +47,7 @@ export function TopCategoriesChart({ categories, monthName }: TopCategoriesChart
               Comienza agregando gastos para ver tus categorías principales
             </p>
             <Button variant="outline" size="sm" className="mt-4" asChild>
-              <Link href="/gastos">Agregar Gasto</Link>
+              <Link href="/dashboard/gastos">Agregar Gasto</Link>
             </Button>
           </div>
         </CardContent>
@@ -69,7 +69,7 @@ export function TopCategoriesChart({ categories, monthName }: TopCategoriesChart
             </CardDescription>
           </div>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/categorias">Ver todas</Link>
+            <Link href="/dashboard/categorias">Ver todas</Link>
           </Button>
         </div>
       </CardHeader>
@@ -115,15 +115,6 @@ export function TopCategoriesChart({ categories, monthName }: TopCategoriesChart
           ))}
         </div>
 
-        {categories.length === 5 && (
-          <div className="mt-4 pt-4 border-t text-center">
-            <Button variant="link" size="sm" asChild>
-              <Link href="/reportes">
-                Ver reporte completo
-              </Link>
-            </Button>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

@@ -106,7 +106,7 @@ export function UpcomingExpensesWidget({ expenses, categories }: UpcomingExpense
             </CardDescription>
           </div>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/gastos">Ver todos</Link>
+            <Link href="/dashboard/gastos">Ver todos</Link>
           </Button>
         </div>
       </CardHeader>
@@ -146,7 +146,7 @@ export function UpcomingExpensesWidget({ expenses, categories }: UpcomingExpense
           {expenses.length > 7 && (
             <div className="pt-2 text-center">
               <Button variant="link" size="sm" asChild>
-                <Link href="/gastos">
+                <Link href="/dashboard/gastos">
                   Ver {expenses.length - 7} más
                 </Link>
               </Button>

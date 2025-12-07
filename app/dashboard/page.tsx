@@ -93,7 +93,7 @@ export default async function DashboardPage() {
                 Agrega tus primeros gastos para comenzar a visualizar tus finanzas
               </p>
               <Button asChild>
-                <Link href="/gastos">
+                <Link href="/dashboard/gastos">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Agregar Primer Gasto
                 </Link>
@@ -111,7 +111,7 @@ export default async function DashboardPage() {
                 Lleva un control completo agregando también tus ingresos
               </p>
               <Button variant="outline" asChild>
-                <Link href="/ingresos">
+                <Link href="/dashboard/ingresos">
                   <TrendingUp className="mr-2 h-4 w-4" />
                   Agregar Ingresos
                 </Link>
@@ -156,7 +156,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/gastos">
+          <Link href="/dashboard/gastos">
             <PlusCircle className="mr-2 h-4 w-4" />
             Agregar Gasto
           </Link>

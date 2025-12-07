@@ -67,20 +67,11 @@ export function CategoryCard({ category }: { category: Category }) {
         )}
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Total gastado:</span>
-            <span className="text-lg font-bold">
-              {formatCurrency(category.total || 0)}
-            </span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <div
-              className="h-3 w-3 rounded-full"
-              style={{ backgroundColor: category.color }}
-            />
-            <span>{category.color}</span>
-          </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">Total gastado:</span>
+          <span className="text-lg font-bold">
+            {formatCurrency(category.total || 0)}
+          </span>
         </div>
       </CardContent>
     </Card>

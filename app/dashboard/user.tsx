@@ -35,9 +35,6 @@ export async function User() {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>{user?.email ?? 'Mi Cuenta'}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Configuración</DropdownMenuItem>
-        <DropdownMenuItem>Soporte</DropdownMenuItem>
-        <DropdownMenuSeparator />
         {user ? (
           <DropdownMenuItem>
             <form action={signOut}>
