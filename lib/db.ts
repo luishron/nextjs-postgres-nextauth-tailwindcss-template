@@ -18,6 +18,27 @@ export type Category = {
 
 export type PaymentStatus = 'pagado' | 'pendiente' | 'vencido';
 
+export type PaymentMethodType =
+  | 'tarjeta_credito'
+  | 'tarjeta_debito'
+  | 'efectivo'
+  | 'transferencia'
+  | 'otro';
+
+export type PaymentMethod = {
+  id: number;
+  user_id: string;
+  name: string;
+  type: PaymentMethodType;
+  bank?: string | null;
+  last_four_digits?: string | null;
+  icon?: string | null;
+  color: string;
+  is_default: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type Expense = {
   id: number;
   user_id: string;
@@ -66,6 +87,7 @@ export type Statistic = {
 };
 
 export type InsertCategory = Omit<Category, 'id' | 'created_at'>;
+export type InsertPaymentMethod = Omit<PaymentMethod, 'id' | 'created_at' | 'updated_at'>;
 export type InsertExpense = Omit<Expense, 'id' | 'created_at' | 'updated_at'>;
 export type InsertBudget = Omit<Budget, 'id' | 'created_at' | 'updated_at'>;
 export type InsertIncome = Omit<Income, 'id' | 'created_at'>;
@@ -142,6 +164,93 @@ export async function deleteCategoryById(id: number): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase
     .from('categories')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
+}
+
+//==============================================================================
+// FUNCIONES DE QUERIES - Métodos de Pago
+//==============================================================================
+
+export async function getPaymentMethodsByUser(
+  userId: string
+): Promise<PaymentMethod[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('payment_methods')
+    .select('*')
+    .eq('user_id', userId)
+    .order('is_default', { ascending: false })
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function createPaymentMethod(
+  paymentMethod: InsertPaymentMethod
+): Promise<PaymentMethod> {
+  const supabase = await createClient();
+
+  // Si se marca como default, desmarcar todos los demás
+  if (paymentMethod.is_default) {
+    await supabase
+      .from('payment_methods')
+      .update({ is_default: false })
+      .eq('user_id', paymentMethod.user_id);
+  }
+
+  const { data, error } = await supabase
+    .from('payment_methods')
+    .insert(paymentMethod)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updatePaymentMethod(
+  id: number,
+  paymentMethod: Partial<InsertPaymentMethod>
+): Promise<PaymentMethod> {
+  const supabase = await createClient();
+
+  // Si se marca como default, desmarcar todos los demás
+  if (paymentMethod.is_default) {
+    // Obtener el user_id del payment method que se está actualizando
+    const { data: current } = await supabase
+      .from('payment_methods')
+      .select('user_id')
+      .eq('id', id)
+      .single();
+
+    if (current) {
+      await supabase
+        .from('payment_methods')
+        .update({ is_default: false })
+        .eq('user_id', current.user_id)
+        .neq('id', id);
+    }
+  }
+
+  const { data, error } = await supabase
+    .from('payment_methods')
+    .update(paymentMethod)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function deletePaymentMethodById(id: number): Promise<void> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('payment_methods')
     .delete()
     .eq('id', id);
 

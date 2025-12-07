@@ -7,7 +7,8 @@ import { UpcomingExpensesCard } from './upcoming-expenses-card';
 import {
   getCategoriesByUser,
   getExpensesByUser,
-  getUpcomingRecurringExpenses
+  getUpcomingRecurringExpenses,
+  getPaymentMethodsByUser
 } from '@/lib/db';
 import { getUser } from '@/lib/auth';
 import Link from 'next/link';
@@ -23,6 +24,9 @@ export default async function GastosPage() {
 
   // Obtener categorías del usuario
   const categories = await getCategoriesByUser(user.id);
+
+  // Obtener métodos de pago del usuario
+  const paymentMethods = await getPaymentMethodsByUser(user.id);
 
   // Obtener gastos del usuario
   const { expenses, totalExpenses } = await getExpensesByUser(user.id, {
@@ -58,8 +62,17 @@ export default async function GastosPage() {
                   <span>Crear Categoría Primero</span>
                 </Link>
               </Button>
+            ) : paymentMethods.length === 0 ? (
+              <Button size="sm" className="h-8 gap-1" asChild>
+                <Link href="/metodos-pago">
+                  <span>Crear Método de Pago Primero</span>
+                </Link>
+              </Button>
             ) : (
-              <AddExpenseDialog categories={categories} />
+              <AddExpenseDialog
+                categories={categories}
+                paymentMethods={paymentMethods}
+              />
             )}
           </div>
         </div>
@@ -69,6 +82,7 @@ export default async function GastosPage() {
             expenses={expenses}
             totalExpenses={totalExpenses}
             categories={categories}
+            paymentMethods={paymentMethods}
           />
         </TabsContent>
 
@@ -89,6 +103,7 @@ export default async function GastosPage() {
             expenses={expenses.filter((e) => e.is_recurring === 1)}
             totalExpenses={expenses.filter((e) => e.is_recurring === 1).length}
             categories={categories}
+            paymentMethods={paymentMethods}
           />
         </TabsContent>
 
@@ -103,6 +118,7 @@ export default async function GastosPage() {
             expenses={expenses.filter((e) => e.is_recurring === 0)}
             totalExpenses={expenses.filter((e) => e.is_recurring === 0).length}
             categories={categories}
+            paymentMethods={paymentMethods}
           />
         </TabsContent>
       </Tabs>

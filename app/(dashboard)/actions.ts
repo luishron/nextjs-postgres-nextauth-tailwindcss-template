@@ -6,7 +6,10 @@ import {
   createExpense,
   updateExpense as updateExpenseInDb,
   createCategory,
-  updateCategory as updateCategoryInDb
+  updateCategory as updateCategoryInDb,
+  createPaymentMethod,
+  updatePaymentMethod as updatePaymentMethodInDb,
+  deletePaymentMethodById
 } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { getUser } from '@/lib/auth';
@@ -25,7 +28,7 @@ export async function saveExpense(formData: FormData) {
     const amount = formData.get('amount') as string;
     const date = formData.get('date') as string;
     const categoryId = formData.get('categoryId') as string;
-    const paymentMethod = formData.get('paymentMethod') as string;
+    const paymentMethodId = formData.get('paymentMethodId') as string;
     const paymentStatus = formData.get('paymentStatus') as string;
     const isRecurring = formData.get('isRecurring') === 'true';
     const recurrenceFrequency = formData.get('recurrenceFrequency') as string;
@@ -37,7 +40,7 @@ export async function saveExpense(formData: FormData) {
       amount,
       description,
       date,
-      payment_method: paymentMethod,
+      payment_method: paymentMethodId,
       payment_status: paymentStatus as any,
       is_recurring: isRecurring ? 1 : 0,
       recurrence_frequency: isRecurring ? recurrenceFrequency : null,
@@ -65,7 +68,7 @@ export async function updateExpense(formData: FormData) {
     const amount = formData.get('amount') as string;
     const date = formData.get('date') as string;
     const categoryId = formData.get('categoryId') as string;
-    const paymentMethod = formData.get('paymentMethod') as string;
+    const paymentMethodId = formData.get('paymentMethodId') as string;
     const paymentStatus = formData.get('paymentStatus') as string;
     const isRecurring = formData.get('isRecurring') === 'true';
     const recurrenceFrequency = formData.get('recurrenceFrequency') as string;
@@ -76,7 +79,7 @@ export async function updateExpense(formData: FormData) {
       amount,
       description,
       date,
-      payment_method: paymentMethod,
+      payment_method: paymentMethodId,
       payment_status: paymentStatus as any,
       is_recurring: isRecurring ? 1 : 0,
       recurrence_frequency: isRecurring ? recurrenceFrequency : null,
@@ -178,7 +181,7 @@ export async function payRecurringExpense(formData: FormData) {
     const amount = formData.get('amount') as string;
     const description = formData.get('description') as string;
     const categoryId = formData.get('categoryId') as string;
-    const paymentMethod = formData.get('paymentMethod') as string;
+    const paymentMethodId = formData.get('paymentMethodId') as string;
     const notes = formData.get('notes') as string;
     const recurrenceFrequency = formData.get('recurrenceFrequency') as string;
 
@@ -189,7 +192,7 @@ export async function payRecurringExpense(formData: FormData) {
       amount,
       description: `${description} (${nextDate})`,
       date: nextDate,
-      payment_method: paymentMethod,
+      payment_method: paymentMethodId,
       payment_status: 'pagado',
       is_recurring: 0, // Marcar como no recurrente (es una instancia individual)
       recurrence_frequency: null,
@@ -202,4 +205,82 @@ export async function payRecurringExpense(formData: FormData) {
     console.error('Error al pagar gasto recurrente:', error);
     return { error: 'Error al pagar el gasto recurrente' };
   }
+}
+
+export async function savePaymentMethod(formData: FormData) {
+  try {
+    const user = await getUser();
+
+    if (!user) {
+      return { error: 'No estás autenticado' };
+    }
+
+    const userId = user.id;
+
+    const name = formData.get('name') as string;
+    const type = formData.get('type') as string;
+    const bank = formData.get('bank') as string;
+    const lastFourDigits = formData.get('lastFourDigits') as string;
+    const icon = formData.get('icon') as string;
+    const color = formData.get('color') as string;
+    const isDefault = formData.get('isDefault') === 'true';
+
+    await createPaymentMethod({
+      user_id: userId,
+      name,
+      type: type as any,
+      bank: bank || null,
+      last_four_digits: lastFourDigits || null,
+      icon: icon || null,
+      color: color || '#6366f1',
+      is_default: isDefault
+    });
+
+    revalidatePath('/metodos-pago');
+    return { success: true };
+  } catch (error) {
+    console.error('Error al guardar método de pago:', error);
+    return { error: 'Error al guardar el método de pago' };
+  }
+}
+
+export async function updatePaymentMethod(formData: FormData) {
+  try {
+    const user = await getUser();
+
+    if (!user) {
+      return { error: 'No estás autenticado' };
+    }
+
+    const id = Number(formData.get('id'));
+    const name = formData.get('name') as string;
+    const type = formData.get('type') as string;
+    const bank = formData.get('bank') as string;
+    const lastFourDigits = formData.get('lastFourDigits') as string;
+    const icon = formData.get('icon') as string;
+    const color = formData.get('color') as string;
+    const isDefault = formData.get('isDefault') === 'true';
+
+    await updatePaymentMethodInDb(id, {
+      name,
+      type: type as any,
+      bank: bank || null,
+      last_four_digits: lastFourDigits || null,
+      icon: icon || null,
+      color: color || '#6366f1',
+      is_default: isDefault
+    });
+
+    revalidatePath('/metodos-pago');
+    return { success: true };
+  } catch (error) {
+    console.error('Error al actualizar método de pago:', error);
+    return { error: 'Error al actualizar el método de pago' };
+  }
+}
+
+export async function deletePaymentMethod(formData: FormData) {
+  let id = Number(formData.get('id'));
+  await deletePaymentMethodById(id);
+  revalidatePath('/metodos-pago');
 }

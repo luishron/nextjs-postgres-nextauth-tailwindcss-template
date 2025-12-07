@@ -32,11 +32,35 @@ type Category = {
   icon?: string | null;
 };
 
-export function AddExpenseDialog({ categories }: { categories: Category[] }) {
+type PaymentMethod = {
+  id: number;
+  name: string;
+  type: string;
+  bank?: string | null;
+  last_four_digits?: string | null;
+  is_default: boolean;
+};
+
+export function AddExpenseDialog({
+  categories,
+  paymentMethods
+}: {
+  categories: Category[];
+  paymentMethods: PaymentMethod[];
+}) {
   const [open, setOpen] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
   const [categoryId, setCategoryId] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('efectivo');
+
+  // Determinar método de pago por defecto
+  const defaultPaymentMethod = paymentMethods.find((pm) => pm.is_default);
+  const defaultPaymentMethodId = defaultPaymentMethod
+    ? String(defaultPaymentMethod.id)
+    : paymentMethods.length > 0
+    ? String(paymentMethods[0].id)
+    : '';
+
+  const [paymentMethodId, setPaymentMethodId] = useState(defaultPaymentMethodId);
   const [paymentStatus, setPaymentStatus] = useState('pendiente');
   const [frequency, setFrequency] = useState('monthly');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,7 +81,7 @@ export function AddExpenseDialog({ categories }: { categories: Category[] }) {
     }
 
     formData.set('categoryId', categoryId);
-    formData.set('paymentMethod', paymentMethod);
+    formData.set('paymentMethodId', paymentMethodId);
     formData.set('paymentStatus', paymentStatus);
     formData.set('isRecurring', String(isRecurring));
     if (isRecurring) {
@@ -73,7 +97,7 @@ export function AddExpenseDialog({ categories }: { categories: Category[] }) {
       // Reset form state
       setIsRecurring(false);
       setCategoryId('');
-      setPaymentMethod('efectivo');
+      setPaymentMethodId(defaultPaymentMethodId);
       setPaymentStatus('pendiente');
       setFrequency('monthly');
       form.reset();
@@ -156,19 +180,25 @@ export function AddExpenseDialog({ categories }: { categories: Category[] }) {
 
           <div className="grid gap-2">
             <Label htmlFor="paymentMethod">Método de Pago</Label>
-            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+            <Select value={paymentMethodId} onValueChange={setPaymentMethodId}>
               <SelectTrigger id="paymentMethod">
-                <SelectValue />
+                <SelectValue placeholder="Selecciona un método de pago" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="efectivo">Efectivo</SelectItem>
-                <SelectItem value="tarjeta_debito">
-                  Tarjeta de Débito
-                </SelectItem>
-                <SelectItem value="tarjeta_credito">
-                  Tarjeta de Crédito
-                </SelectItem>
-                <SelectItem value="transferencia">Transferencia</SelectItem>
+                {paymentMethods.length === 0 ? (
+                  <div className="px-2 py-6 text-center text-sm text-muted-foreground">
+                    No hay métodos de pago configurados.
+                  </div>
+                ) : (
+                  paymentMethods.map((method) => (
+                    <SelectItem key={method.id} value={String(method.id)}>
+                      {method.name}
+                      {method.bank && ` - ${method.bank}`}
+                      {method.last_four_digits && ` (••${method.last_four_digits})`}
+                      {method.is_default && ' ⭐'}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>

@@ -70,7 +70,7 @@ export function UpcomingExpensesCard({
     formData.set('amount', expense.amount);
     formData.set('description', expense.description || '');
     formData.set('categoryId', String(expense.category_id));
-    formData.set('paymentMethod', expense.payment_method || 'efectivo');
+    formData.set('paymentMethodId', expense.payment_method || '');
     formData.set('notes', expense.notes || '');
     formData.set('recurrenceFrequency', expense.recurrence_frequency || 'monthly');
 

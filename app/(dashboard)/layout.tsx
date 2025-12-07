@@ -7,7 +7,8 @@ import {
   DollarSign,
   TrendingUp,
   PanelLeft,
-  Settings
+  Settings,
+  CreditCard
 } from 'lucide-react';
 
 import {
@@ -81,6 +82,10 @@ function DesktopNav() {
           <FolderOpen className="h-5 w-5" />
         </NavItem>
 
+        <NavItem href="/metodos-pago" label="Métodos de Pago">
+          <CreditCard className="h-5 w-5" />
+        </NavItem>
+
         <NavItem href="/ingresos" label="Ingresos">
           <TrendingUp className="h-5 w-5" />
         </NavItem>
@@ -145,6 +150,13 @@ function MobileNav() {
           >
             <FolderOpen className="h-5 w-5" />
             Categorías
+          </Link>
+          <Link
+            href="/metodos-pago"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <CreditCard className="h-5 w-5" />
+            Métodos de Pago
           </Link>
           <Link
             href="/ingresos"

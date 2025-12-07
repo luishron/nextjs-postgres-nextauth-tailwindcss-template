@@ -22,11 +22,12 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { updateExpense } from '../actions';
 import { useRouter } from 'next/navigation';
-import type { SelectExpense, Category } from '@/lib/db';
+import type { SelectExpense, Category, PaymentMethod } from '@/lib/db';
 
 interface EditExpenseDialogProps {
   expense: SelectExpense;
   categories: Category[];
+  paymentMethods: PaymentMethod[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -34,14 +35,24 @@ interface EditExpenseDialogProps {
 export function EditExpenseDialog({
   expense,
   categories,
+  paymentMethods,
   open,
   onOpenChange
 }: EditExpenseDialogProps) {
   const [isRecurring, setIsRecurring] = useState(expense.is_recurring === 1);
   const [categoryId, setCategoryId] = useState(String(expense.category_id));
-  const [paymentMethod, setPaymentMethod] = useState(
-    expense.payment_method || 'efectivo'
-  );
+
+  // Determinar método de pago inicial
+  const defaultPaymentMethod = paymentMethods.find((pm) => pm.is_default);
+  const initialPaymentMethodId = expense.payment_method
+    ? expense.payment_method
+    : defaultPaymentMethod
+    ? String(defaultPaymentMethod.id)
+    : paymentMethods.length > 0
+    ? String(paymentMethods[0].id)
+    : '';
+
+  const [paymentMethodId, setPaymentMethodId] = useState(initialPaymentMethodId);
   const [paymentStatus, setPaymentStatus] = useState(
     expense.payment_status || 'pendiente'
   );
@@ -55,7 +66,7 @@ export function EditExpenseDialog({
   useEffect(() => {
     setIsRecurring(expense.is_recurring === 1);
     setCategoryId(String(expense.category_id));
-    setPaymentMethod(expense.payment_method || 'efectivo');
+    setPaymentMethodId(expense.payment_method || initialPaymentMethodId);
     setPaymentStatus(expense.payment_status || 'pendiente');
     setFrequency(expense.recurrence_frequency || 'monthly');
   }, [expense]);
@@ -76,7 +87,7 @@ export function EditExpenseDialog({
 
     formData.set('id', String(expense.id));
     formData.set('categoryId', categoryId);
-    formData.set('paymentMethod', paymentMethod);
+    formData.set('paymentMethodId', paymentMethodId);
     formData.set('paymentStatus', paymentStatus);
     formData.set('isRecurring', String(isRecurring));
     if (isRecurring) {
@@ -167,19 +178,25 @@ export function EditExpenseDialog({
 
           <div className="grid gap-2">
             <Label htmlFor="paymentMethod">Método de Pago</Label>
-            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+            <Select value={paymentMethodId} onValueChange={setPaymentMethodId}>
               <SelectTrigger id="paymentMethod">
-                <SelectValue />
+                <SelectValue placeholder="Selecciona un método de pago" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="efectivo">Efectivo</SelectItem>
-                <SelectItem value="tarjeta_debito">
-                  Tarjeta de Débito
-                </SelectItem>
-                <SelectItem value="tarjeta_credito">
-                  Tarjeta de Crédito
-                </SelectItem>
-                <SelectItem value="transferencia">Transferencia</SelectItem>
+                {paymentMethods.length === 0 ? (
+                  <div className="px-2 py-6 text-center text-sm text-muted-foreground">
+                    No hay métodos de pago configurados.
+                  </div>
+                ) : (
+                  paymentMethods.map((method) => (
+                    <SelectItem key={method.id} value={String(method.id)}>
+                      {method.name}
+                      {method.bank && ` - ${method.bank}`}
+                      {method.last_four_digits && ` (••${method.last_four_digits})`}
+                      {method.is_default && ' ⭐'}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>

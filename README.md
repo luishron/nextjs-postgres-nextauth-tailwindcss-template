@@ -29,7 +29,7 @@
 - **CRUD Completo**: Crear, leer, actualizar y eliminar gastos
 - **Estados de Pago**: Seguimiento automático (pendiente, pagado, vencido)
 - **Detección de Vencimientos**: Marcado automático de gastos vencidos por fecha
-- **Métodos de Pago**: Efectivo, tarjeta de débito/crédito, transferencia
+- **Métodos de Pago Personalizables**: Sistema configurable de métodos de pago con banco y últimos dígitos
 - **Notas Personalizadas**: Agregar contexto adicional a cada gasto
 - **Filtros Inteligentes**: Por tipo (todos, recurrentes, únicos)
 
@@ -49,6 +49,16 @@
 - **Totales Automáticos**: Cálculo en tiempo real del gasto por categoría
 - **Descripción**: Contexto adicional para cada categoría
 - **Cards Visuales**: Presentación clara con totales destacados
+
+### 💳 Métodos de Pago
+
+- **CRUD Completo**: Crear, editar y eliminar métodos de pago
+- **Tipos Flexibles**: Tarjeta de crédito/débito, efectivo, transferencia, otro
+- **Información Bancaria**: Asociar banco y últimos 4 dígitos de tarjeta
+- **Método Predeterminado**: Marca un método como predeterminado para selección automática
+- **Personalización Visual**: Colores personalizables para cada método
+- **Iconos Dinámicos**: Iconos automáticos según el tipo de método
+- **Integración Completa**: Selección de métodos al crear/editar gastos
 
 ### 🎨 Interfaz de Usuario
 
@@ -225,7 +235,7 @@ AUTH_GITHUB_SECRET=
    - Monto
    - Fecha
    - Categoría
-   - Método de pago
+   - Método de pago (selecciona de tus métodos configurados)
    - Estado de pago
    - Tipo (único o recurrente)
 4. Si es recurrente, selecciona la frecuencia
@@ -238,6 +248,19 @@ AUTH_GITHUB_SECRET=
 3. Visualiza las próximas instancias en la sección "Próximos Gastos Recurrentes"
 4. Click en "Pagar" para registrar el pago de una instancia
 5. La instancia desaparece de "Próximos" y se registra en el historial
+
+### Configurar Métodos de Pago
+
+1. Navega a "Métodos de Pago"
+2. Click en "Nuevo Método de Pago"
+3. Define:
+   - Nombre (ej. "Visa Principal")
+   - Tipo (tarjeta crédito/débito, efectivo, transferencia, otro)
+   - Banco (opcional)
+   - Últimos 4 dígitos (opcional, solo para tarjetas)
+   - Color (selector visual)
+   - Marcar como predeterminado
+4. Los métodos aparecerán en los formularios de gastos
 
 ### Categorías
 
@@ -265,6 +288,10 @@ gastos/
 │   │   │   ├── page.tsx
 │   │   │   ├── category-card.tsx
 │   │   │   └── add-category-dialog.tsx
+│   │   ├── metodos-pago/     # Módulo de métodos de pago
+│   │   │   ├── page.tsx
+│   │   │   ├── payment-method-card.tsx
+│   │   │   └── add-payment-method-dialog.tsx
 │   │   └── gastos/           # Módulo de gastos
 │   │       ├── page.tsx
 │   │       ├── expenses-table.tsx
@@ -284,6 +311,7 @@ gastos/
 ├── public/                   # Assets estáticos
 ├── supabase-init.sql         # Script de inicialización
 ├── supabase-add-payment-status.sql  # Script estados de pago
+├── supabase-payment-methods.sql     # Script métodos de pago
 └── package.json
 ```
 
@@ -323,6 +351,25 @@ export type Category = {
 }
 
 export type PaymentStatus = 'pagado' | 'pendiente' | 'vencido';
+
+export type PaymentMethodType =
+  | 'tarjeta_credito'
+  | 'tarjeta_debito'
+  | 'efectivo'
+  | 'transferencia'
+  | 'otro';
+
+export type PaymentMethod = {
+  id: number;
+  user_id: string;
+  name: string;
+  type: PaymentMethodType;
+  bank?: string | null;
+  last_four_digits?: string | null;
+  icon?: string | null;
+  color: string;
+  is_default: boolean;
+}
 
 export type Expense = {
   id: number;
@@ -383,6 +430,22 @@ updateCategory(id: number, category: Partial<InsertCategory>): Promise<Category>
 deleteCategoryById(id: number): Promise<void>
 ```
 
+#### Funciones de Métodos de Pago
+
+```typescript
+// Obtener métodos de pago del usuario (ordenados por predeterminado)
+getPaymentMethodsByUser(userId: string): Promise<PaymentMethod[]>
+
+// CRUD de métodos de pago
+createPaymentMethod(paymentMethod: InsertPaymentMethod): Promise<PaymentMethod>
+updatePaymentMethod(id: number, paymentMethod: Partial<InsertPaymentMethod>): Promise<PaymentMethod>
+deletePaymentMethodById(id: number): Promise<void>
+```
+
+**Lógica Especial:**
+- Al marcar un método como predeterminado, automáticamente desmarca todos los demás del usuario
+- Los métodos se ordenan por predeterminado primero, luego por fecha de creación
+
 #### Funciones de Gastos Recurrentes
 
 ```typescript
@@ -417,6 +480,11 @@ export async function deleteExpense(formData: FormData): Promise<void>
 export async function saveCategory(formData: FormData): Promise<ActionResult>
 export async function updateCategory(formData: FormData): Promise<ActionResult>
 export async function deleteCategory(formData: FormData): Promise<void>
+
+// Métodos de Pago
+export async function savePaymentMethod(formData: FormData): Promise<ActionResult>
+export async function updatePaymentMethod(formData: FormData): Promise<ActionResult>
+export async function deletePaymentMethod(formData: FormData): Promise<void>
 
 // Gastos Recurrentes
 export async function payRecurringExpense(formData: FormData): Promise<ActionResult>
