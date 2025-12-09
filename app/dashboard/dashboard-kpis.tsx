@@ -1,4 +1,7 @@
-import { TrendingUp, TrendingDown, AlertTriangle, DollarSign, Wallet } from 'lucide-react';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { TrendingUp, TrendingDown, AlertTriangle, DollarSign, Wallet, Eye, EyeOff } from 'lucide-react';
 import type { MonthlySummary, OverdueExpensesSummary } from '@/lib/db';
 
 interface DashboardKPIsProps {
@@ -8,6 +11,34 @@ interface DashboardKPIsProps {
 }
 
 export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses }: DashboardKPIsProps) {
+  const [hideIncome, setHideIncome] = useState(false);
+  const [hideBalance, setHideBalance] = useState(false);
+
+  // Cargar preferencias desde localStorage al montar el componente
+  useEffect(() => {
+    const savedHideIncome = localStorage.getItem('hideIncome');
+    const savedHideBalance = localStorage.getItem('hideBalance');
+
+    if (savedHideIncome !== null) {
+      setHideIncome(savedHideIncome === 'true');
+    }
+    if (savedHideBalance !== null) {
+      setHideBalance(savedHideBalance === 'true');
+    }
+  }, []);
+
+  // Guardar preferencias en localStorage cuando cambien
+  const toggleHideIncome = () => {
+    const newValue = !hideIncome;
+    setHideIncome(newValue);
+    localStorage.setItem('hideIncome', String(newValue));
+  };
+
+  const toggleHideBalance = () => {
+    const newValue = !hideBalance;
+    setHideBalance(newValue);
+    localStorage.setItem('hideBalance', String(newValue));
+  };
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
@@ -76,16 +107,25 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses }: 
           <h3 className="text-sm font-medium text-muted-foreground">
             Ingresos del Mes
           </h3>
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleHideIncome}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={hideIncome ? 'Mostrar ingresos' : 'Ocultar ingresos'}
+            >
+              {hideIncome ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </div>
         </div>
         <p className="text-3xl font-bold text-green-600">
-          {formatCurrency(currentMonth.totalIncome)}
+          {hideIncome ? '••••••' : formatCurrency(currentMonth.totalIncome)}
         </p>
         <div className="mt-2 flex items-center justify-between">
           <p className="text-xs text-muted-foreground">
             {currentMonth.incomesCount} ingresos
           </p>
-          <TrendIndicator change={incomesChange} />
+          {!hideIncome && <TrendIndicator change={incomesChange} />}
         </div>
       </div>
 
@@ -95,18 +135,27 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses }: 
           <h3 className="text-sm font-medium text-muted-foreground">
             Balance del Mes
           </h3>
-          <Wallet className="h-4 w-4 text-muted-foreground" />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleHideBalance}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={hideBalance ? 'Mostrar balance' : 'Ocultar balance'}
+            >
+              {hideBalance ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+            <Wallet className="h-4 w-4 text-muted-foreground" />
+          </div>
         </div>
         <p className={`text-3xl font-bold ${
           currentMonth.balance >= 0 ? 'text-green-600' : 'text-red-600'
         }`}>
-          {formatCurrency(currentMonth.balance)}
+          {hideBalance ? '••••••' : formatCurrency(currentMonth.balance)}
         </p>
         <div className="mt-2 flex items-center justify-between">
           <p className="text-xs text-muted-foreground">
             {currentMonth.balance >= 0 ? 'Superávit' : 'Déficit'}
           </p>
-          <TrendIndicator change={balanceChange} />
+          {!hideBalance && <TrendIndicator change={balanceChange} />}
         </div>
       </div>
 
