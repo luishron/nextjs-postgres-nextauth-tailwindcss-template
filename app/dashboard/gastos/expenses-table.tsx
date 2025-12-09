@@ -233,6 +233,33 @@ export function ExpensesTable({
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Desglose de totales */}
+        {expenses.length > 0 && (
+          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+              <div className="text-xs font-medium text-red-600">Vencidos</div>
+              <div className="text-2xl font-bold text-red-700">
+                {formatCurrency(stats.overdue)}
+              </div>
+              <div className="text-xs text-red-600">{stats.overdueCount} gastos</div>
+            </div>
+            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+              <div className="text-xs font-medium text-yellow-600">Pendientes</div>
+              <div className="text-2xl font-bold text-yellow-700">
+                {formatCurrency(stats.pending)}
+              </div>
+              <div className="text-xs text-yellow-600">{stats.pendingCount} gastos</div>
+            </div>
+            <div className="rounded-lg border border-green-200 bg-green-50 p-3">
+              <div className="text-xs font-medium text-green-600">Pagados</div>
+              <div className="text-2xl font-bold text-green-700">
+                {formatCurrency(stats.paid)}
+              </div>
+              <div className="text-xs text-green-600">{stats.paidCount} gastos</div>
+            </div>
+          </div>
+        )}
+
         <Table>
           <TableHeader>
             <TableRow>
@@ -355,33 +382,6 @@ export function ExpensesTable({
             )}
           </TableBody>
         </Table>
-
-        {/* Desglose de totales */}
-        {expenses.length > 0 && (
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-              <div className="text-xs font-medium text-red-600">Vencidos</div>
-              <div className="text-2xl font-bold text-red-700">
-                {formatCurrency(stats.overdue)}
-              </div>
-              <div className="text-xs text-red-600">{stats.overdueCount} gastos</div>
-            </div>
-            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-              <div className="text-xs font-medium text-yellow-600">Pendientes</div>
-              <div className="text-2xl font-bold text-yellow-700">
-                {formatCurrency(stats.pending)}
-              </div>
-              <div className="text-xs text-yellow-600">{stats.pendingCount} gastos</div>
-            </div>
-            <div className="rounded-lg border border-green-200 bg-green-50 p-3">
-              <div className="text-xs font-medium text-green-600">Pagados</div>
-              <div className="text-2xl font-bold text-green-700">
-                {formatCurrency(stats.paid)}
-              </div>
-              <div className="text-xs text-green-600">{stats.paidCount} gastos</div>
-            </div>
-          </div>
-        )}
 
         <div className="mt-4 text-xs text-muted-foreground">
           Mostrando {expenses.length} de {totalExpenses} gastos
