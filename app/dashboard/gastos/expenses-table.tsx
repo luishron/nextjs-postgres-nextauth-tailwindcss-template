@@ -25,11 +25,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Calendar, Repeat } from 'lucide-react';
+import { MoreHorizontal, Calendar, Repeat, CreditCard } from 'lucide-react';
 import type { SelectExpense, Category, PaymentMethod } from '@/lib/db';
-import { deleteExpense } from '../actions';
+import { deleteExpense, markExpenseAsPaid } from '../actions';
 import { useRouter } from 'next/navigation';
 import { EditExpenseDialog } from './edit-expense-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface ExpensesTableProps {
   expenses: SelectExpense[];
@@ -45,10 +46,12 @@ export function ExpensesTable({
   paymentMethods
 }: ExpensesTableProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [editingExpense, setEditingExpense] = useState<SelectExpense | null>(
     null
   );
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [payingExpenseId, setPayingExpenseId] = useState<number | null>(null);
 
   // Ordenar gastos: vencidos → pendientes → pagados
   const sortedExpenses = [...expenses].sort((a, b) => {
@@ -214,6 +217,37 @@ export function ExpensesTable({
     router.refresh();
   };
 
+  const handlePay = async (expense: SelectExpense) => {
+    setPayingExpenseId(expense.id);
+
+    try {
+      const result = await markExpenseAsPaid(expense.id);
+
+      if (result.error) {
+        toast({
+          title: 'Error',
+          description: result.error,
+          variant: 'destructive'
+        });
+      } else {
+        toast({
+          title: 'Gasto pagado',
+          description: `"${expense.description || 'Sin descripción'}" marcado como pagado`,
+          variant: 'default'
+        });
+        router.refresh();
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Ocurrió un error al marcar el gasto como pagado',
+        variant: 'destructive'
+      });
+    } finally {
+      setPayingExpenseId(null);
+    }
+  };
+
   return (
     <>
       {editingExpense && (
@@ -272,15 +306,16 @@ export function ExpensesTable({
                 Método de Pago
               </TableHead>
               <TableHead className="text-right">Monto</TableHead>
+              <TableHead className="text-right">Acción</TableHead>
               <TableHead>
-                <span className="sr-only">Acciones</span>
+                <span className="sr-only">Más</span>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {expenses.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8">
+                <TableCell colSpan={9} className="text-center py-8">
                   <p className="text-muted-foreground">
                     No hay gastos registrados.
                   </p>
@@ -337,6 +372,20 @@ export function ExpensesTable({
                   <TableCell className="text-right font-semibold">
                     {formatCurrency(expense.amount)}
                   </TableCell>
+                  <TableCell className="text-right">
+                    {expense.payment_status !== 'pagado' && (
+                      <Button
+                        size="sm"
+                        variant={isOverdue ? 'destructive' : 'default'}
+                        onClick={() => handlePay(expense)}
+                        disabled={payingExpenseId === expense.id}
+                        className="gap-1"
+                      >
+                        <CreditCard className="h-4 w-4" />
+                        {payingExpenseId === expense.id ? 'Pagando...' : 'Pagar'}
+                      </Button>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -371,7 +420,7 @@ export function ExpensesTable({
             {/* Fila de Totales */}
             {expenses.length > 0 && (
               <TableRow className="bg-muted/50 font-semibold border-t-2">
-                <TableCell colSpan={6} className="text-right">
+                <TableCell colSpan={7} className="text-right">
                   Total General:
                 </TableCell>
                 <TableCell className="text-right text-lg">

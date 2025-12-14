@@ -2,6 +2,7 @@ import './globals.css';
 
 import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
+import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
   title: 'homelas',
@@ -16,7 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="flex min-h-screen w-full flex-col">{children}</body>
+      <body className="flex min-h-screen w-full flex-col">
+        {children}
+        <Toaster />
+      </body>
       <Analytics />
     </html>
   );

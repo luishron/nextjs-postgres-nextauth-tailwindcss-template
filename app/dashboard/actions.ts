@@ -137,6 +137,27 @@ export async function deleteExpense(formData: FormData) {
   revalidatePath('/dashboard');
 }
 
+export async function markExpenseAsPaid(expenseId: number) {
+  try {
+    const user = await getUser();
+
+    if (!user) {
+      return { error: 'No estás autenticado' };
+    }
+
+    await updateExpenseInDb(expenseId, {
+      payment_status: 'pagado'
+    });
+
+    revalidatePath('/dashboard/gastos');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error) {
+    console.error('Error al marcar gasto como pagado:', error);
+    return { error: 'Error al marcar el gasto como pagado' };
+  }
+}
+
 export async function deleteCategory(formData: FormData) {
   const user = await getUser();
 
