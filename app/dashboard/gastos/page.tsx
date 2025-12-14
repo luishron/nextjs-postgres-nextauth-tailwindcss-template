@@ -12,6 +12,8 @@ import {
 } from '@/lib/db';
 import { getUser } from '@/lib/auth';
 import Link from 'next/link';
+import { formatCurrency } from '@/lib/utils/formatting';
+import { PAYMENT_STATUS } from '@/lib/constants/enums';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,8 +39,8 @@ export default async function GastosPage() {
   const upcomingExpenses = await getUpcomingRecurringExpenses(user.id, 3);
 
   // Filtrar gastos: separar pagados de activos (vencidos + pendientes)
-  const activeExpenses = expenses.filter((e) => e.payment_status !== 'pagado');
-  const paidCount = expenses.filter((e) => e.payment_status === 'pagado').length;
+  const activeExpenses = expenses.filter((e) => e.payment_status !== PAYMENT_STATUS.PAID);
+  const paidCount = expenses.filter((e) => e.payment_status === PAYMENT_STATUS.PAID).length;
 
   // Calcular estadísticas
   const stats = activeExpenses.reduce(
@@ -48,7 +50,7 @@ export default async function GastosPage() {
       today.setHours(0, 0, 0, 0);
       const expenseDate = new Date(expense.date);
       expenseDate.setHours(0, 0, 0, 0);
-      const isOverdue = expenseDate < today && expense.payment_status !== 'pagado';
+      const isOverdue = expenseDate < today && expense.payment_status !== PAYMENT_STATUS.PAID;
 
       acc.total += amount;
 
@@ -64,13 +66,6 @@ export default async function GastosPage() {
     },
     { total: 0, overdue: 0, pending: 0, overdueCount: 0, pendingCount: 0 }
   );
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN'
-    }).format(amount);
-  };
 
   return (
     <div className="flex flex-col gap-4">

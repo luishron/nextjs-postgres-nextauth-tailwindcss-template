@@ -14,6 +14,7 @@ import { Clock, CreditCard, AlertCircle } from 'lucide-react';
 import type { UpcomingExpense, Category } from '@/lib/db';
 import { payRecurringExpense } from '../actions';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 interface UpcomingExpensesCardProps {
   upcomingExpenses: UpcomingExpense[];
@@ -25,6 +26,7 @@ export function UpcomingExpensesCard({
   categories
 }: UpcomingExpensesCardProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [payingId, setPayingId] = useState<number | null>(null);
 
   const formatCurrency = (amount: string | number) => {
@@ -80,8 +82,16 @@ export function UpcomingExpensesCard({
     const result = await payRecurringExpense(formData);
 
     if (result?.error) {
-      alert(result.error);
+      toast({
+        title: 'Error al procesar pago',
+        description: result.error,
+        variant: 'destructive'
+      });
     } else {
+      toast({
+        title: 'Gasto pagado',
+        description: 'El gasto recurrente se ha marcado como pagado exitosamente'
+      });
       router.refresh();
     }
 

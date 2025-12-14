@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { updateIncome } from '../actions';
 import { useRouter } from 'next/navigation';
 import type { Income, IncomeCategory } from '@/lib/db';
+import { useToast } from '@/hooks/use-toast';
 
 interface EditIncomeDialogProps {
   income: Income;
@@ -44,6 +45,7 @@ export function EditIncomeDialog({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   // Reset form when income changes
   useEffect(() => {
@@ -69,7 +71,11 @@ export function EditIncomeDialog({
     const result = await updateIncome(formData);
 
     if (result?.error) {
-      alert(result.error);
+      toast({
+        title: 'Error al actualizar',
+        description: result.error,
+        variant: 'destructive'
+      });
       setIsSubmitting(false);
     } else {
       // Close dialog and refresh

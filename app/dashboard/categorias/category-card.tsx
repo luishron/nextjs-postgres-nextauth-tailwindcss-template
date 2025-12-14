@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,6 +12,8 @@ import {
 import { Trash2 } from 'lucide-react';
 import { deleteCategory } from '../actions';
 import { useRouter } from 'next/navigation';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 type Category = {
   id: number;
@@ -23,6 +26,8 @@ type Category = {
 
 export function CategoryCard({ category }: { category: Category }) {
   const router = useRouter();
+  const { toast } = useToast();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-MX', {
@@ -31,14 +36,20 @@ export function CategoryCard({ category }: { category: Category }) {
     }).format(amount);
   };
 
-  const handleDelete = async () => {
-    if (!confirm(`¿Estás seguro de eliminar la categoría "${category.name}"?`)) {
-      return;
-    }
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
 
+  const handleDeleteConfirm = async () => {
     const formData = new FormData();
     formData.set('id', String(category.id));
     await deleteCategory(formData);
+
+    toast({
+      title: 'Categoría eliminada',
+      description: `La categoría "${category.name}" se ha eliminado exitosamente`
+    });
+
     router.refresh();
   };
 
@@ -55,7 +66,7 @@ export function CategoryCard({ category }: { category: Category }) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleDelete}
+            onClick={handleDeleteClick}
             className="h-8 w-8 text-muted-foreground hover:text-destructive"
           >
             <Trash2 className="h-4 w-4" />
@@ -74,6 +85,17 @@ export function CategoryCard({ category }: { category: Category }) {
           </span>
         </div>
       </CardContent>
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        title="Eliminar categoría"
+        description={`¿Estás seguro de que deseas eliminar la categoría "${category.name}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="destructive"
+      />
     </Card>
   );
 }

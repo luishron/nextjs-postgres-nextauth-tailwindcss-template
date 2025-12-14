@@ -24,6 +24,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { PlusCircle } from 'lucide-react';
 import { saveIncome } from '../actions';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 type IncomeCategory = {
   id: number;
@@ -45,6 +46,7 @@ export function AddIncomeDialog({
   const [frequency, setFrequency] = useState('monthly');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   // Obtener fecha actual en formato YYYY-MM-DD
   const today = new Date().toISOString().split('T')[0];
@@ -58,7 +60,11 @@ export function AddIncomeDialog({
 
     // Validar que se haya seleccionado una categoría
     if (!categoryId) {
-      alert('Por favor selecciona una categoría');
+      toast({
+        title: 'Error de validación',
+        description: 'Por favor selecciona una categoría',
+        variant: 'destructive'
+      });
       setIsSubmitting(false);
       return;
     }
@@ -72,9 +78,13 @@ export function AddIncomeDialog({
     const result = await saveIncome(formData);
 
     if (result?.error) {
-      alert(result.error);
+      toast({
+        title: 'Error al guardar',
+        description: result.error,
+        variant: 'destructive'
+      });
       setIsSubmitting(false);
-    } else {
+    } else{
       // Reset form state
       form.reset();
       setIsRecurring(false);

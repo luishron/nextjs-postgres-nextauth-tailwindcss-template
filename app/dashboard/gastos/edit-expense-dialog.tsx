@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { updateExpense } from '../actions';
 import { useRouter } from 'next/navigation';
 import type { SelectExpense, Category, PaymentMethod } from '@/lib/db';
+import { useToast } from '@/hooks/use-toast';
 
 interface EditExpenseDialogProps {
   expense: SelectExpense;
@@ -61,6 +62,7 @@ export function EditExpenseDialog({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   // Reset form when expense changes
   useEffect(() => {
@@ -80,7 +82,11 @@ export function EditExpenseDialog({
 
     // Validar que se haya seleccionado una categoría
     if (!categoryId) {
-      alert('Por favor selecciona una categoría');
+      toast({
+        title: 'Error de validación',
+        description: 'Por favor selecciona una categoría',
+        variant: 'destructive'
+      });
       setIsSubmitting(false);
       return;
     }
@@ -97,7 +103,11 @@ export function EditExpenseDialog({
     const result = await updateExpense(formData);
 
     if (result?.error) {
-      alert(result.error);
+      toast({
+        title: 'Error al actualizar',
+        description: result.error,
+        variant: 'destructive'
+      });
       setIsSubmitting(false);
     } else {
       // Close dialog and refresh

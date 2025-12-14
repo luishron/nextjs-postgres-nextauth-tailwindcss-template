@@ -17,17 +17,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { PlusCircle, Search } from 'lucide-react';
 import { saveCategory } from '../actions';
 import { useRouter } from 'next/navigation';
-
-const COLORS = [
-  { name: 'Azul', value: '#3B82F6' },
-  { name: 'Verde', value: '#10B981' },
-  { name: 'Amarillo', value: '#F59E0B' },
-  { name: 'Púrpura', value: '#8B5CF6' },
-  { name: 'Rojo', value: '#EF4444' },
-  { name: 'Rosa', value: '#EC4899' },
-  { name: 'Índigo', value: '#6366F1' },
-  { name: 'Gris', value: '#6B7280' }
-];
+import { COLORS } from '@/lib/constants/colors';
+import { useToast } from '@/hooks/use-toast';
 
 const ICON_CATEGORIES = {
   comida: {
@@ -180,6 +171,7 @@ export function AddCategoryDialog() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<keyof typeof ICON_CATEGORIES>('comida');
   const router = useRouter();
+  const { toast } = useToast();
 
   // Filtrar iconos según la búsqueda
   const filteredIcons = useMemo(() => {
@@ -206,8 +198,16 @@ export function AddCategoryDialog() {
     const result = await saveCategory(formData);
 
     if (result?.error) {
-      alert(result.error);
+      toast({
+        title: 'Error al guardar',
+        description: result.error,
+        variant: 'destructive'
+      });
     } else {
+      toast({
+        title: 'Categoría creada',
+        description: 'La categoría se ha creado exitosamente'
+      });
       setOpen(false);
       router.refresh();
       // Reset form

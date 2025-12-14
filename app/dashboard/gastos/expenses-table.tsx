@@ -31,6 +31,14 @@ import { deleteExpense, markExpenseAsPaid } from '../actions';
 import { useRouter } from 'next/navigation';
 import { EditExpenseDialog } from './edit-expense-dialog';
 import { useToast } from '@/hooks/use-toast';
+import {
+  formatCurrency,
+  formatDate,
+  getCategoryName,
+  getPaymentMethodName
+} from '@/lib/utils/formatting';
+import { getPaymentStatusBadge, PAYMENT_STATUS } from '@/lib/constants/enums';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface ExpensesTableProps {
   expenses: SelectExpense[];
@@ -56,6 +64,8 @@ export function ExpensesTable({
   );
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [payingExpenseId, setPayingExpenseId] = useState<number | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [expenseToDelete, setExpenseToDelete] = useState<number | null>(null);
 
   // Ordenar gastos: vencidos → pendientes → pagados
   const sortedExpenses = [...expenses].sort((a, b) => {
@@ -93,109 +103,30 @@ export function ExpensesTable({
     return acc + parseFloat(expense.amount);
   }, 0);
 
-  const formatCurrency = (amount: string | number) => {
-    const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN'
-    }).format(num);
-  };
-
-  const formatDate = (dateString: string) => {
-    // Parsear la fecha como local sin conversión de zona horaria
-    const [year, month, day] = dateString.split('-').map(Number);
-    const date = new Date(year, month - 1, day);
-    return date.toLocaleDateString('es-MX', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const getCategoryName = (categoryId: number) => {
-    const category = categories.find((c) => c.id === categoryId);
-    return category ? `${category.icon || ''} ${category.name}`.trim() : 'Sin categoría';
-  };
-
-  const getPaymentMethodName = (methodId: string | null | undefined) => {
-    if (!methodId) return 'No especificado';
-
-    // Buscar el método de pago por ID
-    const paymentMethod = paymentMethods.find((pm) => pm.id === parseInt(methodId));
-
-    if (paymentMethod) {
-      let displayName = paymentMethod.name;
-      if (paymentMethod.bank) {
-        displayName += ` (${paymentMethod.bank})`;
-      }
-      if (paymentMethod.last_four_digits) {
-        displayName += ` ••${paymentMethod.last_four_digits}`;
-      }
-      return displayName;
-    }
-
-    // Fallback para gastos antiguos con valores hardcodeados
-    const legacyMethods: Record<string, string> = {
-      efectivo: 'Efectivo',
-      tarjeta_debito: 'Tarjeta de Débito',
-      tarjeta_credito: 'Tarjeta de Crédito',
-      transferencia: 'Transferencia'
-    };
-    return legacyMethods[methodId] || methodId;
-  };
-
-  const getPaymentStatusBadge = (status: string | null | undefined, expenseDate: string) => {
-    // Verificar si el gasto está vencido (fecha pasada y no pagado)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const expenseDateObj = new Date(expenseDate);
-    expenseDateObj.setHours(0, 0, 0, 0);
-
-    const isOverdue = expenseDateObj < today && status !== 'pagado';
-    const daysDiff = Math.floor((expenseDateObj.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-    const statusConfig = {
-      pagado: { label: 'Pagado', variant: 'default' as const, className: 'bg-green-500 hover:bg-green-600' },
-      pendiente: { label: 'Pendiente', variant: 'secondary' as const, className: 'bg-yellow-500 hover:bg-yellow-600 text-white' },
-      vencido: { label: 'Vencido', variant: 'destructive' as const, className: '' }
-    };
-
-    // Si está vencido automáticamente, mostrar con días de atraso
-    if (isOverdue) {
-      const daysOverdue = Math.abs(daysDiff);
-      return {
-        ...statusConfig.vencido,
-        label: `Vencido (${daysOverdue}d)`
-      };
-    }
-
-    // Si es pendiente y está próximo a vencer (menos de 7 días)
-    if (status !== 'pagado' && daysDiff >= 0 && daysDiff <= 7) {
-      return {
-        ...statusConfig.pendiente,
-        label: daysDiff === 0 ? 'Vence Hoy' : `Vence en ${daysDiff}d`,
-        className: daysDiff <= 2 ? 'bg-orange-500 hover:bg-orange-600 text-white' : statusConfig.pendiente.className
-      };
-    }
-
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pendiente;
-    return { ...config };
-  };
-
   const handleEdit = (expense: SelectExpense) => {
     setEditingExpense(expense);
     setEditDialogOpen(true);
   };
 
-  const handleDelete = async (expenseId: number) => {
-    if (!confirm('¿Estás seguro de eliminar este gasto?')) {
-      return;
-    }
+  const handleDeleteClick = (expenseId: number) => {
+    setExpenseToDelete(expenseId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!expenseToDelete) return;
 
     const formData = new FormData();
-    formData.set('id', String(expenseId));
+    formData.set('id', String(expenseToDelete));
     await deleteExpense(formData);
+
+    toast({
+      title: 'Gasto eliminado',
+      description: 'El gasto se ha eliminado exitosamente'
+    });
+
     router.refresh();
+    setExpenseToDelete(null);
   };
 
   const handlePay = async (expense: SelectExpense) => {
@@ -240,6 +171,18 @@ export function ExpensesTable({
           onOpenChange={setEditDialogOpen}
         />
       )}
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        title="Eliminar gasto"
+        description="¿Estás seguro de que deseas eliminar este gasto? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="destructive"
+      />
+
       <Card>
       <CardHeader>
         <CardTitle>Lista de Gastos</CardTitle>
@@ -308,7 +251,7 @@ export function ExpensesTable({
                     {expense.description || 'Sin descripción'}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{getCategoryName(expense.category_id)}</Badge>
+                    <Badge variant="outline">{getCategoryName(expense.category_id, categories)}</Badge>
                   </TableCell>
                   <TableCell>
                     {expense.is_recurring === 1 ? (
@@ -337,7 +280,7 @@ export function ExpensesTable({
                     {formatDate(expense.date)}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">
-                    {getPaymentMethodName(expense.payment_method)}
+                    {getPaymentMethodName(expense.payment_method, paymentMethods)}
                   </TableCell>
                   <TableCell className="text-right font-semibold">
                     {formatCurrency(expense.amount)}
@@ -378,7 +321,7 @@ export function ExpensesTable({
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive"
-                            onClick={() => handleDelete(expense.id)}
+                            onClick={() => handleDeleteClick(expense.id)}
                           >
                             Eliminar
                           </DropdownMenuItem>

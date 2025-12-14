@@ -19,6 +19,20 @@ import {
 } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { getUser } from '@/lib/auth';
+import {
+  expenseSchema,
+  updateExpenseSchema,
+  incomeSchema,
+  updateIncomeSchema,
+  deleteIncomeSchema,
+  categorySchema,
+  updateCategorySchema,
+  deleteCategorySchema,
+  paymentMethodSchema,
+  updatePaymentMethodSchema,
+  deletePaymentMethodSchema,
+  validateFormData
+} from '@/lib/validations/schemas';
 
 export async function saveExpense(formData: FormData) {
   try {
@@ -28,34 +42,26 @@ export async function saveExpense(formData: FormData) {
       return { error: 'No estás autenticado' };
     }
 
-    const userId = user.id;
+    // Validar datos con Zod
+    const validation = validateFormData(expenseSchema, formData);
 
-    const description = formData.get('description') as string;
-    const amount = formData.get('amount') as string;
-    const date = formData.get('date') as string;
-    const categoryId = formData.get('categoryId') as string;
-    const paymentMethodId = formData.get('paymentMethodId') as string;
-    const paymentStatus = formData.get('paymentStatus') as string;
-    const isRecurring = formData.get('isRecurring') === 'true';
-    const recurrenceFrequency = formData.get('recurrenceFrequency') as string;
-    const notes = formData.get('notes') as string;
-
-    // Validar paymentStatus
-    if (!['pagado', 'pendiente', 'vencido'].includes(paymentStatus)) {
-      return { error: 'Estado de pago inválido' };
+    if (!validation.success) {
+      return { error: validation.error };
     }
 
+    const data = validation.data;
+
     await createExpense({
-      user_id: userId,
-      category_id: parseInt(categoryId),
-      amount,
-      description,
-      date,
-      payment_method: paymentMethodId,
-      payment_status: paymentStatus as 'pagado' | 'pendiente' | 'vencido',
-      is_recurring: isRecurring ? 1 : 0,
-      recurrence_frequency: isRecurring ? recurrenceFrequency : null,
-      notes
+      user_id: user.id,
+      category_id: data.categoryId,
+      amount: data.amount,
+      description: data.description,
+      date: data.date,
+      payment_method: String(data.paymentMethodId),
+      payment_status: data.paymentStatus as 'pagado' | 'pendiente' | 'vencido',
+      is_recurring: data.isRecurring ? 1 : 0,
+      recurrence_frequency: data.isRecurring ? data.recurrenceFrequency : null,
+      notes: data.notes
     });
 
     revalidatePath('/dashboard/gastos');
@@ -81,32 +87,25 @@ export async function updateExpense(formData: FormData) {
       return { error: 'No estás autenticado' };
     }
 
-    const id = Number(formData.get('id'));
-    const description = formData.get('description') as string;
-    const amount = formData.get('amount') as string;
-    const date = formData.get('date') as string;
-    const categoryId = formData.get('categoryId') as string;
-    const paymentMethodId = formData.get('paymentMethodId') as string;
-    const paymentStatus = formData.get('paymentStatus') as string;
-    const isRecurring = formData.get('isRecurring') === 'true';
-    const recurrenceFrequency = formData.get('recurrenceFrequency') as string;
-    const notes = formData.get('notes') as string;
+    // Validar datos con Zod
+    const validation = validateFormData(updateExpenseSchema, formData);
 
-    // Validar paymentStatus
-    if (!['pagado', 'pendiente', 'vencido'].includes(paymentStatus)) {
-      return { error: 'Estado de pago inválido' };
+    if (!validation.success) {
+      return { error: validation.error };
     }
 
-    await updateExpenseInDb(id, {
-      category_id: parseInt(categoryId),
-      amount,
-      description,
-      date,
-      payment_method: paymentMethodId,
-      payment_status: paymentStatus as 'pagado' | 'pendiente' | 'vencido',
-      is_recurring: isRecurring ? 1 : 0,
-      recurrence_frequency: isRecurring ? recurrenceFrequency : null,
-      notes
+    const data = validation.data;
+
+    await updateExpenseInDb(data.id, {
+      category_id: data.categoryId,
+      amount: data.amount,
+      description: data.description,
+      date: data.date,
+      payment_method: String(data.paymentMethodId),
+      payment_status: data.paymentStatus as 'pagado' | 'pendiente' | 'vencido',
+      is_recurring: data.isRecurring ? 1 : 0,
+      recurrence_frequency: data.isRecurring ? data.recurrenceFrequency : null,
+      notes: data.notes
     });
 
     revalidatePath('/dashboard/gastos');
@@ -159,16 +158,30 @@ export async function markExpenseAsPaid(expenseId: number) {
 }
 
 export async function deleteCategory(formData: FormData) {
-  const user = await getUser();
+  try {
+    const user = await getUser();
 
-  if (!user) {
-    return { error: 'No estás autenticado' };
+    if (!user) {
+      return { error: 'No estás autenticado' };
+    }
+
+    // Validar datos con Zod
+    const validation = validateFormData(deleteCategorySchema, formData);
+
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
+
+    await deleteCategoryById(data.id);
+    revalidatePath('/dashboard/categorias');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error) {
+    console.error('Error al eliminar categoría:', error);
+    return { error: 'Error al eliminar la categoría' };
   }
-
-  const id = Number(formData.get('id'));
-  await deleteCategoryById(id);
-  revalidatePath('/dashboard/categorias');
-  revalidatePath('/dashboard');
 }
 
 export async function updateCategory(formData: FormData) {
@@ -179,17 +192,20 @@ export async function updateCategory(formData: FormData) {
       return { error: 'No estás autenticado' };
     }
 
-    const id = Number(formData.get('id'));
-    const name = formData.get('name') as string;
-    const color = formData.get('color') as string;
-    const icon = formData.get('icon') as string;
-    const description = formData.get('description') as string;
+    // Validar datos con Zod
+    const validation = validateFormData(updateCategorySchema, formData);
 
-    await updateCategoryInDb(id, {
-      name,
-      color,
-      icon,
-      description
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
+
+    await updateCategoryInDb(data.id, {
+      name: data.name,
+      color: data.color,
+      icon: data.icon || null,
+      description: data.description || null
     });
 
     revalidatePath('/dashboard/categorias');
@@ -209,19 +225,21 @@ export async function saveCategory(formData: FormData) {
       return { error: 'No estás autenticado' };
     }
 
-    const userId = user.id;
+    // Validar datos con Zod
+    const validation = validateFormData(categorySchema, formData);
 
-    const name = formData.get('name') as string;
-    const color = formData.get('color') as string;
-    const icon = formData.get('icon') as string;
-    const description = formData.get('description') as string;
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
 
     await createCategory({
-      user_id: userId,
-      name,
-      color,
-      icon,
-      description
+      user_id: user.id,
+      name: data.name,
+      color: data.color,
+      icon: data.icon || null,
+      description: data.description || null
     });
 
     revalidatePath('/dashboard/categorias');
@@ -281,31 +299,30 @@ export async function savePaymentMethod(formData: FormData) {
       return { error: 'No estás autenticado' };
     }
 
-    const userId = user.id;
+    // Validar datos con Zod
+    const validation = validateFormData(paymentMethodSchema, formData);
 
-    const name = formData.get('name') as string;
-    const type = formData.get('type') as string;
-    const bank = formData.get('bank') as string;
-    const lastFourDigits = formData.get('lastFourDigits') as string;
-    const icon = formData.get('icon') as string;
-    const color = formData.get('color') as string;
-    const isDefault = formData.get('isDefault') === 'true';
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
 
     // Validar tipo de método de pago
     const validTypes = ['tarjeta_credito', 'tarjeta_debito', 'efectivo', 'transferencia', 'otro'];
-    if (!validTypes.includes(type)) {
+    if (!validTypes.includes(data.type)) {
       return { error: 'Tipo de método de pago inválido' };
     }
 
     await createPaymentMethod({
-      user_id: userId,
-      name,
-      type: type as 'tarjeta_credito' | 'tarjeta_debito' | 'efectivo' | 'transferencia' | 'otro',
-      bank: bank || null,
-      last_four_digits: lastFourDigits || null,
-      icon: icon || null,
-      color: color || '#6366f1',
-      is_default: isDefault
+      user_id: user.id,
+      name: data.name,
+      type: data.type as 'tarjeta_credito' | 'tarjeta_debito' | 'efectivo' | 'transferencia' | 'otro',
+      bank: data.bank || null,
+      last_four_digits: data.lastFourDigits || null,
+      icon: null,
+      color: data.color,
+      is_default: data.isDefault
     });
 
     revalidatePath('/dashboard/metodos-pago');
@@ -325,29 +342,29 @@ export async function updatePaymentMethod(formData: FormData) {
       return { error: 'No estás autenticado' };
     }
 
-    const id = Number(formData.get('id'));
-    const name = formData.get('name') as string;
-    const type = formData.get('type') as string;
-    const bank = formData.get('bank') as string;
-    const lastFourDigits = formData.get('lastFourDigits') as string;
-    const icon = formData.get('icon') as string;
-    const color = formData.get('color') as string;
-    const isDefault = formData.get('isDefault') === 'true';
+    // Validar datos con Zod
+    const validation = validateFormData(updatePaymentMethodSchema, formData);
+
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
 
     // Validar tipo de método de pago
     const validTypes = ['tarjeta_credito', 'tarjeta_debito', 'efectivo', 'transferencia', 'otro'];
-    if (!validTypes.includes(type)) {
+    if (!validTypes.includes(data.type)) {
       return { error: 'Tipo de método de pago inválido' };
     }
 
-    await updatePaymentMethodInDb(id, {
-      name,
-      type: type as 'tarjeta_credito' | 'tarjeta_debito' | 'efectivo' | 'transferencia' | 'otro',
-      bank: bank || null,
-      last_four_digits: lastFourDigits || null,
-      icon: icon || null,
-      color: color || '#6366f1',
-      is_default: isDefault
+    await updatePaymentMethodInDb(data.id, {
+      name: data.name,
+      type: data.type as 'tarjeta_credito' | 'tarjeta_debito' | 'efectivo' | 'transferencia' | 'otro',
+      bank: data.bank || null,
+      last_four_digits: data.lastFourDigits || null,
+      icon: null,
+      color: data.color,
+      is_default: data.isDefault
     });
 
     revalidatePath('/dashboard/metodos-pago');
@@ -360,16 +377,30 @@ export async function updatePaymentMethod(formData: FormData) {
 }
 
 export async function deletePaymentMethod(formData: FormData) {
-  const user = await getUser();
+  try {
+    const user = await getUser();
 
-  if (!user) {
-    return { error: 'No estás autenticado' };
+    if (!user) {
+      return { error: 'No estás autenticado' };
+    }
+
+    // Validar datos con Zod
+    const validation = validateFormData(deletePaymentMethodSchema, formData);
+
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
+
+    await deletePaymentMethodById(data.id);
+    revalidatePath('/dashboard/metodos-pago');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error) {
+    console.error('Error al eliminar método de pago:', error);
+    return { error: 'Error al eliminar el método de pago' };
   }
-
-  const id = Number(formData.get('id'));
-  await deletePaymentMethodById(id);
-  revalidatePath('/dashboard/metodos-pago');
-  revalidatePath('/dashboard');
 }
 
 //==============================================================================
@@ -384,29 +415,26 @@ export async function saveIncome(formData: FormData) {
       return { error: 'No estás autenticado' };
     }
 
-    const userId = user.id;
+    // Validar datos con Zod
+    const validation = validateFormData(incomeSchema, formData);
 
-    const source = formData.get('source') as string;
-    const amount = formData.get('amount') as string;
-    const date = formData.get('date') as string;
-    const description = formData.get('description') as string;
-    const categoryId = formData.get('categoryId') as string;
-    const paymentMethod = formData.get('paymentMethod') as string;
-    const isRecurring = formData.get('isRecurring') === 'true';
-    const recurrenceFrequency = formData.get('recurrenceFrequency') as string;
-    const notes = formData.get('notes') as string;
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
 
     await createIncome({
-      user_id: userId,
-      source,
-      amount,
-      date,
-      description: description || null,
-      category_id: categoryId ? parseInt(categoryId) : null,
-      payment_method: paymentMethod || null,
-      is_recurring: isRecurring ? 1 : 0,
-      recurrence_frequency: isRecurring ? recurrenceFrequency : null,
-      notes: notes || null
+      user_id: user.id,
+      source: data.source,
+      amount: data.amount,
+      date: data.date,
+      description: data.description || null,
+      category_id: data.categoryId,
+      payment_method: null, // Los ingresos no requieren método de pago
+      is_recurring: data.isRecurring ? 1 : 0,
+      recurrence_frequency: data.isRecurring ? data.recurrenceFrequency : null,
+      notes: null
     });
 
     revalidatePath('/dashboard/ingresos');
@@ -426,27 +454,25 @@ export async function updateIncome(formData: FormData) {
       return { error: 'No estás autenticado' };
     }
 
-    const id = Number(formData.get('id'));
-    const source = formData.get('source') as string;
-    const amount = formData.get('amount') as string;
-    const date = formData.get('date') as string;
-    const description = formData.get('description') as string;
-    const categoryId = formData.get('categoryId') as string;
-    const paymentMethod = formData.get('paymentMethod') as string;
-    const isRecurring = formData.get('isRecurring') === 'true';
-    const recurrenceFrequency = formData.get('recurrenceFrequency') as string;
-    const notes = formData.get('notes') as string;
+    // Validar datos con Zod
+    const validation = validateFormData(updateIncomeSchema, formData);
 
-    await updateIncomeInDb(id, {
-      source,
-      amount,
-      date,
-      description: description || null,
-      category_id: categoryId ? parseInt(categoryId) : null,
-      payment_method: paymentMethod || null,
-      is_recurring: isRecurring ? 1 : 0,
-      recurrence_frequency: isRecurring ? recurrenceFrequency : null,
-      notes: notes || null
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
+
+    await updateIncomeInDb(data.id, {
+      source: data.source,
+      amount: data.amount,
+      date: data.date,
+      description: data.description || null,
+      category_id: data.categoryId,
+      payment_method: null,
+      is_recurring: data.isRecurring ? 1 : 0,
+      recurrence_frequency: data.isRecurring ? data.recurrenceFrequency : null,
+      notes: null
     });
 
     revalidatePath('/dashboard/ingresos');
@@ -459,16 +485,30 @@ export async function updateIncome(formData: FormData) {
 }
 
 export async function deleteIncome(formData: FormData) {
-  const user = await getUser();
+  try {
+    const user = await getUser();
 
-  if (!user) {
-    return { error: 'No estás autenticado' };
+    if (!user) {
+      return { error: 'No estás autenticado' };
+    }
+
+    // Validar datos con Zod
+    const validation = validateFormData(deleteIncomeSchema, formData);
+
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
+
+    await deleteIncomeById(data.id);
+    revalidatePath('/dashboard/ingresos');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error) {
+    console.error('Error al eliminar ingreso:', error);
+    return { error: 'Error al eliminar el ingreso' };
   }
-
-  const id = Number(formData.get('id'));
-  await deleteIncomeById(id);
-  revalidatePath('/dashboard/ingresos');
-  revalidatePath('/dashboard');
 }
 
 //==============================================================================
@@ -483,19 +523,21 @@ export async function saveIncomeCategory(formData: FormData) {
       return { error: 'No estás autenticado' };
     }
 
-    const userId = user.id;
+    // Validar datos con Zod
+    const validation = validateFormData(categorySchema, formData);
 
-    const name = formData.get('name') as string;
-    const color = formData.get('color') as string;
-    const icon = formData.get('icon') as string;
-    const description = formData.get('description') as string;
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
 
     await createIncomeCategory({
-      user_id: userId,
-      name,
-      color: color || '#10B981',
-      icon: icon || null,
-      description: description || null
+      user_id: user.id,
+      name: data.name,
+      color: data.color,
+      icon: data.icon || null,
+      description: data.description || null
     });
 
     revalidatePath('/dashboard/ingresos');
@@ -515,17 +557,20 @@ export async function updateIncomeCategoryAction(formData: FormData) {
       return { error: 'No estás autenticado' };
     }
 
-    const id = Number(formData.get('id'));
-    const name = formData.get('name') as string;
-    const color = formData.get('color') as string;
-    const icon = formData.get('icon') as string;
-    const description = formData.get('description') as string;
+    // Validar datos con Zod
+    const validation = validateFormData(updateCategorySchema, formData);
 
-    await updateIncomeCategoryInDb(id, {
-      name,
-      color: color || '#10B981',
-      icon: icon || null,
-      description: description || null
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
+
+    await updateIncomeCategoryInDb(data.id, {
+      name: data.name,
+      color: data.color,
+      icon: data.icon || null,
+      description: data.description || null
     });
 
     revalidatePath('/dashboard/ingresos');
@@ -538,14 +583,28 @@ export async function updateIncomeCategoryAction(formData: FormData) {
 }
 
 export async function deleteIncomeCategory(formData: FormData) {
-  const user = await getUser();
+  try {
+    const user = await getUser();
 
-  if (!user) {
-    return { error: 'No estás autenticado' };
+    if (!user) {
+      return { error: 'No estás autenticado' };
+    }
+
+    // Validar datos con Zod
+    const validation = validateFormData(deleteCategorySchema, formData);
+
+    if (!validation.success) {
+      return { error: validation.error };
+    }
+
+    const data = validation.data;
+
+    await deleteIncomeCategoryById(data.id);
+    revalidatePath('/dashboard/ingresos');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error) {
+    console.error('Error al eliminar categoría de ingreso:', error);
+    return { error: 'Error al eliminar la categoría' };
   }
-
-  const id = Number(formData.get('id'));
-  await deleteIncomeCategoryById(id);
-  revalidatePath('/dashboard/ingresos');
-  revalidatePath('/dashboard');
 }

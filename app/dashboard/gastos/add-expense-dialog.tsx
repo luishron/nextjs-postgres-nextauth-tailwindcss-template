@@ -24,6 +24,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { PlusCircle } from 'lucide-react';
 import { saveExpense } from '../actions';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 type Category = {
   id: number;
@@ -65,6 +66,7 @@ export function AddExpenseDialog({
   const [frequency, setFrequency] = useState('monthly');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -75,7 +77,11 @@ export function AddExpenseDialog({
 
     // Validar que se haya seleccionado una categoría
     if (!categoryId) {
-      alert('Por favor selecciona una categoría');
+      toast({
+        title: 'Error de validación',
+        description: 'Por favor selecciona una categoría',
+        variant: 'destructive'
+      });
       setIsSubmitting(false);
       return;
     }
@@ -91,7 +97,11 @@ export function AddExpenseDialog({
     const result = await saveExpense(formData);
 
     if (result?.error) {
-      alert(result.error);
+      toast({
+        title: 'Error al guardar',
+        description: result.error,
+        variant: 'destructive'
+      });
       setIsSubmitting(false);
     } else {
       // Reset form state

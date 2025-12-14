@@ -13,6 +13,8 @@ import { EditIncomeDialog } from './edit-income-dialog';
 import { deleteIncome } from '../actions';
 import { useRouter } from 'next/navigation';
 import type { Income, IncomeCategory } from '@/lib/db';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface IncomesListProps {
   incomes: Income[];
@@ -21,18 +23,31 @@ interface IncomesListProps {
 
 export function IncomesList({ incomes, categories }: IncomesListProps) {
   const [editingIncome, setEditingIncome] = useState<Income | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [incomeToDelete, setIncomeToDelete] = useState<number | null>(null);
   const router = useRouter();
+  const { toast } = useToast();
 
-  const handleDelete = async (incomeId: number) => {
-    if (!confirm('¿Estás seguro de eliminar este ingreso?')) {
-      return;
-    }
+  const handleDeleteClick = (incomeId: number) => {
+    setIncomeToDelete(incomeId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!incomeToDelete) return;
 
     const formData = new FormData();
-    formData.set('id', String(incomeId));
+    formData.set('id', String(incomeToDelete));
 
     await deleteIncome(formData);
+
+    toast({
+      title: 'Ingreso eliminado',
+      description: 'El ingreso se ha eliminado exitosamente'
+    });
+
     router.refresh();
+    setIncomeToDelete(null);
   };
 
   return (
@@ -74,7 +89,7 @@ export function IncomesList({ incomes, categories }: IncomesListProps) {
                     Editar
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => handleDelete(income.id)}
+                    onClick={() => handleDeleteClick(income.id)}
                     className="text-destructive focus:text-destructive"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
@@ -95,6 +110,17 @@ export function IncomesList({ incomes, categories }: IncomesListProps) {
           onOpenChange={(open) => !open && setEditingIncome(null)}
         />
       )}
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        title="Eliminar ingreso"
+        description="¿Estás seguro de que deseas eliminar este ingreso? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="destructive"
+      />
     </>
   );
 }

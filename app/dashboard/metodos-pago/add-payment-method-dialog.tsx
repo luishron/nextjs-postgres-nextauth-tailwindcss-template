@@ -23,17 +23,8 @@ import {
 import { PlusCircle, CreditCard } from 'lucide-react';
 import { savePaymentMethod } from '../actions';
 import { useRouter } from 'next/navigation';
-
-const COLORS = [
-  { name: 'Azul', value: '#3B82F6' },
-  { name: 'Verde', value: '#10B981' },
-  { name: 'Amarillo', value: '#F59E0B' },
-  { name: 'Púrpura', value: '#8B5CF6' },
-  { name: 'Rojo', value: '#EF4444' },
-  { name: 'Rosa', value: '#EC4899' },
-  { name: 'Índigo', value: '#6366F1' },
-  { name: 'Gris', value: '#6B7280' }
-];
+import { COLORS } from '@/lib/constants/colors';
+import { useToast } from '@/hooks/use-toast';
 
 const PAYMENT_TYPES = [
   { label: 'Tarjeta de Crédito', value: 'tarjeta_credito' },
@@ -50,6 +41,7 @@ export function AddPaymentMethodDialog() {
   const [isDefault, setIsDefault] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -63,7 +55,11 @@ export function AddPaymentMethodDialog() {
     const result = await savePaymentMethod(formData);
 
     if (result?.error) {
-      alert(result.error);
+      toast({
+        title: 'Error al guardar',
+        description: result.error,
+        variant: 'destructive'
+      });
       setIsSubmitting(false);
     } else {
       // Reset form state antes de cerrar el diálogo

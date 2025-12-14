@@ -17,17 +17,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { PlusCircle } from 'lucide-react';
 import { saveIncomeCategory } from '../../actions';
 import { useRouter } from 'next/navigation';
-
-const COLORS = [
-  { name: 'Verde', value: '#10B981' },
-  { name: 'Azul', value: '#3B82F6' },
-  { name: 'Amarillo', value: '#F59E0B' },
-  { name: 'Púrpura', value: '#8B5CF6' },
-  { name: 'Rosa', value: '#EC4899' },
-  { name: 'Índigo', value: '#6366F1' },
-  { name: 'Esmeralda', value: '#059669' },
-  { name: 'Cyan', value: '#06B6D4' }
-];
+import { COLORS } from '@/lib/constants/colors';
+import { useToast } from '@/hooks/use-toast';
 
 const ICONS = ['💼', '💡', '📈', '🎁', '💰', '🏦', '📊', '💵', '🎯', '⭐', '🚀', '💎'];
 
@@ -37,6 +28,7 @@ export function AddIncomeCategoryDialog() {
   const [selectedIcon, setSelectedIcon] = useState('💰');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,7 +41,11 @@ export function AddIncomeCategoryDialog() {
     const result = await saveIncomeCategory(formData);
 
     if (result?.error) {
-      alert(result.error);
+      toast({
+        title: 'Error al guardar',
+        description: result.error,
+        variant: 'destructive'
+      });
       setIsSubmitting(false);
     } else {
       // Reset form before closing
