@@ -187,6 +187,154 @@ export async function deleteCategoryById(id: number): Promise<void> {
   if (error) throw error;
 }
 
+export async function getCategoryById(
+  userId: string,
+  categoryId: number
+): Promise<Category | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('id', categoryId)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') return null; // Not found
+    throw error;
+  }
+
+  return data;
+}
+
+export async function getExpensesByCategoryId(
+  userId: string,
+  categoryId: number
+): Promise<Expense[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('expenses')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('category_id', categoryId)
+    .order('date', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getCategoryStatistics(
+  userId: string,
+  categoryId: number
+): Promise<{
+  totalSpent: number;
+  expenseCount: number;
+  averageExpense: number;
+  paidTotal: number;
+  pendingTotal: number;
+  overdueTotal: number;
+  paidCount: number;
+  pendingCount: number;
+  overdueCount: number;
+}> {
+  const supabase = await createClient();
+  const today = new Date().toISOString().split('T')[0];
+
+  const { data: expenses, error } = await supabase
+    .from('expenses')
+    .select('amount, payment_status, date')
+    .eq('user_id', userId)
+    .eq('category_id', categoryId);
+
+  if (error) throw error;
+
+  // Calculate statistics
+  const stats = (expenses || []).reduce(
+    (acc, expense) => {
+      const amount = parseFloat(expense.amount);
+      acc.totalSpent += amount;
+      acc.expenseCount++;
+
+      const isOverdue = expense.date < today && expense.payment_status !== 'pagado';
+
+      if (expense.payment_status === 'pagado') {
+        acc.paidTotal += amount;
+        acc.paidCount++;
+      } else if (isOverdue) {
+        acc.overdueTotal += amount;
+        acc.overdueCount++;
+      } else {
+        acc.pendingTotal += amount;
+        acc.pendingCount++;
+      }
+
+      return acc;
+    },
+    {
+      totalSpent: 0,
+      expenseCount: 0,
+      paidTotal: 0,
+      pendingTotal: 0,
+      overdueTotal: 0,
+      paidCount: 0,
+      pendingCount: 0,
+      overdueCount: 0
+    }
+  );
+
+  return {
+    ...stats,
+    averageExpense: stats.expenseCount > 0 ? stats.totalSpent / stats.expenseCount : 0
+  };
+}
+
+export async function getCategoryMonthlyTrend(
+  userId: string,
+  categoryId: number,
+  months = 6
+): Promise<Array<{ month: string; total: number; count: number }>> {
+  const supabase = await createClient();
+
+  // Calculate date range (last N months)
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setMonth(startDate.getMonth() - months);
+
+  const { data: expenses, error } = await supabase
+    .from('expenses')
+    .select('amount, date')
+    .eq('user_id', userId)
+    .eq('category_id', categoryId)
+    .gte('date', startDate.toISOString().split('T')[0])
+    .lte('date', endDate.toISOString().split('T')[0]);
+
+  if (error) throw error;
+
+  // Group by month
+  const monthlyData = new Map<string, { total: number; count: number }>();
+
+  (expenses || []).forEach((expense) => {
+    const date = new Date(expense.date);
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+    const existing = monthlyData.get(monthKey) || { total: 0, count: 0 };
+    existing.total += parseFloat(expense.amount);
+    existing.count++;
+    monthlyData.set(monthKey, existing);
+  });
+
+  // Convert to array and sort by month
+  const result = Array.from(monthlyData.entries())
+    .map(([month, data]) => ({
+      month,
+      total: data.total,
+      count: data.count
+    }))
+    .sort((a, b) => a.month.localeCompare(b.month));
+
+  return result;
+}
+
 //==============================================================================
 // FUNCIONES DE QUERIES - Métodos de Pago
 //==============================================================================

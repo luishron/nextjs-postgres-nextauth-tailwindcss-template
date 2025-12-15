@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -36,7 +37,9 @@ export function CategoryCard({ category }: { category: Category }) {
     }).format(amount);
   };
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setDeleteDialogOpen(true);
   };
 
@@ -54,37 +57,41 @@ export function CategoryCard({ category }: { category: Category }) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div
-            className="flex h-12 w-12 items-center justify-center rounded-lg text-2xl text-white"
-            style={{ backgroundColor: category.color }}
-          >
-            {category.icon || '📦'}
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleDeleteClick}
-            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-        <CardTitle>{category.name}</CardTitle>
-        {category.description && (
-          <CardDescription>{category.description}</CardDescription>
-        )}
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Total gastado:</span>
-          <span className="text-lg font-bold">
-            {formatCurrency(category.total || 0)}
-          </span>
-        </div>
-      </CardContent>
+    <>
+      <Link href={`/dashboard/categorias/${category.id}`}>
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <CardHeader>
+            <div className="flex items-start justify-between">
+              <div
+                className="flex h-12 w-12 items-center justify-center rounded-lg text-2xl text-white"
+                style={{ backgroundColor: category.color }}
+              >
+                {category.icon || '📦'}
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleDeleteClick}
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+            <CardTitle>{category.name}</CardTitle>
+            {category.description && (
+              <CardDescription>{category.description}</CardDescription>
+            )}
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Total gastado:</span>
+              <span className="text-lg font-bold">
+                {formatCurrency(category.total || 0)}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
 
       <ConfirmDialog
         open={deleteDialogOpen}
@@ -96,6 +103,6 @@ export function CategoryCard({ category }: { category: Category }) {
         cancelText="Cancelar"
         variant="destructive"
       />
-    </Card>
+    </>
   );
 }

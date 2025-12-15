@@ -44,14 +44,20 @@ type PaymentMethod = {
 
 export function AddExpenseDialog({
   categories,
-  paymentMethods
+  paymentMethods,
+  defaultCategoryId,
+  lockCategory = false
 }: {
   categories: Category[];
   paymentMethods: PaymentMethod[];
+  defaultCategoryId?: number;
+  lockCategory?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
-  const [categoryId, setCategoryId] = useState('');
+  const [categoryId, setCategoryId] = useState(
+    defaultCategoryId ? String(defaultCategoryId) : ''
+  );
 
   // Determinar método de pago por defecto
   const defaultPaymentMethod = paymentMethods.find((pm) => pm.is_default);
@@ -106,7 +112,7 @@ export function AddExpenseDialog({
     } else {
       // Reset form state
       setIsRecurring(false);
-      setCategoryId('');
+      setCategoryId(defaultCategoryId ? String(defaultCategoryId) : '');
       setPaymentMethodId(defaultPaymentMethodId);
       setPaymentStatus('pendiente');
       setFrequency('monthly');
@@ -119,13 +125,20 @@ export function AddExpenseDialog({
     }
   };
 
+  // Get category name for locked mode
+  const lockedCategory = lockCategory && defaultCategoryId
+    ? categories.find(cat => cat.id === defaultCategoryId)
+    : null;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" className="h-8 gap-1">
           <PlusCircle className="h-3.5 w-3.5" />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Agregar Gasto
+            {lockCategory && lockedCategory
+              ? `Agregar a ${lockedCategory.name}`
+              : 'Agregar Gasto'}
           </span>
         </Button>
       </DialogTrigger>
@@ -167,7 +180,12 @@ export function AddExpenseDialog({
 
           <div className="grid gap-2">
             <Label htmlFor="category">Categoría</Label>
-            <Select value={categoryId} onValueChange={setCategoryId} required>
+            <Select
+              value={categoryId}
+              onValueChange={setCategoryId}
+              required
+              disabled={lockCategory}
+            >
               <SelectTrigger id="category">
                 <SelectValue placeholder="Selecciona una categoría" />
               </SelectTrigger>
