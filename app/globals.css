@@ -4,100 +4,110 @@
 
 @layer base {
   :root {
+    /* ========================================
+       HOMELAS DESIGN SYSTEM - Light Mode
+       Inspired by OLEA brand palette
+       ======================================== */
+
     /* Backgrounds */
-    --background: 0 0% 100%;
-    --foreground: 158 100% 10%;
+    --background: 56 60% 98%;          /* Soft beige-white #FCFBF6 */
+    --foreground: 153 65% 8%;          /* Verde pino dark #071C11 for text */
 
     /* Cards & Surfaces */
-    --card: 0 0% 100%;
-    --card-foreground: 158 100% 10%;
+    --card: 56 60% 96%;                /* Beige/Cream #F9F8E3 */
+    --card-foreground: 153 65% 8%;     /* Verde pino dark */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 158 100% 10%;
+    --popover: 56 60% 96%;
+    --popover-foreground: 153 65% 8%;
 
-    /* Brand Colors - Verde Esmeralda */
-    --primary: 158 64% 52%;
-    --primary-foreground: 0 0% 100%;
+    /* Brand Colors - Verde Vibrante (OLEA) */
+    --primary: 98 100% 70%;            /* Verde vibrante #9FFF66 */
+    --primary-foreground: 153 65% 8%;  /* Verde pino dark on primary */
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 158 64% 52%;
+    --secondary: 56 40% 88%;           /* Beige más saturado */
+    --secondary-foreground: 153 65% 8%;
 
     /* Interactive States */
-    --muted: 158 20% 96%;
-    --muted-foreground: 158 10% 40%;
+    --muted: 56 30% 92%;               /* Beige muy suave */
+    --muted-foreground: 153 20% 35%;   /* Verde grisáceo */
 
-    --accent: 158 40% 95%;
-    --accent-foreground: 158 80% 35%;
+    --accent: 98 100% 85%;             /* Verde vibrante light */
+    --accent-foreground: 153 65% 8%;   /* Verde pino dark */
 
     /* Functional Colors */
-    --destructive: 0 84% 60%;
+    --destructive: 0 84% 60%;          /* Rojo para gastos/errores */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 158 64% 52%;
-    --success-foreground: 0 0% 100%;
+    --success: 98 100% 70%;            /* Verde vibrante #9FFF66 para ingresos */
+    --success-foreground: 153 65% 8%;
 
-    --warning: 38 92% 50%;
+    --warning: 38 92% 50%;             /* Amber/naranja */
     --warning-foreground: 0 0% 100%;
 
-    --info: 199 89% 48%;
+    --info: 199 89% 48%;               /* Azul */
     --info-foreground: 0 0% 100%;
 
     /* Borders & Inputs */
-    --border: 158 15% 88%;
-    --input: 158 15% 88%;
-    --ring: 158 64% 52%;
+    --border: 56 30% 85%;              /* Beige border suave */
+    --input: 56 30% 85%;
+    --ring: 98 100% 70%;               /* Verde vibrante focus ring */
 
     --radius: 0.75rem;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(158 64% 52%) 0%, hsl(168 64% 52%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(158 64% 52%) 0%, hsl(142 76% 36%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(158 10% 99%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(98 100% 70%) 0%, hsl(110 90% 65%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(98 100% 70%) 0%, hsl(142 76% 55%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(56 60% 96%) 0%, hsl(56 50% 94%) 100%);
   }
 
   .dark {
-    /* Backgrounds - Tonos Negros/Grises */
-    --background: 0 0% 8%;
-    --foreground: 0 0% 95%;
+    /* ========================================
+       HOMELAS DESIGN SYSTEM - Dark Mode
+       Inspired by OLEA brand palette
+       ======================================== */
+
+    /* Backgrounds - Verde Pino Oscuro */
+    --background: 153 65% 8%;          /* Verde pino dark #071C11 */
+    --foreground: 56 60% 95%;          /* Beige claro para texto */
 
     /* Cards & Surfaces */
-    --card: 0 0% 12%;
-    --card-foreground: 0 0% 95%;
+    --card: 153 55% 12%;               /* Verde pino un poco más claro */
+    --card-foreground: 56 60% 95%;     /* Beige claro */
 
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 153 55% 12%;
+    --popover-foreground: 56 60% 95%;
 
-    /* Brand Colors - Verde Esmeralda */
-    --primary: 158 64% 45%;
-    --primary-foreground: 0 0% 100%;
+    /* Brand Colors - Verde Vibrante (OLEA) */
+    --primary: 98 100% 70%;            /* Verde vibrante #9FFF66 (mismo que light) */
+    --primary-foreground: 153 65% 8%;  /* Verde pino dark on primary */
 
-    --secondary: 0 0% 18%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 153 45% 18%;          /* Verde pino medio */
+    --secondary-foreground: 56 60% 95%;
 
     /* Interactive States */
-    --muted: 0 0% 18%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 153 40% 15%;              /* Verde pino muted */
+    --muted-foreground: 56 30% 70%;    /* Beige/gris medio */
 
-    --accent: 0 0% 18%;
-    --accent-foreground: 158 64% 45%;
+    --accent: 98 90% 65%;              /* Verde vibrante slightly darker */
+    --accent-foreground: 153 65% 8%;   /* Verde pino dark */
 
     /* Functional Colors */
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 72% 55%;          /* Rojo más suave en dark */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 158 64% 45%;
-    --success-foreground: 0 0% 100%;
+    --success: 98 100% 70%;            /* Verde vibrante #9FFF66 para ingresos */
+    --success-foreground: 153 65% 8%;  /* Verde pino dark */
 
-    --warning: 38 92% 40%;
-    --warning-foreground: 0 0% 100%;
+    --warning: 38 92% 55%;             /* Amber más brillante en dark */
+    --warning-foreground: 153 65% 8%;
 
-    --info: 199 89% 38%;
+    --info: 199 89% 55%;               /* Azul más brillante */
     --info-foreground: 0 0% 100%;
 
     /* Borders & Inputs */
-    --border: 0 0% 22%;
-    --input: 0 0% 22%;
-    --ring: 158 64% 45%;
+    --border: 153 40% 20%;             /* Verde pino border */
+    --input: 153 40% 20%;
+    --ring: 98 100% 70%;               /* Verde vibrante focus ring */
   }
 }
 
