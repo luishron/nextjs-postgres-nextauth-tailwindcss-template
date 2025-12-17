@@ -112,14 +112,48 @@
 }
 
 @layer base {
+  :root {
+    --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+    --font-mono: var(--font-mono), 'Courier New', monospace;
+  }
+
   * {
     @apply border-border;
     transition-property: color, background-color, border-color;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv05' 1, 'cv10' 1; /* Better number legibility */
+  }
+
+  /* Responsive font scaling */
+  html {
+    font-size: 16px;
+  }
+
+  /* Mobile small: slightly smaller */
+  @media (max-width: 375px) {
+    html {
+      font-size: 15px;
+    }
+  }
+
+  /* Desktop: slightly larger */
+  @media (min-width: 1024px) {
+    html {
+      font-size: 17px;
+    }
+  }
+
+  /* Desktop XL: larger */
+  @media (min-width: 1536px) {
+    html {
+      font-size: 18px;
+    }
   }
 }
 
