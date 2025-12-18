@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Card, CardProps } from './card';
+import { Card } from './card';
 import { cn } from '@/lib/utils';
 
 export interface CardFinanceProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'color'> {
