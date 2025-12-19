@@ -6,7 +6,7 @@
   :root {
     /* ========================================
        HOMELAS DESIGN SYSTEM - Light Mode
-       Inspired by OLEA brand palette
+       Brand color palette
        ======================================== */
 
     /* Backgrounds */
@@ -20,7 +20,7 @@
     --popover: 56 60% 96%;
     --popover-foreground: 153 65% 8%;
 
-    /* Brand Colors - Verde Vibrante (OLEA) */
+    /* Brand Colors - Verde Vibrante */
     --primary: 98 100% 70%;            /* Verde vibrante #9FFF66 */
     --primary-foreground: 153 65% 8%;  /* Verde pino dark on primary */
 
@@ -63,7 +63,7 @@
   .dark {
     /* ========================================
        HOMELAS DESIGN SYSTEM - Dark Mode
-       Balanced neutral palette with OLEA green accents
+       Balanced neutral palette with strategic green accents
        ======================================== */
 
     /* Backgrounds - Neutral dark with subtle green tint */
