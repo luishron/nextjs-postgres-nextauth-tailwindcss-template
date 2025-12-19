@@ -63,51 +63,56 @@
   .dark {
     /* ========================================
        HOMELAS DESIGN SYSTEM - Dark Mode
-       Inspired by OLEA brand palette
+       Balanced neutral palette with OLEA green accents
        ======================================== */
 
-    /* Backgrounds - Verde Pino Oscuro */
-    --background: 153 65% 8%;          /* Verde pino dark #071C11 */
-    --foreground: 56 60% 95%;          /* Beige claro para texto */
+    /* Backgrounds - Neutral dark with subtle green tint */
+    --background: 160 8% 9%;           /* Charcoal with subtle green tint #15191A */
+    --foreground: 40 15% 92%;          /* Soft warm white for text #ECEAE5 */
 
-    /* Cards & Surfaces */
-    --card: 153 55% 12%;               /* Verde pino un poco más claro */
-    --card-foreground: 56 60% 95%;     /* Beige claro */
+    /* Cards & Surfaces - Elevated neutral grays */
+    --card: 160 6% 13%;                /* Dark slate gray #1E2325 */
+    --card-foreground: 40 15% 92%;     /* Soft warm white */
 
-    --popover: 153 55% 12%;
-    --popover-foreground: 56 60% 95%;
+    --popover: 160 8% 11%;             /* Slightly lighter than bg #191E20 */
+    --popover-foreground: 40 15% 92%;
 
-    /* Brand Colors - Verde Vibrante (OLEA) */
-    --primary: 98 100% 70%;            /* Verde vibrante #9FFF66 (mismo que light) */
-    --primary-foreground: 153 65% 8%;  /* Verde pino dark on primary */
+    /* Brand Colors - Verde Vibrante as accent only */
+    --primary: 98 100% 70%;            /* Verde vibrante #9FFF66 - reserved for key actions */
+    --primary-foreground: 160 20% 8%;  /* Dark background on primary */
 
-    --secondary: 153 45% 18%;          /* Verde pino medio */
-    --secondary-foreground: 56 60% 95%;
+    --secondary: 160 6% 20%;           /* Neutral gray #2F3537 */
+    --secondary-foreground: 40 15% 92%;
 
-    /* Interactive States */
-    --muted: 153 40% 15%;              /* Verde pino muted */
-    --muted-foreground: 56 30% 70%;    /* Beige/gris medio */
+    /* Interactive States - Balanced neutrals */
+    --muted: 160 6% 16%;               /* Medium dark gray #262B2D */
+    --muted-foreground: 40 8% 65%;     /* Medium gray text #A19E96 */
 
-    --accent: 98 90% 65%;              /* Verde vibrante slightly darker */
-    --accent-foreground: 153 65% 8%;   /* Verde pino dark */
+    --accent: 160 10% 20%;             /* Slate with subtle green #2E3638 */
+    --accent-foreground: 40 15% 95%;   /* Bright text on accent */
 
     /* Functional Colors */
-    --destructive: 0 72% 55%;          /* Rojo más suave en dark */
+    --destructive: 0 72% 55%;          /* Softer red for dark mode */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 98 100% 70%;            /* Verde vibrante #9FFF66 para ingresos */
-    --success-foreground: 153 65% 8%;  /* Verde pino dark */
+    --success: 98 100% 70%;            /* Verde vibrante #9FFF66 for positive values */
+    --success-foreground: 160 20% 8%;  /* Dark text on success */
 
-    --warning: 38 92% 55%;             /* Amber más brillante en dark */
-    --warning-foreground: 153 65% 8%;
+    --warning: 38 92% 55%;             /* Amber */
+    --warning-foreground: 160 20% 8%;  /* Dark text on warning */
 
-    --info: 199 89% 55%;               /* Azul más brillante */
+    --info: 199 89% 55%;               /* Bright blue */
     --info-foreground: 0 0% 100%;
 
-    /* Borders & Inputs */
-    --border: 153 40% 20%;             /* Verde pino border */
-    --input: 153 40% 20%;
+    /* Borders & Inputs - Subtle separators */
+    --border: 160 6% 22%;              /* Subtle border #34393C */
+    --input: 160 6% 22%;               /* Input borders */
     --ring: 98 100% 70%;               /* Verde vibrante focus ring */
+
+    /* Gradients - Adjusted for dark mode */
+    --gradient-primary: linear-gradient(135deg, hsl(98 100% 70%) 0%, hsl(110 90% 65%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(98 100% 70%) 0%, hsl(142 76% 55%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(160 6% 13%) 0%, hsl(160 8% 11%) 100%);
   }
 }
 
