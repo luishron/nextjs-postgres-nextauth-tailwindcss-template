@@ -8,12 +8,15 @@ import {
   getCategoriesByUser,
   getPaymentMethodsByUser
 } from '@/lib/db';
+import { getCategoryBudgetStatus } from '@/lib/drizzle';
 import { CategoryHeader } from './category-header';
 import { CategoryStatsCards } from './category-stats-cards';
 import { CategoryTrendChart } from './category-trend-chart';
 import { ExpensesTable } from '../../gastos/expenses-table';
 import { AddExpenseDialog } from '../../gastos/add-expense-dialog';
 import { EditCategoryDialog } from '../edit-category-dialog';
+import { BudgetLimitDialog } from './budget-limit-dialog';
+import { BudgetStatusCard } from './budget-status-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const dynamic = 'force-dynamic';
@@ -32,14 +35,15 @@ export default async function CategoryDetailsPage({
   }
 
   // Fetch all data in parallel
-  const [category, expenses, statistics, monthlyTrend, allCategories, paymentMethods] =
+  const [category, expenses, statistics, monthlyTrend, allCategories, paymentMethods, budgetStatus] =
     await Promise.all([
       getCategoryById(user.id, categoryId),
       getExpensesByCategoryId(user.id, categoryId),
       getCategoryStatistics(user.id, categoryId),
       getCategoryMonthlyTrend(user.id, categoryId, 6),
       getCategoriesByUser(user.id),
-      getPaymentMethodsByUser(user.id)
+      getPaymentMethodsByUser(user.id),
+      getCategoryBudgetStatus(categoryId, user.id)
     ]);
 
   // Handle 404
@@ -47,9 +51,18 @@ export default async function CategoryDetailsPage({
     notFound();
   }
 
+  // Extraer configuración de límite del metadata
+  const categoryMetadata = category.metadata as any;
+  const limiteConfig = categoryMetadata?.limitesMensuales;
+
   return (
     <div className="flex flex-col gap-4 animate-fade-in">
       <CategoryHeader category={category} />
+
+      {/* Mostrar estado del presupuesto si hay límite configurado */}
+      {budgetStatus && (
+        <BudgetStatusCard status={budgetStatus} />
+      )}
 
       <CategoryStatsCards statistics={statistics} />
 
@@ -70,6 +83,12 @@ export default async function CategoryDetailsPage({
               />
             )}
             <EditCategoryDialog category={category} />
+            <BudgetLimitDialog
+              categoryId={categoryId}
+              currentLimit={limiteConfig?.limite}
+              currentAlert={limiteConfig?.alertaEn}
+              isActive={limiteConfig?.activo}
+            />
           </CardContent>
         </Card>
       </div>
