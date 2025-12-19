@@ -8,7 +8,7 @@ import {
   getCategoriesByUser,
   getPaymentMethodsByUser
 } from '@/lib/db';
-import { getCategoryBudgetStatus } from '@/lib/drizzle';
+import { getCategoryBudgetStatus } from '@/lib/category-limits-supabase';
 import { CategoryHeader } from './category-header';
 import { CategoryStatsCards } from './category-stats-cards';
 import { CategoryTrendChart } from './category-trend-chart';
@@ -35,16 +35,24 @@ export default async function CategoryDetailsPage({
   }
 
   // Fetch all data in parallel
-  const [category, expenses, statistics, monthlyTrend, allCategories, paymentMethods, budgetStatus] =
+  const [category, expenses, statistics, monthlyTrend, allCategories, paymentMethods] =
     await Promise.all([
       getCategoryById(user.id, categoryId),
       getExpensesByCategoryId(user.id, categoryId),
       getCategoryStatistics(user.id, categoryId),
       getCategoryMonthlyTrend(user.id, categoryId, 6),
       getCategoriesByUser(user.id),
-      getPaymentMethodsByUser(user.id),
-      getCategoryBudgetStatus(categoryId, user.id)
+      getPaymentMethodsByUser(user.id)
     ]);
+
+  // Fetch budget status separately with error handling
+  let budgetStatus = null;
+  try {
+    budgetStatus = await getCategoryBudgetStatus(categoryId, user.id);
+  } catch (error) {
+    console.error('Error fetching budget status:', error);
+    // Continue without budget status if it fails
+  }
 
   // Handle 404
   if (!category) {
