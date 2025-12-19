@@ -11,8 +11,8 @@ import {
 } from '@/components/ui/card';
 import { CardFinance } from '@/components/ui/card-finance';
 import { MoneyDisplay } from '@/components/ui/money-display';
-import { Trash2, Receipt } from 'lucide-react';
-import { deleteCategory } from '../actions';
+import { Trash2, Receipt, Star } from 'lucide-react';
+import { deleteCategory, toggleFavoriteCategory } from '../actions';
 import { useRouter } from 'next/navigation';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -22,6 +22,7 @@ export function CategoryCard({ category }: { category: CategoryWithStats }) {
   const router = useRouter();
   const { toast } = useToast();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -39,6 +40,30 @@ export function CategoryCard({ category }: { category: CategoryWithStats }) {
       description: `La categoría "${category.name}" se ha eliminado exitosamente`
     });
 
+    router.refresh();
+  };
+
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setIsTogglingFavorite(true);
+    const result = await toggleFavoriteCategory(category.id);
+
+    if (result.error) {
+      toast({
+        title: 'Error',
+        description: result.error,
+        variant: 'destructive'
+      });
+    } else {
+      toast({
+        title: category.is_favorite ? 'Quitado de favoritos' : 'Agregado a favoritos',
+        description: `La categoría "${category.name}" ${category.is_favorite ? 'ya no es favorita' : 'ahora es favorita'}`
+      });
+    }
+
+    setIsTogglingFavorite(false);
     router.refresh();
   };
 
@@ -71,15 +96,36 @@ export function CategoryCard({ category }: { category: CategoryWithStats }) {
                 </div>
               </div>
 
-              {/* Delete button */}
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={handleDeleteClick}
-                className="text-muted-foreground hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              {/* Action buttons */}
+              <div className="flex gap-1">
+                {/* Favorite button */}
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={handleToggleFavorite}
+                  disabled={isTogglingFavorite}
+                  className={
+                    category.is_favorite
+                      ? 'text-yellow-500 hover:text-yellow-600'
+                      : 'text-muted-foreground hover:text-yellow-500'
+                  }
+                >
+                  <Star
+                    className="h-4 w-4"
+                    fill={category.is_favorite ? 'currentColor' : 'none'}
+                  />
+                </Button>
+
+                {/* Delete button */}
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={handleDeleteClick}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             <CardTitle className="mt-4">{category.name}</CardTitle>

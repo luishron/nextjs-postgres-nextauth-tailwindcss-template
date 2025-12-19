@@ -7,6 +7,7 @@ import {
   updateExpense as updateExpenseInDb,
   createCategory,
   updateCategory as updateCategoryInDb,
+  toggleCategoryFavorite,
   createPaymentMethod,
   updatePaymentMethod as updatePaymentMethodInDb,
   deletePaymentMethodById,
@@ -214,6 +215,25 @@ export async function updateCategory(formData: FormData) {
   } catch (error) {
     console.error('Error al actualizar categoría:', error);
     return { error: 'Error al actualizar la categoría' };
+  }
+}
+
+export async function toggleFavoriteCategory(categoryId: number) {
+  try {
+    const user = await getUser();
+
+    if (!user) {
+      return { error: 'No estás autenticado' };
+    }
+
+    await toggleCategoryFavorite(user.id, categoryId);
+
+    revalidatePath('/dashboard/categorias');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error) {
+    console.error('Error al cambiar estado de favorito:', error);
+    return { error: 'Error al cambiar estado de favorito' };
   }
 }
 

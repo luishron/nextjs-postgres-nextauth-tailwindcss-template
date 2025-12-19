@@ -13,6 +13,7 @@ export type Category = {
   color: string;
   icon?: string | null;
   description?: string | null;
+  is_favorite?: boolean;
   created_at?: string;
 };
 
@@ -217,6 +218,35 @@ export async function updateCategory(
     .from('categories')
     .update(category)
     .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function toggleCategoryFavorite(
+  userId: string,
+  categoryId: number
+): Promise<Category> {
+  const supabase = await createClient();
+
+  // Get current favorite status
+  const { data: category, error: fetchError } = await supabase
+    .from('categories')
+    .select('is_favorite')
+    .eq('id', categoryId)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  // Toggle the favorite status
+  const { data, error } = await supabase
+    .from('categories')
+    .update({ is_favorite: !category.is_favorite })
+    .eq('id', categoryId)
+    .eq('user_id', userId)
     .select()
     .single();
 
