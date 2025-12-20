@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { createClient } from '@/lib/supabase/server';
+import { getMonthlySummaryGeneric, calculateExpenseStats } from '@/lib/db-helpers';
 
 //==============================================================================
 // TYPES - Tipos TypeScript para las tablas
@@ -254,39 +255,7 @@ export async function getCategoryStatistics(
 
   if (error) throw error;
 
-  // Calculate statistics
-  const stats = (expenses || []).reduce(
-    (acc, expense) => {
-      const amount = parseFloat(expense.amount);
-      acc.totalSpent += amount;
-      acc.expenseCount++;
-
-      const isOverdue = expense.date < today && expense.payment_status !== 'pagado';
-
-      if (expense.payment_status === 'pagado') {
-        acc.paidTotal += amount;
-        acc.paidCount++;
-      } else if (isOverdue) {
-        acc.overdueTotal += amount;
-        acc.overdueCount++;
-      } else {
-        acc.pendingTotal += amount;
-        acc.pendingCount++;
-      }
-
-      return acc;
-    },
-    {
-      totalSpent: 0,
-      expenseCount: 0,
-      paidTotal: 0,
-      pendingTotal: 0,
-      overdueTotal: 0,
-      paidCount: 0,
-      pendingCount: 0,
-      overdueCount: 0
-    }
-  );
+  const stats = calculateExpenseStats(expenses || [], today);
 
   return {
     ...stats,
@@ -691,6 +660,59 @@ function getNextOccurrence(
 }
 
 /**
+ * Genera todas las instancias futuras de un gasto recurrente usando recursividad
+ * @param expense Gasto recurrente base
+ * @param currentDate Fecha actual a procesar
+ * @param endDate Fecha límite
+ * @param today Fecha de hoy
+ * @param paidDatesSet Set de fechas ya pagadas
+ * @param accumulator Array acumulador de resultados (tail recursion)
+ */
+function generateRecurringInstances(
+  expense: Expense,
+  currentDate: Date,
+  endDate: Date,
+  today: Date,
+  paidDatesSet: Set<string | null>,
+  accumulator: UpcomingExpense[] = []
+): UpcomingExpense[] {
+  // Caso base: si la fecha actual excede la fecha límite
+  if (currentDate > endDate) {
+    return accumulator;
+  }
+
+  const nextDateStr = currentDate.toISOString().split('T')[0];
+  const daysUntilDue = Math.floor(
+    (currentDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  // Solo incluir si es futuro/vencido reciente y no ha sido pagado
+  if (daysUntilDue >= -30 && !paidDatesSet.has(nextDateStr)) {
+    accumulator.push({
+      ...expense,
+      isVirtual: true,
+      daysUntilDue,
+      dueMessage: getDueMessage(daysUntilDue),
+      nextDate: nextDateStr,
+      templateId: expense.id,
+      payment_status: daysUntilDue < 0 ? 'vencido' : 'pendiente'
+    });
+  }
+
+  // Caso recursivo: calcular siguiente ocurrencia
+  const nextOccurrence = getNextOccurrence(nextDateStr, expense.recurrence_frequency!);
+
+  return generateRecurringInstances(
+    expense,
+    nextOccurrence,
+    endDate,
+    today,
+    paidDatesSet,
+    accumulator
+  );
+}
+
+/**
  * Genera mensaje amigable sobre cuándo vence un gasto
  */
 function getDueMessage(daysUntilDue: number): string {
@@ -741,43 +763,30 @@ export async function getUpcomingRecurringExpenses(
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const upcoming: UpcomingExpense[] = [];
+  const endDate = new Date(today);
+  endDate.setMonth(endDate.getMonth() + monthsAhead);
 
-  for (const expense of recurringExpenses) {
-    if (!expense.recurrence_frequency) continue;
+  // Generar instancias usando recursividad para cada gasto recurrente
+  const upcoming: UpcomingExpense[] = recurringExpenses.reduce<UpcomingExpense[]>(
+    (acc, expense) => {
+      if (!expense.recurrence_frequency) return acc;
 
-    // Calcular próxima ocurrencia desde la fecha del gasto original
-    let nextDate = getNextOccurrence(expense.date, expense.recurrence_frequency);
+      // Calcular próxima ocurrencia desde la fecha del gasto original
+      const nextDate = getNextOccurrence(expense.date, expense.recurrence_frequency);
 
-    // Generar instancias para los próximos N meses
-    const endDate = new Date(today);
-    endDate.setMonth(endDate.getMonth() + monthsAhead);
-
-    while (nextDate <= endDate) {
-      const nextDateStr = nextDate.toISOString().split('T')[0];
-      const daysUntilDue = Math.floor(
-        (nextDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      // Generar instancias recursivamente
+      const instances = generateRecurringInstances(
+        expense,
+        nextDate,
+        endDate,
+        today,
+        paidDatesSet
       );
 
-      // Solo incluir si:
-      // 1. Es futuro o vencido reciente (últimos 30 días)
-      // 2. NO ha sido pagado ya
-      if (daysUntilDue >= -30 && !paidDatesSet.has(nextDateStr)) {
-        upcoming.push({
-          ...expense,
-          isVirtual: true,
-          daysUntilDue,
-          dueMessage: getDueMessage(daysUntilDue),
-          nextDate: nextDateStr,
-          templateId: expense.id,
-          payment_status: daysUntilDue < 0 ? 'vencido' : 'pendiente'
-        });
-      }
-
-      // Calcular siguiente ocurrencia
-      nextDate = getNextOccurrence(nextDateStr, expense.recurrence_frequency);
-    }
-  }
+      return [...acc, ...instances];
+    },
+    []
+  );
 
   // Ordenar por fecha (más cercano primero)
   return upcoming.sort((a, b) => a.daysUntilDue - b.daysUntilDue);
@@ -821,26 +830,7 @@ export async function getMonthlyExpensesSummary(
   year: number,
   month: number
 ): Promise<{ total: number; count: number }> {
-  const supabase = await createClient();
-
-  // Calcular primer y último día del mes
-  const firstDay = new Date(year, month - 1, 1).toISOString().split('T')[0];
-  const lastDay = new Date(year, month, 0).toISOString().split('T')[0];
-
-  const { data, error } = await supabase
-    .from('expenses')
-    .select('amount')
-    .eq('user_id', userId)
-    .gte('date', firstDay)
-    .lte('date', lastDay);
-
-  if (error) throw error;
-
-  const total = (data || []).reduce((sum, expense) => {
-    return sum + parseFloat(expense.amount);
-  }, 0);
-
-  return { total, count: data?.length || 0 };
+  return getMonthlySummaryGeneric('expenses', userId, year, month);
 }
 
 /**
@@ -851,26 +841,7 @@ export async function getMonthlyIncomesSummary(
   year: number,
   month: number
 ): Promise<{ total: number; count: number }> {
-  const supabase = await createClient();
-
-  // Calcular primer y último día del mes
-  const firstDay = new Date(year, month - 1, 1).toISOString().split('T')[0];
-  const lastDay = new Date(year, month, 0).toISOString().split('T')[0];
-
-  const { data, error } = await supabase
-    .from('incomes')
-    .select('amount')
-    .eq('user_id', userId)
-    .gte('date', firstDay)
-    .lte('date', lastDay);
-
-  if (error) throw error;
-
-  const total = (data || []).reduce((sum, income) => {
-    return sum + parseFloat(income.amount);
-  }, 0);
-
-  return { total, count: data?.length || 0 };
+  return getMonthlySummaryGeneric('incomes', userId, year, month);
 }
 
 /**
