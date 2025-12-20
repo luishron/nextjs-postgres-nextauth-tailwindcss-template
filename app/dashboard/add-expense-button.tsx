@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,8 +9,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger
+  DialogTitle
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,8 +21,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { PlusCircle } from 'lucide-react';
-import { saveExpense } from '../actions';
+import { saveExpense } from './actions';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
@@ -42,24 +41,19 @@ type PaymentMethod = {
   is_default: boolean;
 };
 
-export function AddExpenseDialog({
+export function AddExpenseButton({
   categories,
-  paymentMethods,
-  defaultCategoryId,
-  lockCategory = false
+  paymentMethods
 }: {
   categories: Category[];
   paymentMethods: PaymentMethod[];
-  defaultCategoryId?: number;
-  lockCategory?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
-  const [categoryId, setCategoryId] = useState(
-    defaultCategoryId ? String(defaultCategoryId) : ''
-  );
+  const [categoryId, setCategoryId] = useState('');
+  const [isPaid, setIsPaid] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // Determinar método de pago por defecto
   const defaultPaymentMethod = paymentMethods.find((pm) => pm.is_default);
   const defaultPaymentMethodId = defaultPaymentMethod
     ? String(defaultPaymentMethod.id)
@@ -68,14 +62,11 @@ export function AddExpenseDialog({
     : '';
 
   const [paymentMethodId, setPaymentMethodId] = useState(defaultPaymentMethodId);
-  const [isPaid, setIsPaid] = useState(false); // Simplificado: Sí/No en lugar de 3 opciones
   const [frequency, setFrequency] = useState('monthly');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false); // Para campos opcionales
   const router = useRouter();
   const { toast } = useToast();
 
-  // Default de fecha a hoy
   const todayDate = new Date().toISOString().split('T')[0];
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -85,7 +76,6 @@ export function AddExpenseDialog({
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Validar que se haya seleccionado una categoría
     if (!categoryId) {
       toast({
         title: 'Error de validación',
@@ -98,7 +88,6 @@ export function AddExpenseDialog({
 
     formData.set('categoryId', categoryId);
     formData.set('paymentMethodId', paymentMethodId);
-    // Convertir el switch simple a estado de pago
     formData.set('paymentStatus', isPaid ? 'pagado' : 'pendiente');
     formData.set('isRecurring', String(isRecurring));
     if (isRecurring) {
@@ -115,48 +104,33 @@ export function AddExpenseDialog({
       });
       setIsSubmitting(false);
     } else {
-      // Reset form state
       setIsRecurring(false);
-      setCategoryId(defaultCategoryId ? String(defaultCategoryId) : '');
+      setCategoryId('');
       setPaymentMethodId(defaultPaymentMethodId);
       setIsPaid(false);
       setFrequency('monthly');
       setShowAdvanced(false);
       form.reset();
-
-      // Close dialog and refresh
       setOpen(false);
       setIsSubmitting(false);
       router.refresh();
     }
   };
 
-  // Get category name for locked mode
-  const lockedCategory = lockCategory && defaultCategoryId
-    ? categories.find(cat => cat.id === defaultCategoryId)
-    : null;
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" className="h-8 gap-1">
-          <PlusCircle className="h-3.5 w-3.5" />
-          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            {lockCategory && lockedCategory
-              ? `Agregar a ${lockedCategory.name}`
-              : 'Agregar Gasto'}
-          </span>
-        </Button>
-      </DialogTrigger>
+      <Button onClick={() => setOpen(true)}>
+        <PlusCircle className="mr-2 h-4 w-4" />
+        Agregar Gasto
+      </Button>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Agregar Nuevo Gasto</DialogTitle>
           <DialogDescription>
-            Registra un nuevo gasto único o recurrente.
+            Registra un nuevo gasto rápidamente.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          {/* CAMPOS PRINCIPALES - Siempre visibles */}
           <div className="grid gap-2">
             <Label htmlFor="description">¿Qué compraste?</Label>
             <Input
@@ -195,12 +169,7 @@ export function AddExpenseDialog({
 
           <div className="grid gap-2">
             <Label htmlFor="category">Categoría</Label>
-            <Select
-              value={categoryId}
-              onValueChange={setCategoryId}
-              required
-              disabled={lockCategory}
-            >
+            <Select value={categoryId} onValueChange={setCategoryId} required>
               <SelectTrigger id="category">
                 <SelectValue placeholder="Selecciona una categoría" />
               </SelectTrigger>
@@ -221,7 +190,6 @@ export function AddExpenseDialog({
             </Select>
           </div>
 
-          {/* CAMPO SIMPLIFICADO - ¿Ya lo pagaste? */}
           <div className="flex items-center space-x-2 p-3 rounded-md border bg-muted/50">
             <input
               type="checkbox"
@@ -235,7 +203,6 @@ export function AddExpenseDialog({
             </Label>
           </div>
 
-          {/* DETALLES ADICIONALES - Colapsable */}
           <div className="border-t pt-4">
             <Button
               type="button"
@@ -259,20 +226,14 @@ export function AddExpenseDialog({
                       <SelectValue placeholder="Selecciona un método de pago" />
                     </SelectTrigger>
                     <SelectContent>
-                      {paymentMethods.length === 0 ? (
-                        <div className="px-2 py-6 text-center text-sm text-muted-foreground">
-                          No hay métodos de pago configurados.
-                        </div>
-                      ) : (
-                        paymentMethods.map((method) => (
-                          <SelectItem key={method.id} value={String(method.id)}>
-                            {method.name}
-                            {method.bank && ` - ${method.bank}`}
-                            {method.last_four_digits && ` (••${method.last_four_digits})`}
-                            {method.is_default && ' ⭐'}
-                          </SelectItem>
-                        ))
-                      )}
+                      {paymentMethods.map((method) => (
+                        <SelectItem key={method.id} value={String(method.id)}>
+                          {method.name}
+                          {method.bank && ` - ${method.bank}`}
+                          {method.last_four_digits && ` (••${method.last_four_digits})`}
+                          {method.is_default && ' ⭐'}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

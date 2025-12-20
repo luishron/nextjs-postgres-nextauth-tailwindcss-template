@@ -24,12 +24,20 @@ import { User } from './user';
 import Providers from './providers';
 import { NavItem } from './nav-item';
 import { MobileNavBottom } from '@/components/mobile-nav-bottom';
+import { QuickAddFAB } from './quick-add-fab';
+import { getCategoriesByUser, getPaymentMethodsByUser } from '@/lib/db';
+import { getUser } from '@/lib/auth';
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
+  // Obtener datos para Quick Add
+  const user = await getUser();
+  const categories = user ? await getCategoriesByUser(user.id) : [];
+  const paymentMethods = user ? await getPaymentMethodsByUser(user.id) : [];
+
   return (
     <Providers>
       <main className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -46,6 +54,10 @@ export default function DashboardLayout({
           </main>
         </div>
         <MobileNavBottom />
+
+        {/* Quick Add Flotante */}
+        <QuickAddFAB categories={categories} paymentMethods={paymentMethods} />
+
         <Analytics />
       </main>
     </Providers>

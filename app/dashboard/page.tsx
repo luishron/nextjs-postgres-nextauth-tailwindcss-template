@@ -8,12 +8,14 @@ import {
   getUpcomingDueExpenses,
   getTopCategoriesByMonth,
   getNextMonthProjection,
-  getCategoriesByUser
+  getCategoriesByUser,
+  getPaymentMethodsByUser
 } from '@/lib/db';
 import { DashboardKPIs } from './dashboard-kpis';
 import { MonthlyComparisonCard } from './monthly-comparison-card';
 import { UpcomingExpensesWidget } from './upcoming-expenses-widget';
 import { TopCategoriesChart } from './top-categories-chart';
+import { AddExpenseButton } from './add-expense-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +48,8 @@ export default async function DashboardPage() {
     upcomingExpenses,
     topCategories,
     nextMonthProjection,
-    categories
+    categories,
+    paymentMethods
   ] = await Promise.all([
     getMonthlySummary(user.id, currentYear, currentMonth),
     getMonthlySummary(user.id, previousYear, previousMonth),
@@ -54,7 +57,8 @@ export default async function DashboardPage() {
     getUpcomingDueExpenses(user.id, 10),
     getTopCategoriesByMonth(user.id, currentYear, currentMonth, 5),
     getNextMonthProjection(user.id),
-    getCategoriesByUser(user.id)
+    getCategoriesByUser(user.id),
+    getPaymentMethodsByUser(user.id)
   ]);
 
   const getMonthName = (month: number) => {
@@ -155,12 +159,10 @@ export default async function DashboardPage() {
             Resumen de {getMonthName(currentMonth)} {currentYear}
           </p>
         </div>
-        <Button asChild>
-          <Link href="/dashboard/gastos">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Agregar Gasto
-          </Link>
-        </Button>
+        <AddExpenseButton
+          categories={categories}
+          paymentMethods={paymentMethods}
+        />
       </div>
 
       {/* KPIs Principales */}
