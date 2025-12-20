@@ -128,24 +128,55 @@ export function QuickAddFAB({
 
   return (
     <>
-      {/* Botón flotante - Reposicionado para mobile */}
-      <Button
+      {/* Botón flotante mejorado - Diseño moderno */}
+      <button
         onClick={() => setOpen(true)}
-        size="lg"
-        className="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-40"
+        className="group fixed bottom-24 right-4 sm:bottom-6 sm:right-6 h-16 w-16 rounded-full
+                   bg-gradient-to-br from-primary via-primary to-primary/80
+                   shadow-2xl shadow-primary/50
+                   hover:shadow-[0_20px_50px_rgba(var(--primary),0.4)]
+                   hover:scale-110
+                   active:scale-95
+                   transition-all duration-300 ease-out
+                   z-40
+                   border-2 border-white/20
+                   backdrop-blur-sm
+                   before:absolute before:inset-0 before:rounded-full
+                   before:bg-gradient-to-br before:from-white/20 before:to-transparent
+                   before:opacity-0 hover:before:opacity-100
+                   before:transition-opacity before:duration-300"
         aria-label="Agregar gasto rápido"
       >
-        <PlusCircle className="h-6 w-6" />
-      </Button>
+        <div className="relative z-10 flex items-center justify-center h-full w-full">
+          <PlusCircle className="h-7 w-7 text-white drop-shadow-lg
+                                 group-hover:rotate-90
+                                 transition-transform duration-300 ease-out" />
+        </div>
 
-      {/* Diálogo */}
+        {/* Pulse animation ring */}
+        <span className="absolute inset-0 rounded-full
+                        bg-primary/30
+                        animate-ping
+                        group-hover:animate-none"
+              style={{ animationDuration: '2s' }} />
+      </button>
+
+      {/* Diálogo mejorado */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Agregar Gasto Rápido</DialogTitle>
-            <DialogDescription>
-              Registra un gasto en segundos
-            </DialogDescription>
+        <DialogContent className="sm:max-w-[500px] gap-6">
+          <DialogHeader className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-primary/80
+                            flex items-center justify-center shadow-lg shadow-primary/30">
+                <PlusCircle className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-2xl">Agregar Gasto</DialogTitle>
+                <DialogDescription className="text-base">
+                  Registra un gasto en segundos ⚡
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="grid gap-4 py-4">
             <div className="grid gap-2">

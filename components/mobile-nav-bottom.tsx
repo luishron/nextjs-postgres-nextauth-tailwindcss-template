@@ -68,11 +68,11 @@ export function MobileNavBottom() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-card/95 backdrop-blur-lg shadow-2xl sm:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-card/98 backdrop-blur-xl shadow-2xl sm:hidden">
         {/* Active indicator - top gradient bar */}
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
 
-        <div className="grid grid-cols-3 gap-1 px-2 py-2">
+        <div className="grid grid-cols-3 gap-2 px-3 py-3">
           {/* Primary navigation items */}
           {primaryLinks.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href;
@@ -81,30 +81,34 @@ export function MobileNavBottom() {
                 key={href}
                 href={href}
                 className={cn(
-                  'flex flex-col items-center gap-1.5 rounded-lg px-2 py-2.5 text-xs font-medium transition-all duration-200',
-                  'relative',
+                  'flex flex-col items-center gap-2 rounded-2xl px-3 py-3 text-xs font-semibold transition-all duration-300',
+                  'relative overflow-hidden',
                   isActive
-                    ? 'text-primary scale-105'
-                    : 'text-muted-foreground hover:text-foreground active:scale-95'
+                    ? 'text-primary scale-105 bg-primary/10'
+                    : 'text-muted-foreground hover:text-foreground active:scale-95 hover:bg-accent/50'
                 )}
               >
-                {/* Active indicator - top dot */}
+                {/* Active indicator - animated background */}
                 {isActive && (
-                  <span className="absolute top-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-primary animate-pulse" />
+                  <span className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 animate-pulse"
+                        style={{ animationDuration: '3s' }} />
                 )}
 
                 <div
                   className={cn(
-                    'flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200',
+                    'relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300',
                     isActive
-                      ? 'bg-primary/15 shadow-sm'
-                      : 'hover:bg-accent'
+                      ? 'bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/30 scale-110'
+                      : 'bg-muted/50 hover:bg-muted'
                   )}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className={cn(
+                    'h-5 w-5 transition-all duration-300',
+                    isActive ? 'text-white' : 'text-muted-foreground'
+                  )} />
                 </div>
 
-                <span className="leading-tight">{label}</span>
+                <span className="relative leading-tight">{label}</span>
               </Link>
             );
           })}
@@ -113,12 +117,12 @@ export function MobileNavBottom() {
           <button
             onClick={() => setMoreOpen(true)}
             className={cn(
-              'flex flex-col items-center gap-1.5 rounded-lg px-2 py-2.5 text-xs font-medium transition-all duration-200',
+              'flex flex-col items-center gap-2 rounded-2xl px-3 py-3 text-xs font-semibold transition-all duration-300',
               'relative',
-              'text-muted-foreground hover:text-foreground active:scale-95'
+              'text-muted-foreground hover:text-foreground active:scale-95 hover:bg-accent/50'
             )}
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-accent transition-all duration-200">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted/50 hover:bg-muted transition-all duration-300">
               <MoreHorizontal className="h-5 w-5" />
             </div>
             <span className="leading-tight">Más</span>
@@ -126,17 +130,20 @@ export function MobileNavBottom() {
         </div>
       </nav>
 
-      {/* Sheet "Más" - Opciones secundarias */}
+      {/* Sheet "Más" - Opciones secundarias mejorado */}
       <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
-        <SheetContent side="bottom" className="h-[400px]">
-          <SheetHeader>
-            <SheetTitle>Más opciones</SheetTitle>
-            <SheetDescription>
-              Accede a todas las funciones de la aplicación
+        <SheetContent side="bottom" className="h-[480px] rounded-t-3xl">
+          {/* Handle visual */}
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-muted-foreground/20 rounded-full" />
+
+          <SheetHeader className="space-y-3 pt-2">
+            <SheetTitle className="text-2xl">Más opciones</SheetTitle>
+            <SheetDescription className="text-base">
+              Accede a todas las funciones de la app ✨
             </SheetDescription>
           </SheetHeader>
 
-          <div className="mt-6 space-y-2">
+          <div className="mt-8 space-y-3">
             {moreLinks.map(({ href, label, icon: Icon, description }) => {
               const isActive = pathname === href;
               return (
@@ -144,33 +151,60 @@ export function MobileNavBottom() {
                   key={href}
                   onClick={() => handleMoreLinkClick(href)}
                   className={cn(
-                    'w-full flex items-center gap-4 p-4 rounded-lg transition-all duration-200',
-                    'hover:bg-accent active:scale-[0.98]',
-                    isActive && 'bg-primary/10 border border-primary/20'
+                    'w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300',
+                    'hover:bg-accent/80 active:scale-[0.97]',
+                    'border-2 border-transparent',
+                    isActive
+                      ? 'bg-gradient-to-r from-primary/15 via-primary/10 to-primary/5 border-primary/30 shadow-sm shadow-primary/20'
+                      : 'hover:border-accent'
                   )}
                 >
                   <div
                     className={cn(
-                      'flex h-10 w-10 items-center justify-center rounded-full',
-                      isActive ? 'bg-primary/15' : 'bg-muted'
+                      'flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300',
+                      isActive
+                        ? 'bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/30'
+                        : 'bg-muted group-hover:bg-muted/80'
                     )}
                   >
-                    <Icon className={cn('h-5 w-5', isActive && 'text-primary')} />
+                    <Icon
+                      className={cn(
+                        'h-6 w-6 transition-transform duration-300',
+                        isActive ? 'text-white scale-110' : 'text-muted-foreground'
+                      )}
+                    />
                   </div>
 
                   <div className="flex-1 text-left">
-                    <div className={cn('font-medium', isActive && 'text-primary')}>
+                    <div
+                      className={cn(
+                        'font-semibold text-base mb-0.5 transition-colors',
+                        isActive && 'text-primary'
+                      )}
+                    >
                       {label}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-xs text-muted-foreground leading-relaxed">
                       {description}
                     </div>
                   </div>
 
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <ChevronRight
+                    className={cn(
+                      'h-5 w-5 transition-all duration-300',
+                      isActive
+                        ? 'text-primary translate-x-1'
+                        : 'text-muted-foreground group-hover:translate-x-1'
+                    )}
+                  />
                 </button>
               );
             })}
+          </div>
+
+          {/* Footer decorativo */}
+          <div className="absolute bottom-6 left-0 right-0 px-6">
+            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
           </div>
         </SheetContent>
       </Sheet>
