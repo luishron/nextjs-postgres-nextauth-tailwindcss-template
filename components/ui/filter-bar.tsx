@@ -42,7 +42,7 @@ export interface Filter {
   disabled?: boolean;
 }
 
-export interface FilterBarProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface FilterBarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   /** Lista de filtros disponibles */
   filters: Filter[];
   /** IDs de filtros seleccionados */

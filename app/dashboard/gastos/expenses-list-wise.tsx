@@ -205,7 +205,7 @@ export function ExpensesListWise({
   };
 
   // Renderizar TransactionItem
-  const renderExpenseItem = (expense: SelectExpense) => {
+  const renderExpenseItem = (expense: Omit<SelectExpense, 'date'> & { date: string | Date }) => {
     // Obtener icono de categoría
     const category = categories.find((c) => c.id === expense.category_id);
     const categoryIconData = category?.icon
@@ -229,6 +229,12 @@ export function ExpensesListWise({
     // Icon component
     const IconComponent = (LucideIcons as any)[categoryIconData.icon] || Receipt;
 
+    // Normalize expense for handlers (convert Date back to string if needed)
+    const normalizedExpense: SelectExpense = {
+      ...expense,
+      date: typeof expense.date === 'string' ? expense.date : expense.date.toISOString().split('T')[0]
+    };
+
     return (
       <TransactionItem
         key={expense.id}
@@ -239,10 +245,10 @@ export function ExpensesListWise({
         subtitle={`${getCategoryName(expense.category_id, categories)} · ${formatShortDate(typeof expense.date === 'string' ? new Date(expense.date) : expense.date)}`}
         amount={-parseFloat(expense.amount)}
         status={status}
-        onClick={() => handleEdit(expense)}
+        onClick={() => handleEdit(normalizedExpense)}
         onAction={
           !hideActions && !showEditOnly && status !== 'paid'
-            ? () => handlePay(expense)
+            ? () => handlePay(normalizedExpense)
             : undefined
         }
         actionLabel={payingExpenseId === expense.id ? 'Pagando...' : 'Pagar'}
@@ -324,12 +330,12 @@ export function ExpensesListWise({
         categories={categories.map((c) => ({
           id: c.id,
           name: c.name,
-          icon: c.icon,
+          icon: c.icon || undefined,
         }))}
         paymentMethods={paymentMethods.map((pm) => ({
           id: pm.id,
           name: pm.name,
-          icon: pm.icon,
+          icon: pm.icon || undefined,
         }))}
         presets={presets}
         onSavePreset={savePreset}

@@ -23,17 +23,22 @@ export default async function CategoriasPage() {
   // Obtener el total, tendencia y transacciones recientes para cada categoría
   const categoriesWithData = await Promise.all(
     categories.map(async (category) => {
-      const [total, monthlyTrend, recentExpenses] = await Promise.all([
+      const [total, monthlyTrend, allExpenses] = await Promise.all([
         getCategoryTotalExpenses(user.id, category.id),
         getCategoryMonthlyTrend(user.id, category.id, 6),
-        getExpensesByCategoryId(user.id, category.id, { limit: 3 })
+        getExpensesByCategoryId(user.id, category.id)
       ]);
 
       return {
         ...category,
         total,
         monthlyTrend,
-        recentExpenses: recentExpenses.expenses
+        recentExpenses: allExpenses.slice(0, 3).map((expense) => ({
+          id: expense.id,
+          description: expense.description || null,
+          amount: expense.amount,
+          date: expense.date
+        }))
       };
     })
   );

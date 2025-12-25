@@ -77,7 +77,7 @@ export function SearchBar({
   const [isFocused, setIsFocused] = React.useState(false);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const debounceTimerRef = React.useRef<NodeJS.Timeout>();
+  const debounceTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Debounced search
   React.useEffect(() => {
