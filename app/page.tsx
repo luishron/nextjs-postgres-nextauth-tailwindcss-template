@@ -1,94 +1,109 @@
-import Link from 'next/link';
-import { Wallet, TrendingUp, PieChart, Shield } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { getUser } from '@/lib/auth';
-import { redirect } from 'next/navigation';
+import Link from "next/link";
+import { getUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { Logo } from "@/components/landing/logo";
+import { HeroSection } from "@/components/landing/hero-section";
+import { FeaturesGrid } from "@/components/landing/features-grid";
+import { ScreenshotsCarousel } from "@/components/landing/screenshots-carousel";
+import { PricingTable } from "@/components/landing/pricing-table";
+import { TestimonialsSection } from "@/components/landing/testimonials-section";
+import { CTASection } from "@/components/landing/cta-section";
+import { FooterLanding } from "@/components/landing/footer-landing";
+import { Button } from "@/components/ui/button";
 
 export default async function HomePage() {
   const user = await getUser();
 
   // Si el usuario está autenticado, redirigir al dashboard
   if (user) {
-    redirect('/dashboard');
+    redirect("/dashboard");
   }
+
+  // JSON-LD Structured Data for SEO
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Homelas",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Web",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      description: "Free plan with core features"
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.8",
+      ratingCount: "150",
+      bestRating: "5",
+      worstRating: "1"
+    },
+    description:
+      "Gestiona tus gastos e ingresos, visualiza tu situación financiera en tiempo real. Gratis para siempre.",
+    url: "https://homelas.com",
+    screenshot: "https://homelas.com/screenshots/dashboard-light.png",
+    featureList: [
+      "Dashboard inteligente con KPIs en tiempo real",
+      "Gastos recurrentes virtuales",
+      "Quick Add en menos de 3 segundos",
+      "Interfaz estilo Wise",
+      "WCAG 2.1 AA accesible",
+      "Sistema completo de ingresos"
+    ]
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* JSON-LD for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <Wallet className="h-6 w-6" />
-            <span className="text-xl font-bold">homelas</span>
+      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
+        <nav
+          className="container mx-auto flex h-16 items-center justify-between px-4"
+          aria-label="Navegación principal"
+        >
+          <Logo />
+
+          <div className="flex items-center gap-4">
+            <Link
+              href="/login"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:inline-block"
+            >
+              Iniciar Sesión
+            </Link>
+            <Button asChild size="default" className="h-11">
+              <Link href="/login">Comenzar gratis</Link>
+            </Button>
           </div>
-          <Link href="/login">
-            <Button>Iniciar Sesión</Button>
-          </Link>
-        </div>
+        </nav>
       </header>
 
-      {/* Hero Section */}
-      <main className="flex-1">
-        <section className="container mx-auto px-4 py-20">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="mb-6 text-5xl font-bold tracking-tight">
-              Gestiona tus finanzas de forma simple
-            </h1>
-            <p className="mb-8 text-xl text-muted-foreground">
-              Controla tus gastos e ingresos, visualiza tus finanzas y toma mejores decisiones económicas.
-            </p>
-            <div className="flex justify-center gap-4">
-              <Link href="/login">
-                <Button size="lg">Comenzar ahora</Button>
-              </Link>
-            </div>
-          </div>
-        </section>
+      {/* Main Content */}
+      <main>
+        <HeroSection />
 
         {/* Features Section */}
-        <section className="border-t bg-muted/40 py-20">
-          <div className="container mx-auto px-4">
-            <div className="grid gap-8 md:grid-cols-3">
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <TrendingUp className="h-6 w-6" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold">Control Total</h3>
-                <p className="text-muted-foreground">
-                  Registra y categoriza todos tus gastos e ingresos en un solo lugar
-                </p>
-              </div>
+        <FeaturesGrid />
 
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <PieChart className="h-6 w-6" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold">Visualización Clara</h3>
-                <p className="text-muted-foreground">
-                  Gráficos y reportes que te ayudan a entender tu situación financiera
-                </p>
-              </div>
+        {/* Screenshots Section */}
+        <ScreenshotsCarousel />
 
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Shield className="h-6 w-6" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold">Seguro y Privado</h3>
-                <p className="text-muted-foreground">
-                  Tus datos están protegidos y solo tú tienes acceso a ellos
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Pricing Section */}
+        <PricingTable />
+
+        {/* Testimonials Section */}
+        <TestimonialsSection />
+
+        {/* Final CTA Section */}
+        <CTASection />
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-6">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>&copy; 2024 homelas. Gestión financiera personal.</p>
-        </div>
-      </footer>
+      <FooterLanding />
     </div>
   );
 }

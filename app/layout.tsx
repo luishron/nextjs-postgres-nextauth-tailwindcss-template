@@ -19,9 +19,30 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'homelas',
+  title: 'Homelas - Control financiero simple sin complicaciones',
   description:
-    'Gestiona tus finanzas personales de forma simple y efectiva.'
+    'Gestiona tus gastos e ingresos, visualiza tu situación financiera en tiempo real. Gratis para siempre.',
+  keywords:
+    'finanzas personales, control de gastos, presupuesto, mexico, app financiera, gastos recurrentes, ingresos',
+  metadataBase: new URL('https://homelas.com'),
+  openGraph: {
+    type: 'website',
+    locale: 'es_MX',
+    url: 'https://homelas.com',
+    title: 'Homelas - Control financiero simple',
+    description:
+      'Registra gastos e ingresos con interfaz estilo Wise. Gratis para siempre.',
+    siteName: 'Homelas',
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Homelas - Control financiero simple',
+    description:
+      'Gestiona tus finanzas personales con estilo Wise. Gratis para siempre.',
+    images: ['/og-image.png']
+  },
+  robots: { index: true, follow: true }
 };
 
 export default function RootLayout({

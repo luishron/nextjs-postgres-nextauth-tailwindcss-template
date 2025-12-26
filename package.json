@@ -3,7 +3,11 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "screenshots": "tsx scripts/playwright/seed-demo-data.ts && playwright test scripts/playwright/capture-screenshots.ts && tsx scripts/optimize-screenshots.ts",
+    "screenshots:seed": "tsx scripts/playwright/seed-demo-data.ts",
+    "screenshots:capture": "playwright test scripts/playwright/capture-screenshots.ts",
+    "screenshots:optimize": "tsx scripts/optimize-screenshots.ts"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -27,6 +31,8 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
+    "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
     "lucide-react": "^0.400.0",
     "next": "^15.1.9",
     "next-themes": "^0.4.6",
@@ -53,6 +59,8 @@
     "trailingComma": "none"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.31.8"
+    "@playwright/test": "^1.57.0",
+    "drizzle-kit": "^0.31.8",
+    "sharp": "^0.34.5"
   }
 }
