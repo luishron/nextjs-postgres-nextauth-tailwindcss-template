@@ -8,8 +8,35 @@ import {
   jsonb,
   index,
   unique,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
+
+//==============================================================================
+// TABLA: user_profiles (Perfiles de usuario con roles y onboarding)
+//==============================================================================
+export const userProfiles = pgTable(
+  'user_profiles',
+  {
+    id: uuid('id').primaryKey(),
+    role: text('role').notNull().default('free'), // 'free' | 'premium'
+    planExpiresAt: timestamp('plan_expires_at', { withTimezone: true }),
+    onboardingCompleted: boolean('onboarding_completed').notNull().default(false),
+    preferences: jsonb('preferences').$type<{
+      currency?: 'MXN' | 'USD';
+      theme?: 'light' | 'dark' | 'system';
+      language?: 'es' | 'en';
+      [key: string]: any;
+    }>().default({ currency: 'MXN', theme: 'system' }),
+    fullName: text('full_name'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+  },
+  (table) => ({
+    roleIdx: index('idx_user_profiles_role').on(table.role),
+    onboardingIdx: index('idx_user_profiles_onboarding').on(table.onboardingCompleted),
+  })
+);
 
 //==============================================================================
 // TABLA: categories (Categorías de gastos)
@@ -241,6 +268,9 @@ export const statistics = pgTable(
 //==============================================================================
 // TIPOS INFERIDOS PARA TYPESCRIPT
 //==============================================================================
+export type UserProfile = typeof userProfiles.$inferSelect;
+export type NewUserProfile = typeof userProfiles.$inferInsert;
+
 export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
 

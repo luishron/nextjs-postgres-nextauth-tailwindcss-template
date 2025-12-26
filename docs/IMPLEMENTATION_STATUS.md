@@ -43,7 +43,7 @@ El proyecto Homelas ha completado exitosamente las 5 fases de transformación UX
 
 **Estado:** Completada el 23 de Diciembre, 2025
 
-#### Sistema de Colores OLEA
+#### Sistema de Colores Homelas
 
 - ✅ Paleta expandida con verde vibrante (#9FFF66) como primary
 - ✅ Colores semantic para transacciones (income, expense, transfer)

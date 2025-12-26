@@ -1,6 +1,6 @@
 # 🎨 Homelas Design System
 
-> Sistema de diseño moderno para la gestión de finanzas personales, inspirado en la paleta OLEA.
+> Sistema de diseño moderno para la gestión de finanzas personales, inspirado en la paleta Homelas.
 
 **Versión:** 2.0.0
 **Última actualización:** Diciembre 2024
@@ -29,7 +29,7 @@ Homelas utiliza una paleta de colores **natural y enérgica** que transmite:
 
 ### Inspiración
 
-Nuestro sistema está inspirado en la marca OLEA, adoptando su paleta distintiva:
+Nuestro sistema está inspirado en la marca Homelas, adoptando su paleta distintiva:
 - Verde vibrante (#9FFF66) como color principal
 - Verde pino oscuro (#071C11) para fondos y contraste
 - Beige/crema (#F9F8E3) para superficies suaves
@@ -722,7 +722,7 @@ Ya configuradas en `globals.css`:
 ## 🔄 Changelog
 
 ### v2.0.0 (Diciembre 2024)
-- ✨ Implementación de la paleta OLEA
+- ✨ Implementación de la paleta Homelas
 - 🎨 Verde Vibrante (#9FFF66) como primary
 - 🌲 Verde Pino Oscuro (#071C11) para dark mode
 - 🌾 Beige/Crema (#F9F8E3) para fondos suaves

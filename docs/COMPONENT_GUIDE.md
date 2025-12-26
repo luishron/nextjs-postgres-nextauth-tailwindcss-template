@@ -1136,7 +1136,7 @@ Ver [ACCESSIBILITY-AUDIT.md](./ACCESSIBILITY-AUDIT.md) para detalles completos.
 
 ## 📚 Recursos Adicionales
 
-- **[design-system.md](./design-system.md)** - Sistema de diseño OLEA completo
+- **[design-system.md](./design-system.md)** - Sistema de diseño Homelas completo
 - **[ACCESSIBILITY-AUDIT.md](./ACCESSIBILITY-AUDIT.md)** - Auditoría de accesibilidad
 - **[shadcn/ui Docs](https://ui.shadcn.com/)** - Documentación oficial de shadcn/ui
 - **[Tailwind CSS](https://tailwindcss.com/docs)** - Documentación de Tailwind

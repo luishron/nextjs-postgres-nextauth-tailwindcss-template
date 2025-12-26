@@ -81,7 +81,7 @@ New custom components:
 - **EmptyState** (`/components/ui/empty-state.tsx`): Semantic empty states
 - **Skeletons** (`/components/ui/skeletons.tsx`): 11 loading state components
 
-### FASE 1: Design System OLEA (Dec 23, 2025) ✅ COMPLETED
+### FASE 1: Design System Homelas (Dec 23, 2025) ✅ COMPLETED
 
 - **Color Palette:** Verde vibrante (#9FFF66) as primary
 - **Semantic Colors:** transaction-income, transaction-expense, transaction-transfer
@@ -108,12 +108,14 @@ npx tsc --noEmit         # Type check without emitting files
 ```
 
 ### Database Management
-Execute SQL scripts in Supabase SQL Editor (not via command line):
-- `scripts/supabase/migrations/00-initial-schema.sql` - Initial database schema
-- `scripts/supabase/migrations/01-add-payment-status.sql` - Payment status system
-- `scripts/supabase/migrations/02-payment-methods.sql` - Payment methods table
-- `scripts/supabase/migrations/03-incomes-system.sql` - Income tracking system
-- `scripts/supabase/migrations/04-add-metadata-columns.sql` - Metadata columns
+```bash
+pnpm db:generate     # Generate SQL migrations from Drizzle schemas
+pnpm db:push         # Apply schemas to database (direct push, no migration files)
+pnpm db:migrate      # Run automatic migration script (with validation)
+pnpm build:prod      # Run migrations + build (for CI/CD deployments)
+```
+
+**Note:** For production deployments, use `pnpm build:prod` which automatically applies database migrations before building. See `/docs/DEPLOYMENT.md` for detailed deployment instructions.
 
 ## Architecture Overview
 
@@ -287,7 +289,7 @@ export function AddExpenseDialog() {
 
 ### Styling Conventions
 
-- **Design System OLEA** (see `/docs/design-system.md`):
+- **Design System Homelas** (see `/docs/design-system.md`):
   - Primary color: Verde vibrante #9FFF66 (`hsl(98 100% 70%)`)
   - Semantic colors: transaction-income, transaction-expense, transaction-transfer
   - Design tokens in `app/globals.css` (use CSS variables, not hardcoded colors)
@@ -435,6 +437,8 @@ if (!category) throw new Error('Category not found')
 - `/docs/COMPONENT_GUIDE.md` - Component catalog and usage
 - `/docs/ACCESSIBILITY-AUDIT.md` - WCAG 2.1 AA compliance audit
 - `/docs/IMPLEMENTATION_STATUS.md` - Feature tracking and roadmap
+- `/docs/AUTHENTICATION.md` - Magic Links, user roles, onboarding system
+- `/docs/DEPLOYMENT.md` - Production deployment with automatic migrations
 - `/docs/setup/SUPABASE.md` - Database setup guide
 - `/docs/setup/GITHUB_OAUTH.md` - OAuth configuration guide
 

@@ -194,7 +194,7 @@ async function createExpense(formData: FormData) {
   Guardar
 </button>
 
-// ✅ HACER: Usar paleta OLEA
+// ✅ HACER: Usar paleta Homelas
 <div className="text-foreground bg-background">
   {/* Verde vibrante #9FFF66 */}
   <span className="text-primary">Destacado</span>
@@ -208,7 +208,7 @@ async function createExpense(formData: FormData) {
 
 **Reglas de estilo:**
 - ✅ Tailwind CSS con design tokens de `globals.css`
-- ✅ Paleta OLEA (ver [design-system.md](./docs/design-system.md))
+- ✅ Paleta Homelas (ver [design-system.md](./docs/design-system.md))
 - ✅ Touch targets ≥ 44px (WCAG 2.1 AA)
 - ✅ Contraste de colores ≥ 4.5:1
 - ✅ Dark mode support (automático con design tokens)
@@ -534,7 +534,7 @@ Usa la etiqueta `enhancement`:
 ### Documentación del Proyecto
 
 - **[README.md](./README.md)** - Visión general y setup
-- **[design-system.md](./docs/design-system.md)** - Sistema de diseño OLEA
+- **[design-system.md](./docs/design-system.md)** - Sistema de diseño Homelas
 - **[COMPONENT_GUIDE.md](./docs/COMPONENT_GUIDE.md)** - Guía de componentes
 - **[ACCESSIBILITY-AUDIT.md](./docs/ACCESSIBILITY-AUDIT.md)** - Auditoría de accesibilidad
 - **[IMPLEMENTATION_STATUS.md](./docs/IMPLEMENTATION_STATUS.md)** - Estado de features

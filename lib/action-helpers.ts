@@ -49,7 +49,8 @@ export async function withAuth<T>(
     return { success: true, data };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Error desconocido';
-    console.error('[Action Error]', { error: message });
+    console.error('[Action Error] Full error:', error);
+    console.error('[Action Error] Message:', message);
 
     // Detectar errores de BD comunes
     if (message.includes('constraint') || message.includes('foreign key')) {

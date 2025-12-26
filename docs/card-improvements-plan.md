@@ -37,7 +37,7 @@
 **Problemas identificados:**
 - ❌ Aspecto genérico (podrían ser de cualquier app)
 - ❌ Falta personalidad financiera
-- ❌ No comunican la marca OLEA
+- ❌ No comunican la marca Homelas
 - ❌ Bordes y sombras muy estándar
 - ❌ Sin micro-interacciones significativas
 - ❌ No aprovechan la paleta verde vibrante

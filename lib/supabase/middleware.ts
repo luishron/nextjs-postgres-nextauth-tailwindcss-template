@@ -51,11 +51,53 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Si el usuario está autenticado, redirigir desde login o home al dashboard
-  if (user && (pathname === '/login' || pathname === '/')) {
+  // Proteger la ruta de onboarding (solo usuarios autenticados)
+  if (!user && pathname.startsWith('/onboarding')) {
     const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
+    url.pathname = '/login';
     return NextResponse.redirect(url);
+  }
+
+  // Si el usuario está autenticado, verificar onboarding
+  if (user) {
+    // Permitir acceso a auth callback
+    if (pathname.startsWith('/auth/callback')) {
+      return supabaseResponse;
+    }
+
+    // Verificar si el usuario ha completado el onboarding
+    const { data: profile, error } = await supabase
+      .from('user_profiles')
+      .select('onboarding_completed')
+      .eq('id', user.id)
+      .single();
+
+    // Si no hay perfil o no ha completado onboarding, redirigir a onboarding
+    if (error || !profile || !profile.onboarding_completed) {
+      // Permitir acceso a la página de onboarding
+      if (pathname.startsWith('/onboarding')) {
+        return supabaseResponse;
+      }
+
+      // Redirigir desde otras rutas a onboarding
+      const url = request.nextUrl.clone();
+      url.pathname = '/onboarding';
+      return NextResponse.redirect(url);
+    }
+
+    // Si ya completó onboarding, redirigir desde onboarding al dashboard
+    if (pathname.startsWith('/onboarding')) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/dashboard';
+      return NextResponse.redirect(url);
+    }
+
+    // Si el usuario está autenticado y completó onboarding, redirigir desde login o home al dashboard
+    if (pathname === '/login' || pathname === '/') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/dashboard';
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;

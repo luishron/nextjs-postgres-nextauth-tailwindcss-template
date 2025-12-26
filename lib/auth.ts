@@ -49,3 +49,20 @@ export async function signOut() {
 
   return { success: true };
 }
+
+export async function signInWithMagicLink(email: string, redirectTo?: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: redirectTo || `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
+    },
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: true, data };
+}

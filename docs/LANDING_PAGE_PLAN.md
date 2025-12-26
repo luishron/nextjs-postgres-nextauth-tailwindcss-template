@@ -11,7 +11,7 @@
 - ✅ Tono profesional y confiable (estilo Nu/Wise)
 - ✅ Secciones: Hero, Features, Screenshots, Pricing, Reviews, CTA
 
-**Estrategia:** Reemplazar `/app/page.tsx` actual (muy básica) con landing completa usando componentes del sistema OLEA, Server Components por defecto, y capturas automatizadas.
+**Estrategia:** Reemplazar `/app/page.tsx` actual (muy básica) con landing completa usando componentes del sistema Homelas, Server Components por defecto, y capturas automatizadas.
 
 ---
 
@@ -319,7 +319,7 @@ const jsonLd = {
 **Herramienta:** Figma/Canva
 
 **Contenido:**
-- Background con gradient OLEA (Verde Vibrante)
+- Background con gradient Homelas (Verde Vibrante)
 - Screenshot del dashboard (preview)
 - Logo Homelas
 - Tagline: "Control financiero simple"

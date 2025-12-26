@@ -15,6 +15,12 @@ Empieza aquí si es tu primera vez con el proyecto.
 - **[setup/SUPABASE.md](./setup/SUPABASE.md)**
   Guía paso a paso para configurar Supabase (base de datos PostgreSQL).
 
+- **[AUTHENTICATION.md](./AUTHENTICATION.md)** - **Sistema de Autenticación** ⭐ NUEVO
+  Guía completa de Magic Links, roles de usuario, onboarding y protección de rutas.
+
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - **Deploy a Producción** ⭐ NUEVO
+  Guía completa de deployment con migraciones automáticas para Vercel, Railway y Fly.io.
+
 - **[setup/GITHUB_OAUTH.md](./setup/GITHUB_OAUTH.md)**
   Instrucciones para configurar GitHub OAuth y autenticación.
 
@@ -27,7 +33,7 @@ Empieza aquí si es tu primera vez con el proyecto.
 
 Sistema de diseño, componentes y mejoras visuales.
 
-- **[design-system.md](./design-system.md)** - **Sistema de Diseño OLEA** ⭐
+- **[design-system.md](./design-system.md)** - **Sistema de Diseño Homelas** ⭐
   Paleta de colores, tipografía, espaciado, animaciones y design tokens completos.
 
 - **[ACCESSIBILITY-AUDIT.md](./ACCESSIBILITY-AUDIT.md)** - **Auditoría WCAG 2.1 AA** ✅
@@ -92,7 +98,8 @@ Guías para contribuir y trabajar con el código.
 1. [README.md](../README.md) - Empieza aquí
 2. [setup/SUPABASE.md](./setup/SUPABASE.md) - Setup de DB
 3. [setup/GITHUB_OAUTH.md](./setup/GITHUB_OAUTH.md) - Setup de Auth
-4. [CONTRIBUTING.md](../CONTRIBUTING.md) - Guía de contribución
+4. [DEPLOYMENT.md](./DEPLOYMENT.md) - Deploy a producción
+5. [CONTRIBUTING.md](../CONTRIBUTING.md) - Guía de contribución
 
 **Diseñador/UI Developer:**
 1. [design-system.md](./design-system.md) - Sistema de diseño
@@ -130,6 +137,8 @@ Guías para contribuir y trabajar con el código.
 |-----------|--------|---------|---------------------|
 | README.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
 | setup/SUPABASE.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
+| AUTHENTICATION.md | ⭐ Nuevo | 2.1.0 | Diciembre 2025 |
+| DEPLOYMENT.md | ⭐ Nuevo | 2.1.0 | Diciembre 2025 |
 | setup/GITHUB_OAUTH.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
 | .env.example | ✅ Actualizado | 2.0.0 | Diciembre 2025 |
 | design-system.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
@@ -139,7 +148,7 @@ Guías para contribuir y trabajar con el código.
 | IMPLEMENTATION_STATUS.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
 | PRD.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
 | LANDING_PAGE_PLAN.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
-| CLAUDE.md | ✅ Actualizado | 2.0.0 | Diciembre 2025 |
+| CLAUDE.md | ✅ Actualizado | 2.1.0 | Diciembre 2025 |
 | ui-improvements.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
 | card-improvements-plan.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
 | LICENSE.md | ✅ Actualizado | - | Diciembre 2024 |

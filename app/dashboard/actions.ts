@@ -402,3 +402,37 @@ export async function deleteIncomeCategory(formData: FormData): Promise<ActionRe
     revalidateIngresos();
   });
 }
+
+//==============================================================================
+// ONBOARDING ACTIONS
+//==============================================================================
+
+import { updateUserProfile, completeOnboarding } from '@/lib/db';
+import { z } from 'zod';
+
+const onboardingNameSchema = z.object({
+  fullName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres')
+});
+
+export async function saveOnboardingName(formData: FormData): Promise<ActionResult> {
+  return withAuth(async (userId) => {
+    const validation = validateFormData(onboardingNameSchema, formData);
+
+    if (!validation.success) {
+      throw new Error(validation.error);
+    }
+
+    await updateUserProfile(userId, {
+      full_name: validation.data.fullName
+    });
+
+    // No revalidation needed for onboarding
+  });
+}
+
+export async function finishOnboarding(): Promise<ActionResult> {
+  return withAuth(async (userId) => {
+    await completeOnboarding(userId);
+    revalidateGastos(); // Revalidate dashboard
+  });
+}

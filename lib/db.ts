@@ -109,16 +109,86 @@ export type Statistic = {
   created_at?: string;
 };
 
+export type UserRole = 'free' | 'premium';
+
+export type UserProfile = {
+  id: string;
+  role: UserRole;
+  plan_expires_at?: string | null;
+  onboarding_completed: boolean;
+  preferences?: {
+    currency?: 'MXN' | 'USD';
+    theme?: 'light' | 'dark' | 'system';
+    language?: 'es' | 'en';
+    [key: string]: any;
+  } | null;
+  full_name?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type InsertCategory = Omit<Category, 'id' | 'created_at'>;
 export type InsertIncomeCategory = Omit<IncomeCategory, 'id' | 'created_at'>;
 export type InsertPaymentMethod = Omit<PaymentMethod, 'id' | 'created_at' | 'updated_at'>;
 export type InsertExpense = Omit<Expense, 'id' | 'created_at' | 'updated_at'>;
 export type InsertBudget = Omit<Budget, 'id' | 'created_at' | 'updated_at'>;
 export type InsertIncome = Omit<Income, 'id' | 'created_at' | 'updated_at'>;
+export type InsertUserProfile = Omit<UserProfile, 'created_at' | 'updated_at'>;
 
 // Aliases para compatibilidad
 export type SelectExpense = Expense;
 export type SelectCategory = Category;
+
+//==============================================================================
+// FUNCIONES DE QUERIES - User Profiles
+//==============================================================================
+
+export async function getUserProfile(userId: string): Promise<UserProfile | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('*')
+    .eq('id', userId)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') return null; // No rows returned
+    throw error;
+  }
+  return data;
+}
+
+export async function createUserProfile(profile: InsertUserProfile): Promise<UserProfile> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .insert(profile)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updateUserProfile(
+  userId: string,
+  updates: Partial<InsertUserProfile>
+): Promise<UserProfile> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .update(updates)
+    .eq('id', userId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function completeOnboarding(userId: string): Promise<UserProfile> {
+  return updateUserProfile(userId, { onboarding_completed: true });
+}
 
 //==============================================================================
 // FUNCIONES DE QUERIES - Categorías
