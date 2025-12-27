@@ -7,7 +7,9 @@ import { ProblemSection } from "@/components/landing/problem-section";
 import { SolutionSteps } from "@/components/landing/solution-steps";
 import { ScreenshotsCarousel } from "@/components/landing/screenshots-carousel";
 import { ComparisonSection } from "@/components/landing/comparison-section";
+import { QuoteSection } from "@/components/landing/quote-section";
 import { PricingTable } from "@/components/landing/pricing-table";
+import { ReviewsSection } from "@/components/landing/reviews-section";
 import { FAQSection } from "@/components/landing/faq-section";
 import { CTASection } from "@/components/landing/cta-section";
 import { FooterLanding } from "@/components/landing/footer-landing";
@@ -101,13 +103,19 @@ export default async function HomePage() {
         {/* 5. Comparación - Por qué Homelas */}
         <ComparisonSection />
 
-        {/* 6. Pricing - 100% gratis sin trucos */}
+        {/* 6. Quote - Lo que no se mide, se descontrola */}
+        <QuoteSection />
+
+        {/* 7. Pricing - 100% gratis sin trucos */}
         <PricingTable />
 
-        {/* 7. FAQ - Eliminar objeciones */}
+        {/* 8. Reviews - Prueba social */}
+        <ReviewsSection />
+
+        {/* 9. FAQ - Eliminar objeciones */}
         <FAQSection />
 
-        {/* 8. CTA Final - Último empujón */}
+        {/* 10. CTA Final - Último empujón */}
         <CTASection />
       </main>
 

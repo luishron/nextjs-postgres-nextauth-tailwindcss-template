@@ -1,10 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { useState } from "react";
 
 type BillingPeriod = "monthly" | "annual";
 
@@ -12,66 +12,59 @@ const pricingPlans = [
   {
     name: "Gratis",
     price: "$0",
-    period: "/mes",
-    description: "Perfecto para empezar",
+    description: "Todo lo que necesitas para decidir bien.",
     features: [
-      { text: "Gastos e ingresos ilimitados", included: true },
-      { text: "10 categorías personalizables", included: true },
-      { text: "3 métodos de pago", included: true },
-      { text: "Dashboard con KPIs básicos", included: true },
-      { text: "Gastos recurrentes básicos", included: true },
-      { text: "Dark mode", included: true },
-      { text: "Responsive mobile-first", included: true },
+      "Gastos e ingresos ilimitados",
+      "Categorías personalizables",
+      "Métodos de pago",
+      "Balance real (con gastos futuros)",
+      "Dashboard claro",
+      "Uso en móvil y desktop",
     ],
     cta: "Comenzar gratis",
+    ctaSubtext: "Sin tarjeta. Sin vencimiento.",
     href: "/login",
-    popular: false,
   },
   {
     name: "Pro",
     monthlyPrice: 14.99,
-    annualPrice: 149.9, // 10 meses (ahorra 2 meses)
-    description: "Para profesionistas organizados",
+    annualPrice: 149.9,
+    description: "Para los que quieren delegar el control.",
     features: [
-      { text: "Todo lo de Gratis", included: true },
-      { text: "Categorías ilimitadas", included: true },
-      { text: "Métodos de pago ilimitados", included: true },
-      { text: "Gastos recurrentes avanzados", included: true },
-      { text: "Búsqueda global instantánea (Cmd+K)", included: true },
-      { text: "Filtros avanzados y presets", included: true },
-      { text: "Dashboard completo con comparativas", included: true },
-      { text: "Proyecciones de próximo mes", included: true },
-      { text: "Soporte prioritario", included: true },
+      "Todo lo del plan Gratis",
+      "Gastos recurrentes automáticos",
+      "Búsqueda y filtros avanzados",
+      "Visión mensual y comparativas",
+      "Menos cosas que recordar",
     ],
-    cta: "Comenzar con Pro",
+    microArgument: "La suscripción se paga sola.\nEvitás un gasto innecesario y listo.",
+    cta: "Pasar a Pro",
     href: "/login",
     popular: true,
   },
   {
     name: "Plus",
     monthlyPrice: 19.99,
-    annualPrice: 199.9, // 10 meses (ahorra 2 meses)
-    description: "Máximo control financiero",
+    annualPrice: 199.9,
+    description: "Para quienes quieren control total y reportes avanzados.",
     features: [
-      { text: "Todo lo de Pro", included: true },
-      { text: "Exportación de datos (CSV, PDF)", included: true },
-      { text: "Reportes personalizados", included: true },
-      { text: "Compartir dashboard", included: true },
-      { text: "Múltiples monedas", included: true },
-      { text: "Asesoría financiera", included: true },
+      "Todo lo del plan Pro",
+      "Exportación de datos (CSV, PDF)",
+      "Reportes personalizados",
+      "Compartir dashboard",
+      "Múltiples monedas",
     ],
-    cta: "Próximamente",
-    href: "#",
-    popular: false,
-    comingSoon: true,
+    cta: "Pasar a Plus",
+    href: "/login",
   },
 ];
 
 export function PricingTable() {
-  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("annual");
+  const [billingPeriod, setBillingPeriod] =
+    useState<BillingPeriod>("annual");
 
   const getPrice = (plan: typeof pricingPlans[number]) => {
-    if (plan.name === "Gratis") return { display: "$0", period: "/mes" };
+    if (plan.price) return { display: plan.price, period: "" };
 
     if (billingPeriod === "annual") {
       const monthlyEquivalent = plan.annualPrice! / 12;
@@ -80,10 +73,19 @@ export function PricingTable() {
         period: "/mes",
       };
     }
+
     return {
       display: `$${plan.monthlyPrice!.toFixed(2)}`,
       period: "/mes",
     };
+  };
+
+  const getSavings = (plan: typeof pricingPlans[number]) => {
+    if (!plan.monthlyPrice || billingPeriod === "monthly") return null;
+    const annualTotal = plan.annualPrice!;
+    const monthlyTotal = plan.monthlyPrice! * 12;
+    const savings = monthlyTotal - annualTotal;
+    return `Ahorras $${savings.toFixed(2)}`;
   };
 
   return (
@@ -99,22 +101,19 @@ export function PricingTable() {
             id="pricing-heading"
             className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4"
           >
-            Planes para cada necesidad
+            Empieza gratis.{" "}
+            <span className="text-primary">Escala solo si lo necesitas.</span>
           </h2>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Comienza gratis y escala cuando lo necesites. Al registrar y
-            entender tus gastos,{" "}
-            <span className="text-foreground font-medium">
-              eliminás fugas de dinero que hacen que el plan se pague solo
-            </span>
-            .
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            El plan se paga solo con los gastos que dejas de cometer cuando ves
+            tus números claros.
           </p>
 
-          {/* Billing Toggle */}
-          <div className="flex items-center justify-center gap-3 mt-8">
+          {/* Billing Period Toggle */}
+          <div className="flex items-center justify-center gap-3">
             <button
               onClick={() => setBillingPeriod("monthly")}
-              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
+              className={`px-6 py-2 rounded-lg font-medium transition-all ${
                 billingPeriod === "monthly"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
@@ -125,7 +124,7 @@ export function PricingTable() {
             </button>
             <button
               onClick={() => setBillingPeriod("annual")}
-              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
+              className={`px-6 py-2 rounded-lg font-medium transition-all ${
                 billingPeriod === "annual"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
@@ -146,7 +145,7 @@ export function PricingTable() {
                 plan.popular
                   ? "bg-card border-2 border-primary shadow-2xl scale-105"
                   : "bg-card border border-border shadow-lg"
-              } ${plan.comingSoon ? "opacity-90" : ""}`}
+              }`}
               style={{
                 animationDelay: `${index * 100}ms`,
               }}
@@ -160,29 +159,14 @@ export function PricingTable() {
                 </div>
               )}
 
-              {/* Coming Soon Badge */}
-              {plan.comingSoon && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <Badge
-                    variant="secondary"
-                    className="px-4 py-1 text-sm font-semibold"
-                  >
-                    Próximamente
-                  </Badge>
-                </div>
-              )}
-
               {/* Plan Name */}
               <h3 className="text-2xl font-bold text-foreground mb-2 mt-2">
                 {plan.name}
               </h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                {plan.description}
-              </p>
 
               {/* Price */}
-              <div className="mb-6">
-                <div className="flex items-baseline gap-2">
+              <div className="mb-4">
+                <div className="flex items-baseline gap-1">
                   <span className="text-5xl font-bold text-foreground">
                     {getPrice(plan).display}
                   </span>
@@ -192,29 +176,36 @@ export function PricingTable() {
                     </span>
                   )}
                 </div>
-                {billingPeriod === "annual" && plan.name !== "Gratis" && !plan.comingSoon && (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    ${plan.annualPrice}/año • Ahorras ${((plan.monthlyPrice! * 12) - plan.annualPrice!).toFixed(2)}
-                  </p>
-                )}
-                {billingPeriod === "monthly" && plan.name !== "Gratis" && !plan.comingSoon && (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Facturado mensualmente
+                {getSavings(plan) && (
+                  <p className="text-sm text-primary font-medium mt-1">
+                    {getSavings(plan)}
                   </p>
                 )}
               </div>
 
+              {/* Description */}
+              <p className="text-base text-muted-foreground mb-6 leading-relaxed">
+                {plan.description}
+              </p>
+
               {/* Features */}
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((feature) => (
-                  <li key={feature.text} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-foreground">
-                      {feature.text}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              {plan.features && (
+                <ul className="space-y-3 mb-6">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-foreground">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {/* Micro-argument */}
+              {plan.microArgument && (
+                <p className="text-sm text-foreground font-medium italic mb-6 p-3 bg-primary/5 rounded-lg border-l-2 border-primary">
+                  {plan.microArgument}
+                </p>
+              )}
 
               {/* CTA */}
               <Button
@@ -225,20 +216,23 @@ export function PricingTable() {
                     ? ""
                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 }`}
-                disabled={plan.comingSoon}
               >
-                <Link href={plan.href}>{plan.cta}</Link>
+                <Link href={plan.href}>{plan.cta} →</Link>
               </Button>
+
+              {/* CTA Subtext */}
+              {plan.ctaSubtext && (
+                <p className="text-xs text-muted-foreground text-center mt-3">
+                  {plan.ctaSubtext}
+                </p>
+              )}
             </div>
           ))}
         </div>
 
-        {/* Guarantee */}
+        {/* Footer Note */}
         <div className="max-w-3xl mx-auto mt-16 text-center">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            <strong className="text-foreground">
-              Todos los planes incluyen:
-            </strong>{" "}
             Tus datos son tuyos. Sin letra chica. Cancela cuando quieras.
           </p>
         </div>

@@ -8,14 +8,13 @@ export function CTASection() {
       <div className="container mx-auto px-4 text-center relative z-10">
         {/* Headline */}
         <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6 animate-fade-in">
-          Tu control financiero{" "}
-          <span className="text-primary">empieza ahora</span>
+          Empieza hoy.{" "}
+          <span className="text-primary">Gratis y sin compromiso.</span>
         </h2>
 
         {/* Subheadline */}
         <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in-up">
-          Únete a cientos de profesionistas que tomaron el control de sus
-          finanzas. Gratis, simple, efectivo.
+          Tu primer gasto registrado en 15 segundos.
         </p>
 
         {/* Benefits */}

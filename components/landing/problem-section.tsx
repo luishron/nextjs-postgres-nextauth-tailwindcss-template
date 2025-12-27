@@ -3,23 +3,24 @@ import { AlertCircle, TrendingDown, Calendar } from "lucide-react";
 const problems = [
   {
     icon: AlertCircle,
-    title: "¿Puedo comprar esto?",
+    title: "Dudas antes de gastar",
     description:
-      "Ves algo que quieres comprar pero no sabes si afectará tu presupuesto del mes.",
+      "Quieres comprar algo y no sabes si estás haciendo bien las cuentas.",
     color: "hsl(45 93% 47%)", // Amarillo
   },
   {
     icon: TrendingDown,
-    title: "¿Por qué siempre me falta dinero?",
+    title: "Falta de visibilidad",
     description:
-      "Ganas bien pero nunca sabes en qué se te va el dinero.",
+      "Ganas bien, pero no ves todos tus gastos juntos.",
+    additionalLine: "El dinero no desaparece: se diluye.",
     color: "hsl(0 72% 50%)", // Rojo
   },
   {
     icon: Calendar,
-    title: "Olvidé pagar... otra vez",
+    title: "Consecuencias evitables",
     description:
-      "Los recargos por olvidos suman cientos de pesos al mes.",
+      "Olvidos, recargos y decisiones que después pesan.",
     color: "hsl(280 83% 63%)", // Morado
   },
 ];
@@ -76,6 +77,12 @@ export function ProblemSection() {
                 <p className="text-base text-muted-foreground leading-relaxed">
                   {problem.description}
                 </p>
+
+                {problem.additionalLine && (
+                  <p className="text-base text-foreground font-semibold mt-3 italic">
+                    {problem.additionalLine}
+                  </p>
+                )}
               </div>
             );
           })}

@@ -11,15 +11,16 @@ export function HeroSection() {
           <div className="text-center lg:text-left animate-fade-in">
             <h1
               id="hero-heading"
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight max-w-4xl mx-auto lg:mx-0"
             >
-              No podés mejorar{" "}
-              <span className="text-primary">lo que no controlás</span>
+              El problema no es gastar.
             </h1>
 
-            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mt-6 max-w-2xl mx-auto lg:mx-0">
-              Homelas te muestra tu realidad financiera para que tomes mejores
-              decisiones, todos los días.
+            <p className="text-lg sm:text-xl md:text-2xl text-foreground mt-6 max-w-2xl mx-auto lg:mx-0">
+              Es decidir sin ver los{" "}
+              <span className="text-primary font-semibold">próximos gastos</span>.
+              <br />
+              Homelas te muestra tus gastos y tu balance real antes de gastar.
             </p>
 
             {/* CTA */}
@@ -32,20 +33,11 @@ export function HeroSection() {
               >
                 <Link href="/login">Comenzar gratis →</Link>
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="h-12 px-8 text-base font-semibold"
-                aria-label="Ver demo de Homelas"
-              >
-                <Link href="#pricing">Ver demo</Link>
-              </Button>
             </div>
 
             {/* Social Proof */}
             <p className="text-sm text-muted-foreground mt-6">
-              Gratis para siempre · Sin tarjeta de crédito · Sin trucos
+              Sin ansiedad · Sin suposiciones · Gratis
             </p>
           </div>
 
