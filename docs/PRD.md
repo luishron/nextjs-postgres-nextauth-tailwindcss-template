@@ -16,6 +16,7 @@
 - [5. Success Metrics](#5-success-metrics)
 - [6. Roadmap & Priorización](#6-roadmap--priorización)
 - [7. Decisiones de Producto](#7-decisiones-de-producto)
+  - [7.6 Modelo de Pricing](#76-modelo-de-pricing)
 
 ---
 
@@ -24,14 +25,14 @@
 ### 1.1 Problema que Resuelve
 
 **El problema:**
-La mayoría de los mexicanos no tiene visibilidad clara de sus finanzas personales. Las apps bancarias muestran transacciones pero no ayudan a entender patrones de gasto, planificar gastos recurrentes, o alcanzar metas financieras. Las soluciones existentes son:
+La mayoría de los profesionistas hispanos no tiene visibilidad clara de sus finanzas personales. Las apps bancarias muestran transacciones pero no ayudan a entender patrones de gasto, planificar gastos recurrentes, o alcanzar metas financieras. Las soluciones existentes son:
 - **Demasiado complejas** (ej. YNAB, Mint) - requieren conocimiento contable
 - **Limitadas** (apps bancarias) - solo muestran transacciones sin contexto
 - **Caras** (software empresarial) - no accesibles para personas individuales
-- **No localizadas** (apps internacionales) - no entienden el contexto mexicano (USD, cultura de efectivo, quincenas)
+- **No localizadas** (apps internacionales) - no entienden el contexto latinoamericano (USD, cultura de efectivo, quincenas)
 
 **La solución: Homelas**
-Una aplicación web simple y elegante que permite a profesionistas mexicanos:
+Una aplicación web simple y elegante que permite a profesionistas del mercado hispano:
 1. Registrar gastos e ingresos en segundos
 2. Visualizar su situación financiera en tiempo real
 3. Planificar gastos recurrentes (rentas, suscripciones, servicios)
@@ -46,7 +47,7 @@ Una aplicación web simple y elegante que permite a profesionistas mexicanos:
 1. **Velocidad:** Agregar gasto en < 3 taps (QuickAddFAB)
 2. **Claridad:** Dashboard visual al estilo Wise (no tablas abrumadoras)
 3. **Inteligente:** Gastos recurrentes calculados automáticamente sin duplicar datos
-4. **Localizado:** Diseñado para México (USD, quincenas, cultura de efectivo)
+4. **Localizado:** Diseñado para el mercado hispano (USD, quincenas, cultura de efectivo)
 5. **Accesible:** Interfaz WCAG 2.1 AA compliant, usable por todos
 6. **Moderno:** UX/UI inspirada en Wise, mejor que apps bancarias tradicionales
 
@@ -85,7 +86,7 @@ Una aplicación web simple y elegante que permite a profesionistas mexicanos:
 **Frustraciones:**
 - Excel es tedioso y se olvida de actualizarlo
 - Apps bancarias solo muestran movimientos sin contexto
-- Apps gringas como Mint no funcionan en México
+- Apps gringas como Mint no están localizadas para el mercado hispano
 - No quiere aprender contabilidad para usar YNAB
 
 **Quote:** "Quiero saber si puedo comprar esto sin arruinar mi presupuesto del mes"
@@ -641,7 +642,7 @@ Usuarios preguntaron: "¿Puedo registrar gastos en USD?"
 **Decisión: No en v2.0, planear para v2.3**
 
 **Razones:**
-- 🎯 Focus en mercado mexicano primero (80% de target users usan solo USD)
+- 🎯 Focus en mercado hispano primero (80% de target users usan solo USD)
 - 🎯 Multi-moneda agrega complejidad:
   - API de conversión (costo mensual)
   - ¿Convertir automáticamente o manual?
@@ -696,6 +697,36 @@ Necesitábamos base de datos PostgreSQL.
 **Trade-offs aceptados:**
 - Supabase tiene cold starts (~200ms), aceptable
 - Si escalamos mucho, migrar a Vercel Postgres + NextAuth
+
+### 7.6 Modelo de Pricing
+
+**Decisión: 100% Gratis - Sin Límites**
+
+**Contexto:**
+Las aplicaciones de gestión financiera suelen cobrar suscripciones mensuales (YNAB $15/mes, Mint $10/mes), lo cual crea barreras de entrada especialmente en el mercado hispano donde la sensibilidad al precio es alta.
+
+**Razones para mantener 100% gratis:**
+- ✅ **Maximizar adopción:** Sin fricción de pago, más usuarios prueban y adoptan la app
+- ✅ **Accesibilidad financiera:** Nuestro target (estudiantes, freelancers, profesionistas jóvenes) valoran soluciones sin costo
+- ✅ **Ventaja competitiva:** Diferenciador clave vs alternativas de pago
+- ✅ **Focus en producto:** Priorizar excelencia de producto sobre monetización temprana
+- ✅ **Trust building:** Sin costos ocultos ni límites artificiales genera confianza
+
+**Opciones de monetización futura (si necesario):**
+1. **Tier corporativo/empresarial** (no para usuarios individuales)
+   - Gestión de equipos y gastos compartidos
+   - Reportes avanzados para contabilidad
+   - Soporte prioritario
+2. **Licenciamiento white-label** para instituciones financieras
+3. **Donaciones opcionales** de usuarios que quieran apoyar el proyecto
+
+**Opciones RECHAZADAS:**
+- ❌ **Modelo Freemium** (límites artificiales): Agrega complejidad, reduce trust
+- ❌ **Publicidad**: Degrada UX, genera preocupaciones de privacidad
+- ❌ **Venta de datos**: Contrario a valores del proyecto
+
+**Compromiso:**
+Homelas permanecerá 100% gratis para usuarios individuales sin límites artificiales en número de transacciones, categorías, o funcionalidades core.
 
 ---
 

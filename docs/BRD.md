@@ -27,7 +27,7 @@
 
 ### ¿Qué es Homelas?
 
-**Homelas** es una aplicación web moderna de gestión de gastos personales diseñada específicamente para profesionistas mexicanos que quieren:
+**Homelas** es una aplicación web moderna de gestión de gastos personales diseñada específicamente para profesionistas del mercado hispano que quieren:
 - **Tomar control de sus finanzas** sin complicaciones contables
 - **Visualizar su situación financiera** en tiempo real
 - **Planificar gastos futuros** sin sorpresas de última hora
@@ -119,9 +119,9 @@ Según encuestas con usuarios objetivo (profesionistas 25-35 años):
 
 **Apps Internacionales (Mint, YNAB):**
 - ✅ Features poderosos
-- ❌ Diseñadas para USA, no México (no hay USD, cultura de quincena)
+- ❌ Diseñadas para USA, no para el mercado hispano (no hay USD, cultura de quincena)
 - ❌ Demasiado complejas (requieren conocimiento contable)
-- ❌ Muchas no funcionan con bancos mexicanos
+- ❌ Muchas no funcionan con bancos de la región
 
 **Apps Mexicanas Existentes:**
 - ✅ Entienden el contexto local
@@ -961,13 +961,13 @@ Gasto: $80 (palomitas + refrescos)
 |----------------|-----------|---------|
 | **Soporte USD** | ❌ USD/EUR principalmente | ✅ USD nativo |
 | **Cultura de quincena** | ❌ No contempla | ✅ Diseñado para quincenas |
-| **Bancos mexicanos** | ⚠️ Integración limitada | ✅ Agnóstico (funciona con todos) |
+| **Bancos de la región** | ⚠️ Integración limitada | ✅ Agnóstico (funciona con todos) |
 | **Complejidad** | ⚠️ Alta (curva de aprendizaje) | ✅ Simple (uso inmediato) |
 | **Precio** | ⚠️ $10-15 USD/mes | ✅ Gratis |
 | **Idioma** | ⚠️ Inglés (o español traducido) | ✅ Español nativo |
 | **Mobile UX** | ⚠️ Funcional | ✅ Mobile-first |
 
-**Ventaja de Homelas:** Diseñada específicamente para México, simple y gratis
+**Ventaja de Homelas:** Diseñada específicamente para el mercado hispano, simple y gratis
 
 ---
 
@@ -1296,7 +1296,7 @@ AHORRO TOTAL: ~$4,000/mes = $48,000/año
 
 ---
 
-#### 5. Diseñado para Ti (Mexicano)
+#### 5. Diseñado para Ti (Mercado Hispano)
 
 **Homelas entiende tu contexto:**
 - ✅ Quincenas (días 15 y 30/31)
@@ -1520,7 +1520,7 @@ Ver: `CONTRIBUTING.md` para guía completa.
 >
 > Registra gastos en 10 segundos. Configura recurrentes una vez. Ve tu balance en tiempo real. Toma decisiones con confianza.
 >
-> Gratis. Mobile-first. Diseñado para México.
+> Gratis. Mobile-first. Diseñado para el mercado hispano.
 >
 > **5 minutos de setup. Control financiero de por vida.**
 

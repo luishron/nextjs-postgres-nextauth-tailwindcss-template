@@ -57,14 +57,8 @@ Visión del producto, objetivos y roadmap.
 - **[PRD.md](./PRD.md)** - **Product Requirements Document** ⭐ NUEVO
   Visión del producto, user personas, justificación de features, success metrics y roadmap priorizado.
 
----
-
-## 📱 Marketing & Landing
-
-Planes de implementación para landing page y estrategia de marketing.
-
-- **[LANDING_PAGE_PLAN.md](./LANDING_PAGE_PLAN.md)** - **Plan de Landing Page** ⭐ NUEVO
-  Plan completo para implementar landing page de ventas: arquitectura, contenido, pricing ($99 USD/mes Freemium), screenshots con Playwright, SEO y WCAG 2.1 AA compliance.
+- **[BRD.md](./BRD.md)** - **Business Requirements Document** ⭐ NUEVO
+  Documento de requerimientos de negocio, problemas del usuario, propuesta de valor, features y diferenciadores competitivos.
 
 ---
 
@@ -114,7 +108,7 @@ Guías para contribuir y trabajar con el código.
 **Product Manager:**
 1. [README.md](../README.md) - Visión general
 2. [PRD.md](./PRD.md) - Product Requirements Document
-3. [LANDING_PAGE_PLAN.md](./LANDING_PAGE_PLAN.md) - Plan de landing page
+3. [BRD.md](./BRD.md) - Business Requirements Document
 4. [IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md) - Features y progreso
 5. [ui-improvements.md](./ui-improvements.md) - Mejoras implementadas
 
@@ -147,7 +141,7 @@ Guías para contribuir y trabajar con el código.
 | CONTRIBUTING.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
 | IMPLEMENTATION_STATUS.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
 | PRD.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
-| LANDING_PAGE_PLAN.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
+| BRD.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
 | CLAUDE.md | ✅ Actualizado | 2.0.0 | Diciembre 2025 |
 | ui-improvements.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
 | card-improvements-plan.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
