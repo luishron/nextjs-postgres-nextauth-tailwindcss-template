@@ -5,7 +5,7 @@ export interface MoneyDisplayProps extends React.HTMLAttributes<HTMLSpanElement>
   amount: number | string;
   size?: 'sm' | 'md' | 'lg';
   positive?: boolean;
-  currency?: 'MXN' | 'USD' | 'EUR';
+  currency?: 'USD' | 'USD' | 'EUR';
   locale?: string;
   showSign?: boolean;
 }
@@ -14,7 +14,7 @@ export function MoneyDisplay({
   amount,
   size = 'md',
   positive,
-  currency = 'MXN',
+  currency = 'USD',
   locale = 'es-MX',
   showSign = false,
   className,

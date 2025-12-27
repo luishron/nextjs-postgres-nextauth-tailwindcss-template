@@ -94,7 +94,7 @@
 - **Badges Semánticos**: Colores según urgencia y estado
 - **Tablas Interactivas**: Acciones contextuales (editar, eliminar)
 - **Diálogos Modales**: Experiencia fluida sin cambios de página
-- **Formato MXN**: Moneda mexicana con separadores correctos
+- **Formato USD**: Moneda mexicana con separadores correctos
 
 ---
 
@@ -750,7 +750,7 @@ Tabla interactiva de gastos con:
 - **Resaltado Visual**: Gastos vencidos con fondo rojo y borde izquierdo
 - **Badges Semánticos**: Colores según estado (verde/amarillo/rojo)
 - **Desglose Detallado**: Cards al final con totales por estado
-- **Formateo de Moneda MXN**
+- **Formateo de Moneda USD**
 - **Métodos de Pago Dinámicos**: Muestra nombre + banco + últimos dígitos
 - **Acciones Contextuales**: Editar y eliminar
 

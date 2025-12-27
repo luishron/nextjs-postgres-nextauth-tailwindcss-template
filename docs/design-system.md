@@ -327,7 +327,7 @@ Ya implementado en `globals.css`:
     <CardTitle>Balance Mensual</CardTitle>
   </CardHeader>
   <CardContent>
-    <p className="text-2xl font-bold text-success">$12,500 MXN</p>
+    <p className="text-2xl font-bold text-success">$12,500 USD</p>
   </CardContent>
 </Card>
 ```
@@ -385,7 +385,7 @@ Ya implementado en `globals.css`:
 #### Balance Positivo
 ```tsx
 <div className="text-3xl font-bold text-success">
-  +$5,240 MXN
+  +$5,240 USD
 </div>
 ```
 **Color:** Verde Vibrante (#9FFF66)
@@ -393,7 +393,7 @@ Ya implementado en `globals.css`:
 #### Balance Negativo
 ```tsx
 <div className="text-3xl font-bold text-destructive">
-  -$1,320 MXN
+  -$1,320 USD
 </div>
 ```
 **Color:** Rojo (#EF4444)
@@ -409,7 +409,7 @@ Ya implementado en `globals.css`:
     </Badge>
   </td>
   <td className="text-destructive font-medium">Renta</td>
-  <td className="text-destructive font-bold">$8,000 MXN</td>
+  <td className="text-destructive font-bold">$8,000 USD</td>
 </tr>
 ```
 
@@ -428,7 +428,7 @@ Ya implementado en `globals.css`:
     </Badge>
   </td>
   <td>Internet</td>
-  <td className="font-semibold">$500 MXN</td>
+  <td className="font-semibold">$500 USD</td>
 </tr>
 ```
 
@@ -441,7 +441,7 @@ Ya implementado en `globals.css`:
     </Badge>
   </td>
   <td className="text-muted-foreground">Luz</td>
-  <td className="text-muted-foreground">$1,200 MXN</td>
+  <td className="text-muted-foreground">$1,200 USD</td>
 </tr>
 ```
 
@@ -460,7 +460,7 @@ Ya implementado en `globals.css`:
     </CardTitle>
   </CardHeader>
   <CardContent>
-    <div className="text-3xl font-bold text-success">$25,000 MXN</div>
+    <div className="text-3xl font-bold text-success">$25,000 USD</div>
     <p className="text-xs text-success flex items-center gap-1 mt-1">
       <ArrowUp className="w-3 h-3" />
       +12% vs mes anterior
@@ -483,7 +483,7 @@ Ya implementado en `globals.css`:
     </CardTitle>
   </CardHeader>
   <CardContent>
-    <div className="text-3xl font-bold">$19,760 MXN</div>
+    <div className="text-3xl font-bold">$19,760 USD</div>
     <p className="text-xs text-destructive flex items-center gap-1 mt-1">
       <ArrowUp className="w-3 h-3" />
       +8% vs mes anterior
@@ -536,7 +536,7 @@ Ya implementado en `globals.css`:
       </div>
     </CardHeader>
     <CardContent>
-      <p className="text-2xl font-bold">${category.total} MXN</p>
+      <p className="text-2xl font-bold">${category.total} USD</p>
     </CardContent>
   </Card>
 ))}

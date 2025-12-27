@@ -28,7 +28,7 @@ La mayoría de los mexicanos no tiene visibilidad clara de sus finanzas personal
 - **Demasiado complejas** (ej. YNAB, Mint) - requieren conocimiento contable
 - **Limitadas** (apps bancarias) - solo muestran transacciones sin contexto
 - **Caras** (software empresarial) - no accesibles para personas individuales
-- **No localizadas** (apps internacionales) - no entienden el contexto mexicano (MXN, cultura de efectivo, quincenas)
+- **No localizadas** (apps internacionales) - no entienden el contexto mexicano (USD, cultura de efectivo, quincenas)
 
 **La solución: Homelas**
 Una aplicación web simple y elegante que permite a profesionistas mexicanos:
@@ -46,7 +46,7 @@ Una aplicación web simple y elegante que permite a profesionistas mexicanos:
 1. **Velocidad:** Agregar gasto en < 3 taps (QuickAddFAB)
 2. **Claridad:** Dashboard visual al estilo Wise (no tablas abrumadoras)
 3. **Inteligente:** Gastos recurrentes calculados automáticamente sin duplicar datos
-4. **Localizado:** Diseñado para México (MXN, quincenas, cultura de efectivo)
+4. **Localizado:** Diseñado para México (USD, quincenas, cultura de efectivo)
 5. **Accesible:** Interfaz WCAG 2.1 AA compliant, usable por todos
 6. **Moderno:** UX/UI inspirada en Wise, mejor que apps bancarias tradicionales
 
@@ -65,7 +65,7 @@ Una aplicación web simple y elegante que permite a profesionistas mexicanos:
 **Demografía:**
 - Edad: 28 años
 - Ocupación: Marketing Manager en empresa tech
-- Ingreso: $25,000-$35,000 MXN/mes
+- Ingreso: $25,000-$35,000 USD/mes
 - Ubicación: Ciudad de México
 - Dispositivos: iPhone + MacBook
 
@@ -95,7 +95,7 @@ Una aplicación web simple y elegante que permite a profesionistas mexicanos:
 **Demografía:**
 - Edad: 32 años
 - Ocupación: Diseñador freelance
-- Ingreso: $15,000-$40,000 MXN/mes (variable)
+- Ingreso: $15,000-$40,000 USD/mes (variable)
 - Ubicación: Guadalajara
 - Dispositivos: Android + PC Windows
 
@@ -125,7 +125,7 @@ Una aplicación web simple y elegante que permite a profesionistas mexicanos:
 **Demografía:**
 - Edad: 22 años
 - Ocupación: Estudiante universitaria + part-time
-- Ingreso: $8,000 MXN/mes (beca + trabajo)
+- Ingreso: $8,000 USD/mes (beca + trabajo)
 - Ubicación: Monterrey
 - Dispositivos: Android mid-range
 
@@ -308,7 +308,7 @@ Usuario abre app (mobile)
    ↓
 Dashboard carga en < 2s
    ↓
-Ve KPIs: "Balance: +$3,500 MXN 💚"
+Ve KPIs: "Balance: +$3,500 USD 💚"
    ↓
 Scroll a "Próximos Gastos"
    ↓
@@ -633,7 +633,7 @@ En v1.0, usuarios pedían "recordatorios de gastos mensuales como Netflix".
 - Pago crea registro real con `is_recurring=0`
 - Dashboard usa proyecciones para "Próximo Mes"
 
-### 7.3 Por Qué MXN Only (No Multi-moneda en v2.0)?
+### 7.3 Por Qué USD Only (No Multi-moneda en v2.0)?
 
 **Contexto:**
 Usuarios preguntaron: "¿Puedo registrar gastos en USD?"
@@ -641,7 +641,7 @@ Usuarios preguntaron: "¿Puedo registrar gastos en USD?"
 **Decisión: No en v2.0, planear para v2.3**
 
 **Razones:**
-- 🎯 Focus en mercado mexicano primero (80% de target users usan solo MXN)
+- 🎯 Focus en mercado mexicano primero (80% de target users usan solo USD)
 - 🎯 Multi-moneda agrega complejidad:
   - API de conversión (costo mensual)
   - ¿Convertir automáticamente o manual?

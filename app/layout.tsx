@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   description:
     'Gestiona tus gastos e ingresos, visualiza tu situación financiera en tiempo real. Gratis para siempre.',
   keywords:
-    'finanzas personales, control de gastos, presupuesto, mexico, app financiera, gastos recurrentes, ingresos',
+    'finanzas personales, control de gastos, presupuesto, Latam, app financiera, gastos recurrentes, ingresos',
   metadataBase: new URL('https://homelas.com'),
   openGraph: {
     type: 'website',

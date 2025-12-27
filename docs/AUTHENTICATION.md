@@ -62,7 +62,7 @@ type UserProfile = {
   plan_expires_at?: string;      // Premium expiration date
   onboarding_completed: boolean; // Has completed onboarding
   preferences: {
-    currency?: 'MXN' | 'USD';
+    currency?: 'USD' | 'USD';
     theme?: 'light' | 'dark' | 'system';
     language?: 'es' | 'en';
   };
@@ -220,7 +220,7 @@ CREATE TABLE user_profiles (
   role TEXT NOT NULL DEFAULT 'free' CHECK (role IN ('free', 'premium')),
   plan_expires_at TIMESTAMPTZ,
   onboarding_completed BOOLEAN NOT NULL DEFAULT false,
-  preferences JSONB NOT NULL DEFAULT '{"currency": "MXN", "theme": "system"}',
+  preferences JSONB NOT NULL DEFAULT '{"currency": "USD", "theme": "system"}',
   full_name TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()

@@ -73,7 +73,7 @@ export function IncomesList({ incomes, categories }: IncomesListProps) {
               <p className="font-bold text-green-600 text-lg">
                 {new Intl.NumberFormat('es-MX', {
                   style: 'currency',
-                  currency: 'MXN'
+                  currency: 'USD'
                 }).format(parseFloat(income.amount))}
               </p>
               <DropdownMenu>

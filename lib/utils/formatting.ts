@@ -5,13 +5,13 @@
 import type { Category, PaymentMethod } from '@/lib/db';
 
 /**
- * Formatea un número como moneda mexicana (MXN)
+ * Formatea un número como moneda mexicana (USD)
  */
 export function formatCurrency(amount: string | number): string {
   const num = typeof amount === 'string' ? parseFloat(amount) : amount;
   return new Intl.NumberFormat('es-MX', {
     style: 'currency',
-    currency: 'MXN'
+    currency: 'USD'
   }).format(num);
 }
 

@@ -99,7 +99,7 @@ CREATE TABLE "user_profiles" (
 	"role" text DEFAULT 'free' NOT NULL,
 	"plan_expires_at" timestamp with time zone,
 	"onboarding_completed" boolean DEFAULT false NOT NULL,
-	"preferences" jsonb DEFAULT '{"currency":"MXN","theme":"system"}'::jsonb,
+	"preferences" jsonb DEFAULT '{"currency":"USD","theme":"system"}'::jsonb,
 	"full_name" text,
 	"created_at" timestamp with time zone DEFAULT now(),
 	"updated_at" timestamp with time zone DEFAULT now()

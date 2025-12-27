@@ -407,11 +407,11 @@ Payment methods show as: "Name (Bank) ••1234"
 - Input: HTML `<input type="date">` natively uses ISO format
 
 ### 7. Currency Formatting
-Always format as MXN:
+Always format as USD:
 ```typescript
 new Intl.NumberFormat('es-MX', {
   style: 'currency',
-  currency: 'MXN'
+  currency: 'USD'
 }).format(amount)
 ```
 

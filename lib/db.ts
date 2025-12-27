@@ -117,7 +117,7 @@ export type UserProfile = {
   plan_expires_at?: string | null;
   onboarding_completed: boolean;
   preferences?: {
-    currency?: 'MXN' | 'USD';
+    currency?: 'USD' | 'USD';
     theme?: 'light' | 'dark' | 'system';
     language?: 'es' | 'en';
     [key: string]: any;

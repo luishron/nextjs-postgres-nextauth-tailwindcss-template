@@ -36,7 +36,7 @@ export async function GET(request: Request) {
           role: 'free',
           onboarding_completed: false,
           preferences: {
-            currency: 'MXN',
+            currency: 'USD',
             theme: 'system',
           },
         });

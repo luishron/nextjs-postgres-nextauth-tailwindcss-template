@@ -274,7 +274,7 @@ pnpm run screenshots
 export const metadata: Metadata = {
   title: 'Homelas - Control financiero simple sin complicaciones',
   description: 'Gestiona tus gastos e ingresos, visualiza tu situación financiera en tiempo real. Gratis para siempre.',
-  keywords: 'finanzas personales, control de gastos, presupuesto, mexico, app financiera',
+  keywords: 'finanzas personales, control de gastos, presupuesto, Latam, app financiera',
   metadataBase: new URL('https://homelas.com'),
   openGraph: {
     type: 'website',
@@ -305,7 +305,7 @@ const jsonLd = {
   name: 'Homelas',
   applicationCategory: 'FinanceApplication',
   operatingSystem: 'Web',
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'MXN' },
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
   aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.9', ratingCount: '500' },
 };
 
@@ -508,7 +508,7 @@ pnpm add embla-carousel-react
 ### 2. Pricing: $9.99 USD/mes (Global)
 
 **Razón:**
-- Precio competitivo internacional (~$200 MXN, accesible en LATAM)
+- Precio competitivo internacional (~$200 USD, accesible en LATAM)
 - Sweet spot para SaaS: Monarch Money $9.99, Nu Bank ~$8-10 USD
 - Free tier generoso reduce objeción
 - Trial de 14 días sin tarjeta reduce fricción

@@ -42,7 +42,7 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses }: 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
-      currency: 'MXN'
+      currency: 'USD'
     }).format(amount);
   };
 

@@ -680,7 +680,7 @@ export function MoneyDisplay({
 }) {
   const formatted = new Intl.NumberFormat('es-MX', {
     style: 'currency',
-    currency: 'MXN'
+    currency: 'USD'
   }).format(amount);
 
   return (
@@ -703,7 +703,7 @@ export function MoneyDisplay({
 
 // USO:
 <MoneyDisplay amount={12500.50} size="lg" positive />
-// Resultado: $12,500.50 MXN (verde, grande, monoespaciada)
+// Resultado: $12,500.50 USD (verde, grande, monoespaciada)
 ```
 
 ### 📱 Escala Responsiva

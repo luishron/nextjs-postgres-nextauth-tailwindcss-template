@@ -64,7 +64,7 @@ Visión del producto, objetivos y roadmap.
 Planes de implementación para landing page y estrategia de marketing.
 
 - **[LANDING_PAGE_PLAN.md](./LANDING_PAGE_PLAN.md)** - **Plan de Landing Page** ⭐ NUEVO
-  Plan completo para implementar landing page de ventas: arquitectura, contenido, pricing ($99 MXN/mes Freemium), screenshots con Playwright, SEO y WCAG 2.1 AA compliance.
+  Plan completo para implementar landing page de ventas: arquitectura, contenido, pricing ($99 USD/mes Freemium), screenshots con Playwright, SEO y WCAG 2.1 AA compliance.
 
 ---
 

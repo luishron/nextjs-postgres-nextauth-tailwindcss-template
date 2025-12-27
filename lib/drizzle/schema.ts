@@ -23,11 +23,11 @@ export const userProfiles = pgTable(
     planExpiresAt: timestamp('plan_expires_at', { withTimezone: true }),
     onboardingCompleted: boolean('onboarding_completed').notNull().default(false),
     preferences: jsonb('preferences').$type<{
-      currency?: 'MXN' | 'USD';
+      currency?: 'USD' | 'USD';
       theme?: 'light' | 'dark' | 'system';
       language?: 'es' | 'en';
       [key: string]: any;
-    }>().default({ currency: 'MXN', theme: 'system' }),
+    }>().default({ currency: 'USD', theme: 'system' }),
     fullName: text('full_name'),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),

@@ -731,7 +731,7 @@ _No hay features en progreso actualmente._
   - Estimado: 2 días
 
 - ⏳ **Multi-moneda**
-  - Soporte para USD, EUR, MXN, etc.
+  - Soporte para USD, EUR, USD, etc.
   - Conversión automática
   - API de tasas de cambio (exchangerate-api.com)
   - Prioridad: Baja

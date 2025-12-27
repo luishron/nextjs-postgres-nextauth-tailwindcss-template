@@ -388,7 +388,7 @@ export function CardStat({
 ```tsx
 <CardStat
   title="Gastos del Mes"
-  value="$19,760 MXN"
+  value="$19,760 USD"
   change={8.2}
   trend="down"
   icon={<DollarSign className="h-5 w-5 text-primary" />}
@@ -685,7 +685,7 @@ export function CardSkeleton() {
   {/* KPI Cards con CardStat */}
   <CardStat
     title="Balance del Mes"
-    value="$5,240 MXN"
+    value="$5,240 USD"
     change={12.5}
     trend="up"
     icon={<Wallet className="h-5 w-5 text-success" />}
@@ -693,7 +693,7 @@ export function CardSkeleton() {
 
   <CardStat
     title="Gastos"
-    value="$19,760 MXN"
+    value="$19,760 USD"
     change={8.2}
     trend="down"
     icon={<DollarSign className="h-5 w-5 text-destructive" />}
@@ -701,7 +701,7 @@ export function CardSkeleton() {
 
   <CardStat
     title="Ingresos"
-    value="$25,000 MXN"
+    value="$25,000 USD"
     change={5.3}
     trend="up"
     icon={<TrendingUp className="h-5 w-5 text-success" />}

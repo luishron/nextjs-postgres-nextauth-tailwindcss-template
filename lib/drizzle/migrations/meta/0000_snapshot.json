@@ -850,7 +850,7 @@
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
-          "default": "'{\"currency\":\"MXN\",\"theme\":\"system\"}'::jsonb"
+          "default": "'{\"currency\":\"USD\",\"theme\":\"system\"}'::jsonb"
         },
         "full_name": {
           "name": "full_name",

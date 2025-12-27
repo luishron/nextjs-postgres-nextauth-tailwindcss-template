@@ -18,7 +18,7 @@ async function applyUserProfilesTable() {
       role TEXT NOT NULL DEFAULT 'free',
       plan_expires_at TIMESTAMPTZ,
       onboarding_completed BOOLEAN NOT NULL DEFAULT false,
-      preferences JSONB NOT NULL DEFAULT '{"currency":"MXN","theme":"system"}'::jsonb,
+      preferences JSONB NOT NULL DEFAULT '{"currency":"USD","theme":"system"}'::jsonb,
       full_name TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
