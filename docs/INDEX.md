@@ -1,7 +1,7 @@
 # 📚 Índice de Documentación - Homelas
 
-**Versión del proyecto:** 2.0.0
-**Última actualización:** 25 de Diciembre, 2025
+**Versión del proyecto:** 0.1.0-beta
+**Última actualización:** 27 de Diciembre, 2025
 
 ---
 
@@ -54,8 +54,8 @@ Sistema de diseño, componentes y mejoras visuales.
 
 Visión del producto, objetivos y roadmap.
 
-- **[PRD.md](./PRD.md)** - **Product Requirements Document** ⭐ NUEVO
-  Visión del producto, user personas, justificación de features, success metrics y roadmap priorizado.
+- **[PRD.md](./PRD.md)** - **Product Requirements Document** ⭐ ACTUALIZADO
+  Research-backed product design with Hispanic market focus. Includes Li & Forlizzi tracking models, Epstein abandonment studies, and behavioral psychology foundations.
 
 - **[BRD.md](./BRD.md)** - **Business Requirements Document** ⭐ NUEVO
   Documento de requerimientos de negocio, problemas del usuario, propuesta de valor, features y diferenciadores competitivos.
@@ -129,22 +129,22 @@ Guías para contribuir y trabajar con el código.
 
 | Documento | Estado | Versión | Última Actualización |
 |-----------|--------|---------|---------------------|
-| README.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
-| setup/SUPABASE.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
-| AUTHENTICATION.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
-| DEPLOYMENT.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
-| setup/GITHUB_OAUTH.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
-| .env.example | ✅ Actualizado | 2.0.0 | Diciembre 2025 |
-| design-system.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
-| ACCESSIBILITY-AUDIT.md | ✅ Actualizado | 2.0.0 | Diciembre 2025 |
-| COMPONENT_GUIDE.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
-| CONTRIBUTING.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
-| IMPLEMENTATION_STATUS.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
-| PRD.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
-| BRD.md | ⭐ Nuevo | 2.0.0 | Diciembre 2025 |
-| CLAUDE.md | ✅ Actualizado | 2.0.0 | Diciembre 2025 |
-| ui-improvements.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
-| card-improvements-plan.md | ✅ Actualizado | 2.0.0 | Diciembre 2024 |
+| README.md | ✅ Actualizado | 0.1.0-beta | Diciembre 2025 |
+| setup/SUPABASE.md | ✅ Actualizado | 0.1.0-beta | Diciembre 2024 |
+| AUTHENTICATION.md | ⭐ Nuevo | 0.1.0-beta | Diciembre 2025 |
+| DEPLOYMENT.md | ⭐ Nuevo | 0.1.0-beta | Diciembre 2025 |
+| setup/GITHUB_OAUTH.md | ✅ Actualizado | 0.1.0-beta | Diciembre 2024 |
+| .env.example | ✅ Actualizado | 0.1.0-beta | Diciembre 2025 |
+| design-system.md | ✅ Actualizado | 0.1.0-beta | Diciembre 2024 |
+| ACCESSIBILITY-AUDIT.md | ✅ Actualizado | 0.1.0-beta | Diciembre 2025 |
+| COMPONENT_GUIDE.md | ⭐ Nuevo | 0.1.0-beta | Diciembre 2025 |
+| CONTRIBUTING.md | ⭐ Nuevo | 0.1.0-beta | Diciembre 2025 |
+| IMPLEMENTATION_STATUS.md | ✅ Actualizado | 0.1.0-beta | Diciembre 2025 |
+| PRD.md | ✅ Actualizado | 0.1.0-beta | Diciembre 2025 |
+| BRD.md | ⭐ Nuevo | 0.1.0-beta | Diciembre 2025 |
+| CLAUDE.md | ✅ Actualizado | 0.1.0-beta | Diciembre 2025 |
+| ui-improvements.md | ✅ Actualizado | 0.1.0-beta | Diciembre 2024 |
+| card-improvements-plan.md | ✅ Actualizado | 0.1.0-beta | Diciembre 2024 |
 | LICENSE.md | ✅ Actualizado | - | Diciembre 2024 |
 
 ---

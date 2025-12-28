@@ -6,11 +6,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Personal expense management web application built with Next.js 15, TypeScript, Supabase, and Tailwind CSS. Features expense tracking, recurring expenses, income management, payment methods, and financial analytics dashboard.
 
-**Version:** 2.0.0 (Wise-inspired UX/UI transformation completed)
-**Status:** ✅ Production Ready
-**Last Updated:** December 26, 2025
+**Version:** 0.1.0-beta
+**Status:** 🚧 Beta
+**Last Updated:** December 27, 2025
 
-## Recent Changes (v2.0.0)
+## Recent Changes
+
+### Landing Page + PRD Update (Dec 27, 2025) ✅ COMPLETED
+
+- **Landing Page**: 10-section conversion-focused landing page (Hero, Problem, Solution, Demo, Comparison, Social Proof, Pricing, FAQ, CTA)
+- **PRD Refocus**: Updated to target Hispanic market with scientific research basis (Li & Forlizzi behavioral models, Epstein abandonment studies)
+- **18 Landing Components**: Modular, accessible components for marketing site
+
+### Version Correction (Dec 27, 2025) ✅ COMPLETED
+
+- **Beta Status**: Corrected project status from "Production Ready" to "Beta"
+- **Version Alignment**: Updated from 2.0.0 to 0.1.0-beta across all documentation
+- **Documentation Scope**: Right-sized docs to match beta maturity level
 
 ### Documentation Audit (Dec 26, 2025) ✅ COMPLETED
 

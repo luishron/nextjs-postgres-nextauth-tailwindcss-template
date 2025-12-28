@@ -1,8 +1,8 @@
 # 💰 Sistema de Gestión de Gastos Personales
 
-> Aplicación web moderna para gestionar gastos personales con soporte para gastos recurrentes, categorización inteligente y seguimiento de estados de pago.
+> Aplicación web moderna para gestionar gastos personales con soporte para gastos recurrentes, categorización inteligente y seguimiento de estados de pago. Diseñada con base en investigación científica sobre comportamiento financiero para el mercado hispano.
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/luishron/nextjs-postgres-nextauth-tailwindcss-template/releases/tag/v2.0.0)
+[![Version](https://img.shields.io/badge/version-0.1.0--beta-orange.svg)](https://github.com/luishron/nextjs-postgres-nextauth-tailwindcss-template/releases)
 [![Next.js](https://img.shields.io/badge/Next.js-15.1.9-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Latest-green)](https://supabase.com/)
@@ -10,7 +10,7 @@
 ## 📋 Tabla de Contenidos
 
 - [Características](#-características)
-- [Novedades en v2.0.0](#-novedades-en-v200)
+- [Novedades en v0.1.0-beta](#-novedades-en-v010-beta)
 - [Stack Tecnológico](#-stack-tecnológico)
 - [Arquitectura](#-arquitectura)
 - [Instalación](#-instalación)
@@ -25,6 +25,12 @@
 ---
 
 ## ✨ Características
+
+### 🌐 Landing Page
+
+- **10-Section Conversion Funnel**: Hero, Problem, Solution, Demo, Comparison, Testimonials, Pricing, FAQ, CTA
+- **Research-Backed Design**: Built on behavioral psychology studies (Li & Forlizzi tracking models, Epstein abandonment research)
+- **Hispanic Market Focus**: Tailored messaging and value propositions
 
 ### 📊 Dashboard Inteligente
 
@@ -98,7 +104,11 @@
 
 ---
 
-## 🚀 Novedades en v2.0.0
+## 🚀 Novedades en v0.1.0-beta
+
+### Landing Page (Dec 2025)
+
+Conversion-optimized marketing page with 10 strategic sections designed to guide users from problem awareness to signup. Built on scientific research about financial behavior and tracking abandonment patterns.
 
 ### Dashboard Inteligente Completamente Renovado
 
