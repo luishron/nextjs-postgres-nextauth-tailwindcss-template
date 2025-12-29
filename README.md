@@ -106,6 +106,18 @@
 
 ## 🚀 Novedades en v0.1.0-beta
 
+### 🔧 User Registration System Fix (Dec 27, 2025) - CRITICAL
+
+**Production Bug Fix:** Resolved critical issue preventing new user registration with "Database error saving new user".
+
+**Technical Details:**
+- Migrated `user_profiles.role` → `user_profiles.plan` with ENUM type `user_plan`
+- Added automatic user profile creation via trigger `on_auth_user_created`
+- Implemented 100% Drizzle migration approach for all database changes
+- Migration: `lib/drizzle/migrations/0001_add_user_plan_enum_and_triggers.sql`
+
+**Status:** ✅ Fixed and deployed in production
+
 ### Landing Page (Dec 2025)
 
 Conversion-optimized marketing page with 10 strategic sections designed to guide users from problem awareness to signup. Built on scientific research about financial behavior and tracking abandonment patterns.
