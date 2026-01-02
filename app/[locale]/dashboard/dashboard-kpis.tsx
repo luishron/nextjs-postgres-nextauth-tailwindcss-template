@@ -4,14 +4,17 @@ import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, AlertTriangle, DollarSign, Wallet, Eye, EyeOff } from 'lucide-react';
 import type { MonthlySummary, OverdueExpensesSummary } from '@/lib/db';
 import { useTranslations } from 'next-intl';
+import { formatCurrency } from '@/lib/utils/formatting';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 interface DashboardKPIsProps {
   currentMonth: MonthlySummary;
   previousMonth: MonthlySummary | null;
   overdueExpenses: OverdueExpensesSummary;
+  currency: CurrencyCode;
 }
 
-export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses }: DashboardKPIsProps) {
+export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses, currency }: DashboardKPIsProps) {
   const t = useTranslations('pages.dashboard');
   const [hideIncome, setHideIncome] = useState(false);
   const [hideBalance, setHideBalance] = useState(false);
@@ -40,12 +43,6 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses }: 
     const newValue = !hideBalance;
     setHideBalance(newValue);
     localStorage.setItem('hideBalance', String(newValue));
-  };
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
   };
 
   const calculateChange = (current: number, previous: number | null) => {
@@ -95,7 +92,7 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses }: 
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </div>
         <div className="space-y-1">
-          <p className="text-2xl font-bold tracking-tight">{formatCurrency(currentMonth.totalExpenses)}</p>
+          <p className="text-2xl font-bold tracking-tight">{formatCurrency(currentMonth.totalExpenses, currency)}</p>
           <p className="text-xs text-muted-foreground">
             {currentMonth.expensesCount} {currentMonth.expensesCount === 1 ? t('pluralization.expense.singular') : t('pluralization.expense.plural')}
           </p>
@@ -126,7 +123,7 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses }: 
         </div>
         <div className="space-y-1">
           <p className="text-2xl font-bold tracking-tight text-green-600">
-            {hideIncome ? '••••••' : formatCurrency(currentMonth.totalIncome)}
+            {hideIncome ? '••••••' : formatCurrency(currentMonth.totalIncome, currency)}
           </p>
           <p className="text-xs text-muted-foreground">
             {currentMonth.incomesCount} {currentMonth.incomesCount === 1 ? t('pluralization.income.singular') : t('pluralization.income.plural')}
@@ -160,7 +157,7 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses }: 
           <p className={`text-2xl font-bold tracking-tight ${
             currentMonth.balance >= 0 ? 'text-green-600' : 'text-red-600'
           }`}>
-            {hideBalance ? '••••••' : formatCurrency(currentMonth.balance)}
+            {hideBalance ? '••••••' : formatCurrency(currentMonth.balance, currency)}
           </p>
           <p className="text-xs text-muted-foreground">
             {currentMonth.balance >= 0 ? t('kpis.monthlyBalance.surplus') : t('kpis.monthlyBalance.deficit')}
@@ -191,7 +188,7 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses }: 
           <p className={`text-2xl font-bold tracking-tight ${
             overdueExpenses.count > 0 ? 'text-destructive' : 'text-muted-foreground'
           }`}>
-            {overdueExpenses.count > 0 ? formatCurrency(overdueExpenses.total) : '$0.00'}
+            {overdueExpenses.count > 0 ? formatCurrency(overdueExpenses.total, currency) : formatCurrency(0, currency)}
           </p>
           <p className={`text-xs ${
             overdueExpenses.count > 0 ? 'text-destructive/80' : 'text-muted-foreground'

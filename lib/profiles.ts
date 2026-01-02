@@ -2,6 +2,7 @@ import 'server-only';
 
 import { createClient } from '@/lib/supabase/server';
 import { cache } from 'react';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 // ============================================================================
 // TYPES
@@ -22,6 +23,12 @@ export interface UserProfile {
   language: string | null;
   max_monthly_expenses: number | null;
   max_categories: number | null;
+  preferences?: {
+    currency?: CurrencyCode;
+    theme?: 'light' | 'dark' | 'system';
+    language?: 'es' | 'en';
+    [key: string]: any;
+  } | null;
 }
 
 export interface PlanLimits {

@@ -13,24 +13,19 @@ import {
 } from '@/components/ui/card';
 import { PieChart as RechartsPie, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import type { CategorySummary } from '@/lib/db';
+import { formatCurrency } from '@/lib/utils/formatting';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 interface TopCategoriesChartProps {
   categories: CategorySummary[];
   monthName: string;
+  currency: CurrencyCode;
 }
 
 type ViewMode = 'list' | 'pie';
 
-export function TopCategoriesChart({ categories, monthName }: TopCategoriesChartProps) {
+export function TopCategoriesChart({ categories, monthName, currency }: TopCategoriesChartProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
 
   // Preparar datos para el gráfico de pie
   const pieData = categories.map((category) => ({
@@ -50,7 +45,7 @@ export function TopCategoriesChart({ categories, monthName }: TopCategoriesChart
             {payload[0].name}
           </p>
           <p className="text-sm font-bold text-primary">
-            {formatCurrency(payload[0].value)}
+            {formatCurrency(payload[0].value, currency)}
           </p>
           <p className="text-xs text-muted-foreground">
             {payload[0].payload.percentage.toFixed(1)}%
@@ -153,7 +148,7 @@ export function TopCategoriesChart({ categories, monthName }: TopCategoriesChart
                   </div>
                   <div className="text-right">
                     <p className="font-bold">
-                      {formatCurrency(category.total)}
+                      {formatCurrency(category.total, currency)}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {category.percentage.toFixed(1)}%

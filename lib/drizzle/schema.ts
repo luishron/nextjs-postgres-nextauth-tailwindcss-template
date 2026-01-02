@@ -13,6 +13,7 @@ import {
   check,
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 //==============================================================================
 // ENUMS
@@ -45,7 +46,7 @@ export const userProfiles = pgTable(
     // Onboarding y preferences
     onboardingCompleted: boolean('onboarding_completed').notNull().default(false),
     preferences: jsonb('preferences').$type<{
-      currency?: 'USD' | 'MXN';
+      currency?: CurrencyCode;
       theme?: 'light' | 'dark' | 'system';
       [key: string]: any;
     }>().default({ currency: 'MXN', theme: 'system' }),

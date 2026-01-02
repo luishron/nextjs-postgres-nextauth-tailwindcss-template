@@ -15,6 +15,7 @@ import { getUser } from '@/lib/auth';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils/formatting';
 import { PAYMENT_STATUS } from '@/lib/constants/enums';
+import { getUserCurrency } from '@/lib/utils/currency-helpers';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,19 +26,20 @@ export default async function GastosPage() {
     return <div>No autenticado</div>;
   }
 
-  // Obtener categorías del usuario
-  const categories = await getCategoriesByUser(user.id);
-
-  // Obtener métodos de pago del usuario
-  const paymentMethods = await getPaymentMethodsByUser(user.id);
-
-  // Obtener gastos del usuario
-  const { expenses } = await getExpensesByUser(user.id, {
-    limit: 100
-  });
-
-  // Obtener próximos gastos recurrentes (virtuales)
-  const upcomingExpenses = await getUpcomingRecurringExpenses(user.id, 3);
+  // Obtener moneda del usuario y datos en paralelo
+  const [
+    currency,
+    categories,
+    paymentMethods,
+    { expenses },
+    upcomingExpenses
+  ] = await Promise.all([
+    getUserCurrency(),
+    getCategoriesByUser(user.id),
+    getPaymentMethodsByUser(user.id),
+    getExpensesByUser(user.id, { limit: 100 }),
+    getUpcomingRecurringExpenses(user.id, 3)
+  ]);
 
   // Filtrar gastos: separar pagados de activos (vencidos + pendientes)
   const activeExpenses = expenses.filter((e) => e.payment_status !== PAYMENT_STATUS.PAID);
@@ -91,21 +93,21 @@ export default async function GastosPage() {
           <div className="rounded-lg border-2 border-destructive bg-card p-3 sm:p-4 animate-scale-in" style={{ animationDelay: '0.02s' }}>
             <div className="text-xs font-medium text-destructive">Vencidos</div>
             <div className="text-xl sm:text-2xl font-bold text-destructive">
-              {formatCurrency(stats.overdue)}
+              {formatCurrency(stats.overdue, currency)}
             </div>
             <div className="text-xs text-muted-foreground">{stats.overdueCount} gastos</div>
           </div>
           <div className="rounded-lg border-2 border-warning bg-card p-3 sm:p-4 animate-scale-in" style={{ animationDelay: '0.04s' }}>
             <div className="text-xs font-medium text-warning">Pendientes</div>
             <div className="text-xl sm:text-2xl font-bold text-warning">
-              {formatCurrency(stats.pending)}
+              {formatCurrency(stats.pending, currency)}
             </div>
             <div className="text-xs text-muted-foreground">{stats.pendingCount} gastos</div>
           </div>
           <div className="rounded-lg border-2 border-success bg-card p-3 sm:p-4 animate-scale-in" style={{ animationDelay: '0.06s' }}>
             <div className="text-xs font-medium text-success">Pagados</div>
             <div className="text-xl sm:text-2xl font-bold text-success">
-              {formatCurrency(0)}
+              {formatCurrency(0, currency)}
             </div>
             <div className="text-xs text-muted-foreground">{paidCount} gastos</div>
           </div>
@@ -168,6 +170,7 @@ export default async function GastosPage() {
           <UpcomingExpensesCard
             upcomingExpenses={upcomingExpenses}
             categories={categories}
+            currency={currency}
           />
 
           <ExpensesTable

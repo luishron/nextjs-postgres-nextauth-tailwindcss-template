@@ -381,7 +381,8 @@
         "expenses": "Gastos",
         "categories": "Categorías",
         "paymentMethods": "Métodos de Pago",
-        "income": "Ingresos"
+        "income": "Ingresos",
+        "settings": "Configuración"
       },
       "months": {
         "january": "Enero",
@@ -458,7 +459,7 @@
       }
     },
     "onboarding": {
-      "progress": "Paso {step} de 4",
+      "progress": "Paso {step} de 5",
       "skip": "Saltar configuración",
       "previous": "Anterior",
       "continue": "Continuar",
@@ -472,6 +473,13 @@
         "placeholder": "Tu nombre completo"
       },
       "step2": {
+        "title": "¿Cuál es tu moneda?",
+        "subtitle": "Selecciona la moneda que usas habitualmente",
+        "label": "Moneda principal",
+        "inferredNote": "Inferida automáticamente desde tu zona horaria",
+        "note": "Podrás cambiar esto más tarde en Configuración"
+      },
+      "step3": {
         "title": "Categorías iniciales",
         "subtitle": "Selecciona las categorías que más uses (puedes agregar más después)",
         "categories": {
@@ -483,7 +491,7 @@
           "education": "Educación"
         }
       },
-      "step3": {
+      "step4": {
         "title": "Método de pago",
         "subtitle": "Agrega tu método de pago principal",
         "nameLabel": "Nombre del método de pago",
@@ -495,7 +503,7 @@
           "cash": "Efectivo"
         }
       },
-      "step4": {
+      "step5": {
         "title": "¡Todo listo!",
         "subtitle": "Ya puedes empezar a gestionar tus finanzas",
         "greeting": "¡Hola, {name}!",
@@ -516,6 +524,9 @@
           }
         }
       }
+    },
+    "settings": {
+      "title": "Configuración"
     }
   },
   "footer": {

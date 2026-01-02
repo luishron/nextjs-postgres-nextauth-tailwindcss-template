@@ -2,6 +2,7 @@ import 'server-only';
 
 import { createClient } from '@/lib/supabase/server';
 import { getMonthlySummaryGeneric, calculateExpenseStats } from '@/lib/db-helpers';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 //==============================================================================
 // TYPES - Tipos TypeScript para las tablas
@@ -116,8 +117,9 @@ export type UserProfile = {
   role: UserRole;
   plan_expires_at?: string | null;
   onboarding_completed: boolean;
+  timezone?: string | null;
   preferences?: {
-    currency?: 'USD' | 'USD';
+    currency?: CurrencyCode;
     theme?: 'light' | 'dark' | 'system';
     language?: 'es' | 'en';
     [key: string]: any;

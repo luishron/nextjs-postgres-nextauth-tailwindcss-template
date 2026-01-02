@@ -15,6 +15,13 @@
       "when": 1735350000000,
       "tag": "0001_add_user_plan_enum_and_triggers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1767359905731,
+      "tag": "0002_busy_tarantula",
+      "breakpoints": true
     }
   ]
 }

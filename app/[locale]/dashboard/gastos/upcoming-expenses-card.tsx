@@ -15,27 +15,23 @@ import type { UpcomingExpense, Category } from '@/lib/db';
 import { payRecurringExpense } from '../actions';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { formatCurrency } from '@/lib/utils/formatting';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 interface UpcomingExpensesCardProps {
   upcomingExpenses: UpcomingExpense[];
   categories: Category[];
+  currency: CurrencyCode;
 }
 
 export function UpcomingExpensesCard({
   upcomingExpenses,
-  categories
+  categories,
+  currency
 }: UpcomingExpensesCardProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [payingId, setPayingId] = useState<number | null>(null);
-
-  const formatCurrency = (amount: string | number) => {
-    const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(num);
-  };
 
   const formatDate = (dateString: string) => {
     // Parsear la fecha como local sin conversión de zona horaria
@@ -149,7 +145,7 @@ export function UpcomingExpensesCard({
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-lg font-bold">
-                    {formatCurrency(expense.amount)}
+                    {formatCurrency(expense.amount, currency)}
                   </span>
                   <Button
                     size="sm"

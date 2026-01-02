@@ -16,6 +16,7 @@ import { MonthlyComparisonCard } from './monthly-comparison-card';
 import { UpcomingExpensesWidget } from './upcoming-expenses-widget';
 import { TopCategoriesChart } from './top-categories-chart';
 import { getTranslations } from 'next-intl/server';
+import { getUserCurrency } from '@/lib/utils/currency-helpers';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,8 +43,9 @@ export default async function DashboardPage() {
   const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
   const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear;
 
-  // Obtener todos los datos en paralelo
+  // Obtener moneda del usuario y datos en paralelo
   const [
+    currency,
     currentMonthSummary,
     previousMonthSummary,
     overdueExpenses,
@@ -52,6 +54,7 @@ export default async function DashboardPage() {
     nextMonthProjection,
     categories
   ] = await Promise.all([
+    getUserCurrency(),
     getMonthlySummary(user.id, currentYear, currentMonth),
     getMonthlySummary(user.id, previousYear, previousMonth),
     getOverdueExpenses(user.id),
@@ -168,6 +171,7 @@ export default async function DashboardPage() {
           currentMonth={currentMonthSummary}
           previousMonth={previousMonthSummary.expensesCount > 0 ? previousMonthSummary : null}
           overdueExpenses={overdueExpenses}
+          currency={currency}
         />
       </div>
 
@@ -177,6 +181,7 @@ export default async function DashboardPage() {
           previousMonth={previousMonthSummary.expensesCount > 0 ? previousMonthSummary : null}
           currentMonth={currentMonthSummary}
           nextMonthProjection={nextMonthProjection}
+          currency={currency}
         />
       </div>
 
@@ -185,11 +190,13 @@ export default async function DashboardPage() {
         <UpcomingExpensesWidget
           expenses={upcomingExpenses}
           categories={categories}
+          currency={currency}
         />
 
         <TopCategoriesChart
           categories={topCategories}
           monthName={getMonthName(currentMonth)}
+          currency={currency}
         />
       </div>
     </div>

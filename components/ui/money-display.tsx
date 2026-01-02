@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils/formatting';
+import { DEFAULT_CURRENCY, type CurrencyCode } from '@/lib/config/currencies';
 
 export interface MoneyDisplayProps extends React.HTMLAttributes<HTMLSpanElement> {
   amount: number | string;
   size?: 'sm' | 'md' | 'lg';
   positive?: boolean;
-  currency?: 'USD' | 'USD' | 'EUR';
-  locale?: string;
+  currency?: CurrencyCode;
   showSign?: boolean;
 }
 
@@ -14,18 +15,15 @@ export function MoneyDisplay({
   amount,
   size = 'md',
   positive,
-  currency = 'USD',
-  locale = 'es-MX',
+  currency = DEFAULT_CURRENCY,
   showSign = false,
   className,
   ...props
 }: MoneyDisplayProps) {
   const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
 
-  const formatted = new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: currency
-  }).format(Math.abs(numericAmount));
+  // Use centralized formatCurrency function
+  const formatted = formatCurrency(Math.abs(numericAmount), currency);
 
   const isPositive = positive ?? numericAmount >= 0;
   const sign = numericAmount < 0 ? '-' : showSign && isPositive ? '+' : '';

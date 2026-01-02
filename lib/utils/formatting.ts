@@ -3,15 +3,29 @@
  */
 
 import type { Category, PaymentMethod } from '@/lib/db';
+import { SUPPORTED_CURRENCIES, DEFAULT_CURRENCY, type CurrencyCode } from '@/lib/config/currencies';
 
 /**
- * Formatea un número como moneda mexicana (USD)
+ * Formatea un número como moneda usando la preferencia especificada
+ *
+ * @param amount - Monto a formatear (number o string)
+ * @param currencyCode - Código ISO de la moneda (ej: 'USD', 'MXN', 'EUR')
+ * @returns String formateado con símbolo de moneda nativo
+ *
+ * @example
+ * ```ts
+ * formatCurrency(1500.50, 'USD') // "$1,500.50"
+ * formatCurrency(1500.50, 'MXN') // "$1,500.50"
+ * formatCurrency(1500.50, 'EUR') // "1.500,50 €"
+ * ```
  */
-export function formatCurrency(amount: string | number): string {
+export function formatCurrency(amount: string | number, currencyCode: CurrencyCode = DEFAULT_CURRENCY): string {
   const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-  return new Intl.NumberFormat('es-MX', {
+  const currency = SUPPORTED_CURRENCIES[currencyCode];
+
+  return new Intl.NumberFormat(currency.locale, {
     style: 'currency',
-    currency: 'USD'
+    currency: currency.code
   }).format(num);
 }
 

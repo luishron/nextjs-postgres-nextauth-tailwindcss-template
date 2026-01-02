@@ -12,21 +12,16 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import type { Expense, Category } from '@/lib/db';
+import { formatCurrency } from '@/lib/utils/formatting';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 interface UpcomingExpensesWidgetProps {
   expenses: Expense[];
   categories: Category[];
+  currency: CurrencyCode;
 }
 
-export function UpcomingExpensesWidget({ expenses, categories }: UpcomingExpensesWidgetProps) {
-  const formatCurrency = (amount: string | number) => {
-    const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(num);
-  };
-
+export function UpcomingExpensesWidget({ expenses, categories, currency }: UpcomingExpensesWidgetProps) {
   const formatDate = (dateString: string) => {
     // Parsear la fecha como local sin conversión de zona horaria
     const [year, month, day] = dateString.split('-').map(Number);
@@ -149,7 +144,7 @@ export function UpcomingExpensesWidget({ expenses, categories }: UpcomingExpense
                 </div>
                 <div className="relative text-right ml-4">
                   <p className="font-semibold group-hover:text-primary transition-colors">
-                    {formatCurrency(expense.amount)}
+                    {formatCurrency(expense.amount, currency)}
                   </p>
                 </div>
               </div>

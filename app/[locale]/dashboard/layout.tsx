@@ -6,7 +6,8 @@ import {
   DollarSign,
   TrendingUp,
   PanelLeft,
-  CreditCard
+  CreditCard,
+  Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -121,6 +122,10 @@ function DesktopNav({ t, brandName }: { t: any; brandName: string }) {
             <NavItem href="/dashboard/ingresos" label={t('navigation.income')}>
               <TrendingUp className="h-4 w-4" />
             </NavItem>
+
+            <NavItem href="/dashboard/configuracion" label={t('navigation.settings')}>
+              <Settings className="h-4 w-4" />
+            </NavItem>
           </nav>
         </div>
       </div>
@@ -136,7 +141,8 @@ function MobileNav({ t, brandName }: { t: any; brandName: string }) {
     { href: '/dashboard/gastos', labelKey: 'navigation.expenses', icon: DollarSign },
     { href: '/dashboard/categorias', labelKey: 'navigation.categories', icon: FolderOpen },
     { href: '/dashboard/metodos-pago', labelKey: 'navigation.paymentMethods', icon: CreditCard },
-    { href: '/dashboard/ingresos', labelKey: 'navigation.income', icon: TrendingUp }
+    { href: '/dashboard/ingresos', labelKey: 'navigation.income', icon: TrendingUp },
+    { href: '/dashboard/configuracion', labelKey: 'navigation.settings', icon: Settings }
   ];
 
   return (

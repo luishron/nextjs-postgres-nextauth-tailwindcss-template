@@ -381,7 +381,8 @@
         "expenses": "Expenses",
         "categories": "Categories",
         "paymentMethods": "Payment Methods",
-        "income": "Income"
+        "income": "Income",
+        "settings": "Settings"
       },
       "months": {
         "january": "January",
@@ -458,7 +459,7 @@
       }
     },
     "onboarding": {
-      "progress": "Step {step} of 4",
+      "progress": "Step {step} of 5",
       "skip": "Skip setup",
       "previous": "Previous",
       "continue": "Continue",
@@ -472,6 +473,13 @@
         "placeholder": "Your full name"
       },
       "step2": {
+        "title": "What's your currency?",
+        "subtitle": "Select the currency you use regularly",
+        "label": "Main currency",
+        "inferredNote": "Automatically inferred from your timezone",
+        "note": "You can change this later in Settings"
+      },
+      "step3": {
         "title": "Initial categories",
         "subtitle": "Select the categories you use most (you can add more later)",
         "categories": {
@@ -483,7 +491,7 @@
           "education": "Education"
         }
       },
-      "step3": {
+      "step4": {
         "title": "Payment method",
         "subtitle": "Add your main payment method",
         "nameLabel": "Payment method name",
@@ -495,7 +503,7 @@
           "cash": "Cash"
         }
       },
-      "step4": {
+      "step5": {
         "title": "All set!",
         "subtitle": "You can now start managing your finances",
         "greeting": "Hello, {name}!",
@@ -516,6 +524,9 @@
           }
         }
       }
+    },
+    "settings": {
+      "title": "Settings"
     }
   },
   "footer": {

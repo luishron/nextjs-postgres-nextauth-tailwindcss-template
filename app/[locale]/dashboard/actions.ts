@@ -409,9 +409,12 @@ export async function deleteIncomeCategory(formData: FormData): Promise<ActionRe
 
 import { updateUserProfile, completeOnboarding } from '@/lib/db';
 import { z } from 'zod';
+import { isValidCurrency, type CurrencyCode } from '@/lib/config/currencies';
+import { createClient } from '@/lib/supabase/server';
 
 const onboardingNameSchema = z.object({
-  fullName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres')
+  fullName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+  currency: z.string().optional()
 });
 
 export async function saveOnboardingName(formData: FormData): Promise<ActionResult> {
@@ -422,9 +425,40 @@ export async function saveOnboardingName(formData: FormData): Promise<ActionResu
       throw new Error(validation.error);
     }
 
+    const { fullName, currency } = validation.data;
+
+    // Validar que currency sea válido si se proporciona
+    if (currency && !isValidCurrency(currency)) {
+      throw new Error('Moneda no soportada');
+    }
+
+    // Actualizar perfil (nombre)
     await updateUserProfile(userId, {
-      full_name: validation.data.fullName
+      full_name: fullName
     });
+
+    // Actualizar preferencias (currency) si se proporcionó
+    if (currency) {
+      const supabase = await createClient();
+
+      // Obtener preferences actuales
+      const { data: currentProfile } = await supabase
+        .from('user_profiles')
+        .select('preferences')
+        .eq('id', userId)
+        .single();
+
+      // Merge con currency
+      const updatedPreferences = {
+        ...(currentProfile?.preferences || {}),
+        currency: currency as CurrencyCode
+      };
+
+      await supabase
+        .from('user_profiles')
+        .update({ preferences: updatedPreferences })
+        .eq('id', userId);
+    }
 
     // No revalidation needed for onboarding
   });

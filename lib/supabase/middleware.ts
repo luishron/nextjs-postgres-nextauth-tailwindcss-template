@@ -44,17 +44,21 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Extraer locale del pathname (e.g., /es/dashboard -> es)
+  const localeMatch = pathname.match(/^\/([a-z]{2})(\/|$)/);
+  const locale = localeMatch ? localeMatch[1] : 'es';
+
   // Proteger todas las rutas del dashboard
-  if (!user && pathname.startsWith('/dashboard')) {
+  if (!user && pathname.includes('/dashboard')) {
     const url = request.nextUrl.clone();
-    url.pathname = '/login';
+    url.pathname = `/${locale}/login`;
     return NextResponse.redirect(url);
   }
 
   // Proteger la ruta de onboarding (solo usuarios autenticados)
-  if (!user && pathname.startsWith('/onboarding')) {
+  if (!user && pathname.includes('/onboarding')) {
     const url = request.nextUrl.clone();
-    url.pathname = '/login';
+    url.pathname = `/${locale}/login`;
     return NextResponse.redirect(url);
   }
 
@@ -75,27 +79,27 @@ export async function updateSession(request: NextRequest) {
     // Si no hay perfil o no ha completado onboarding, redirigir a onboarding
     if (error || !profile || !profile.onboarding_completed) {
       // Permitir acceso a la página de onboarding
-      if (pathname.startsWith('/onboarding')) {
+      if (pathname.includes('/onboarding')) {
         return supabaseResponse;
       }
 
       // Redirigir desde otras rutas a onboarding
       const url = request.nextUrl.clone();
-      url.pathname = '/onboarding';
+      url.pathname = `/${locale}/onboarding`;
       return NextResponse.redirect(url);
     }
 
     // Si ya completó onboarding, redirigir desde onboarding al dashboard
-    if (pathname.startsWith('/onboarding')) {
+    if (pathname.includes('/onboarding')) {
       const url = request.nextUrl.clone();
-      url.pathname = '/dashboard';
+      url.pathname = `/${locale}/dashboard`;
       return NextResponse.redirect(url);
     }
 
     // Si el usuario está autenticado y completó onboarding, redirigir desde login o home al dashboard
-    if (pathname === '/login' || pathname === '/') {
+    if (pathname.includes('/login') || pathname === `/${locale}` || pathname === '/') {
       const url = request.nextUrl.clone();
-      url.pathname = '/dashboard';
+      url.pathname = `/${locale}/dashboard`;
       return NextResponse.redirect(url);
     }
   }
