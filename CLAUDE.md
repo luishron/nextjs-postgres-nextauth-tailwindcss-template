@@ -8,9 +8,44 @@ Personal expense management web application built with Next.js 15, TypeScript, S
 
 **Version:** 0.1.0-beta
 **Status:** 🚧 Beta
-**Last Updated:** December 27, 2025
+**Last Updated:** January 2, 2026
 
 ## Recent Changes
+
+### Multi-Currency System Implementation (Jan 2, 2026) ✅ COMPLETED
+
+**Feature:** Complete multi-currency support with intelligent inference and user configuration.
+
+**Architecture:**
+- **20 Supported Currencies**: USD, MXN, EUR, COP, ARS, CLP, PEN, GTQ, HNL, NIO, CRC, PAB, DOP, CUP, BOB, PYG, UYU, VES, BRL
+- **Intelligent Inference**: 3-level strategy (explicit preference → timezone inference → default MXN)
+- **Type-Safe**: All currency handling uses `CurrencyCode` type
+- **Optimized**: React `cache()` for request-level caching of user currency
+- **No Conversion**: Changes display format only, does not convert amounts
+
+**Files Created:**
+- `lib/config/currencies.ts` - Currency metadata and timezone-to-currency mapping
+- `lib/utils/currency-helpers.ts` - Cached `getUserCurrency()` helper
+- `app/[locale]/dashboard/configuracion/` - Complete settings page with currency selector
+
+**Key Changes:**
+- Updated `formatCurrency()` to accept `CurrencyCode` parameter
+- Added currency selection to onboarding (Step 2 of 5)
+- Eliminated duplicate `formatCurrency()` from 7+ components
+- Added `preferences.currency` and `timezone` to `UserProfile` type
+- Settings page at `/dashboard/configuracion` with searchable currency selector
+
+**Fixes Included:**
+- Fixed login redirect to use next-intl router (prevents "Failed to fetch" error)
+- Fixed middleware redirects to include locale (prevents redirect loops for new users)
+
+**Status:**
+- ✅ All components migrated to centralized currency system
+- ✅ Build successful with no type errors
+- ✅ Onboarding flow working correctly
+- ✅ Settings page functional
+
+See implementation details in plan file: `~/.claude/plans/virtual-stargazing-cat.md`
 
 ### User Registration System Fix + 100% Drizzle Migration (Dec 27, 2025) ✅ COMPLETED
 
@@ -329,6 +364,9 @@ export async function saveExpense(formData: FormData): Promise<ActionResult> {
 
 **Key Tables**:
 - `user_profiles` - User profiles with plan type (ENUM: 'free', 'pro', 'plus', 'admin')
+  - `preferences` (JSONB): User preferences including `currency` (CurrencyCode), `theme`, etc.
+  - `timezone` (text): User timezone for intelligent currency inference
+  - `onboarding_completed` (boolean): Tracks onboarding completion status
 - `categories` - Expense categories (user-scoped, with color/icon)
 - `income_categories` - Income categories (separate from expense categories)
 - `expenses` - All expenses (recurring templates + one-time)
@@ -340,12 +378,14 @@ export async function saveExpense(formData: FormData): Promise<ActionResult> {
 - ALL tables have `user_id` foreign key to `users.id` (or `user_profiles.id`) with `ON DELETE CASCADE`
 - RLS policies ensure users can only access their own data
 - `user_profiles.plan`: Uses ENUM `user_plan` with values ('free', 'pro', 'plus', 'admin')
+- `user_profiles.preferences`: JSONB with default `{"currency": "MXN", "theme": "system"}`
+- `user_profiles.timezone`: Text with default `'America/Mexico_City'`
 - `payment_methods.is_default`: Only ONE can be true per user (enforced in code, not DB)
 - `expenses.payment_status`: Auto-marked 'vencido' if date < today and status != 'pagado'
 
 **Automatic Profile Creation**:
 - Trigger `on_auth_user_created` automatically creates `user_profiles` entry when a new user signs up
-- Function `handle_new_user()` populates email, full_name, and sets plan to 'free'
+- Function `handle_new_user()` populates email, full_name, sets plan to 'free', and initializes preferences
 - See migration `0001_add_user_plan_enum_and_triggers.sql` for implementation
 
 **Indexes**:
@@ -490,13 +530,38 @@ Payment methods show as: "Name (Bank) ••1234"
 - Input: HTML `<input type="date">` natively uses ISO format
 
 ### 7. Currency Formatting
-Always format as USD:
+**IMPORTANT**: Always use the centralized `formatCurrency()` function with the user's preferred currency:
+
 ```typescript
-new Intl.NumberFormat('es-MX', {
-  style: 'currency',
-  currency: 'USD'
-}).format(amount)
+// In Server Components
+import { formatCurrency } from '@/lib/utils/formatting';
+import { getUserCurrency } from '@/lib/utils/currency-helpers';
+
+const currency = await getUserCurrency();
+const formatted = formatCurrency(amount, currency);
 ```
+
+```typescript
+// In Client Components (pass currency as prop from parent)
+import { formatCurrency } from '@/lib/utils/formatting';
+import type { CurrencyCode } from '@/lib/config/currencies';
+
+interface Props {
+  amount: number;
+  currency: CurrencyCode;
+}
+
+function Component({ amount, currency }: Props) {
+  return <span>{formatCurrency(amount, currency)}</span>;
+}
+```
+
+**Never:**
+- ❌ Hardcode currency to 'USD'
+- ❌ Create local `formatCurrency()` functions
+- ❌ Use `Intl.NumberFormat` directly in components
+
+**Supported Currencies**: 20 currencies from Spanish-speaking countries (see `lib/config/currencies.ts`)
 
 ### 8. Smart Expense Sorting
 Expenses are sorted by urgency in `expenses-table.tsx`:
