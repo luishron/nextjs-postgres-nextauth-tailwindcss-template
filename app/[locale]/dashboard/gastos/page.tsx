@@ -43,7 +43,20 @@ export default async function GastosPage() {
 
   // Filtrar gastos: separar pagados de activos (vencidos + pendientes)
   const activeExpenses = expenses.filter((e) => e.payment_status !== PAYMENT_STATUS.PAID);
-  const paidCount = expenses.filter((e) => e.payment_status === PAYMENT_STATUS.PAID).length;
+
+  // Obtener mes actual para filtrar gastos pagados
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+
+  const paidExpenses = expenses.filter((e) => {
+    if (e.payment_status !== PAYMENT_STATUS.PAID) return false;
+    const expenseDate = new Date(e.date);
+    return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
+  });
+
+  const paidCount = paidExpenses.length;
+  const paidTotal = paidExpenses.reduce((sum, e) => sum + parseFloat(e.amount), 0);
 
   // Calcular estadísticas
   const stats = activeExpenses.reduce(
@@ -107,7 +120,7 @@ export default async function GastosPage() {
           <div className="rounded-lg border-2 border-success bg-card p-3 sm:p-4 animate-scale-in" style={{ animationDelay: '0.06s' }}>
             <div className="text-xs font-medium text-success">Pagados</div>
             <div className="text-xl sm:text-2xl font-bold text-success">
-              {formatCurrency(0, currency)}
+              {formatCurrency(paidTotal, currency)}
             </div>
             <div className="text-xs text-muted-foreground">{paidCount} gastos</div>
           </div>
