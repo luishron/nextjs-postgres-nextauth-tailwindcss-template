@@ -168,11 +168,7 @@ export default async function DashboardPage() {
 
       {/* Expense Heatmap */}
       <div className="animate-fade-in-up" style={{ animationDelay: '0.02s' }}>
-        <ExpenseHeatmap
-          userId={user.id}
-          currency={currency}
-          initialView="month"
-        />
+        <ExpenseHeatmap userId={user.id} currency={currency} />
       </div>
 
       {/* KPIs Principales */}

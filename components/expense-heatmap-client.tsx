@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
@@ -23,12 +22,10 @@ import {
 } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-type ViewMode = 'month' | 'quarter' | 'year';
 
 interface ExpenseHeatmapClientProps {
   data: DailyExpenseFrequency[];
   currency: CurrencyCode;
-  initialView?: ViewMode;
 }
 
 type DayData = {
@@ -41,10 +38,8 @@ type DayData = {
 export function ExpenseHeatmapClient({
   data,
   currency,
-  initialView = 'month',
 }: ExpenseHeatmapClientProps) {
   const t = useTranslations('pages.dashboard.heatmap');
-  const [viewMode, setViewMode] = useState<ViewMode>(initialView);
 
   // Convert sparse data to Map for O(1) lookup
   const dataMap = useMemo(() => {
@@ -53,25 +48,13 @@ export function ExpenseHeatmapClient({
     return map;
   }, [data]);
 
-  // Calculate date range for current view
+  // Always show year view (last 365 days)
   const dateRange = useMemo(() => {
     const endDate = new Date();
     const startDate = new Date();
-
-    switch (viewMode) {
-      case 'month':
-        startDate.setDate(startDate.getDate() - 30);
-        break;
-      case 'quarter':
-        startDate.setMonth(startDate.getMonth() - 3);
-        break;
-      case 'year':
-        startDate.setFullYear(startDate.getFullYear() - 1);
-        break;
-    }
-
+    startDate.setFullYear(startDate.getFullYear() - 1);
     return { startDate, endDate };
-  }, [viewMode]);
+  }, []);
 
   // Generate all days in range (fill gaps)
   const allDays = useMemo(() => {
@@ -183,54 +166,24 @@ export function ExpenseHeatmapClient({
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div>
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                {t('title')}
-                {/* Streak Badge */}
-                {stats.streak >= 3 && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 text-xs font-medium">
-                    🔥 {stats.streak} {stats.streak === 1 ? 'día' : 'días'}
-                  </span>
-                )}
-              </CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                {t('subtitle', {
-                  activeDays: stats.activeDays,
-                  totalDays: stats.totalDays,
-                  consistency: stats.consistency,
-                })}
-              </p>
-            </div>
-          </div>
-
-          {/* View mode toggle */}
-          <div className="flex gap-2">
-            <Button
-              variant={viewMode === 'month' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('month')}
-              className="min-h-[40px]"
-            >
-              {t('view.month')}
-            </Button>
-            <Button
-              variant={viewMode === 'quarter' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('quarter')}
-              className="min-h-[40px]"
-            >
-              {t('view.quarter')}
-            </Button>
-            <Button
-              variant={viewMode === 'year' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('year')}
-              className="min-h-[40px]"
-            >
-              {t('view.year')}
-            </Button>
+        <div className="flex items-center gap-3">
+          <div>
+            <CardTitle className="text-lg font-semibold flex items-center gap-2">
+              {t('title')}
+              {/* Streak Badge */}
+              {stats.streak >= 3 && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 text-xs font-medium">
+                  🔥 {stats.streak} {stats.streak === 1 ? 'día' : 'días'}
+                </span>
+              )}
+            </CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              {t('subtitle', {
+                activeDays: stats.activeDays,
+                totalDays: stats.totalDays,
+                consistency: stats.consistency,
+              })}
+            </p>
           </div>
         </div>
       </CardHeader>
