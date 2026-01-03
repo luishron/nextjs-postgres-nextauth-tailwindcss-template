@@ -474,6 +474,20 @@
         "legend": {
           "less": "Menos",
           "more": "Más"
+        },
+        "days": {
+          "mon": "Lun",
+          "tue": "Mar",
+          "wed": "Mié",
+          "thu": "Jue",
+          "fri": "Vie",
+          "sat": "Sáb",
+          "sun": "Dom"
+        },
+        "emptyState": {
+          "title": "Comienza tu racha de registro",
+          "description": "Registra tus gastos diariamente y observa cómo tu hábito toma forma. Cada día que registres aparecerá aquí con un color más intenso.",
+          "hint": "Cuantos más gastos, más intenso el color"
         }
       }
     },
