@@ -17,6 +17,7 @@ import { UpcomingExpensesWidget } from './upcoming-expenses-widget';
 import { TopCategoriesChart } from './top-categories-chart';
 import { getTranslations } from 'next-intl/server';
 import { getUserCurrency } from '@/lib/utils/currency-helpers';
+import { ExpenseHeatmap } from '@/components/expense-heatmap';
 
 export const dynamic = 'force-dynamic';
 
@@ -163,6 +164,15 @@ export default async function DashboardPage() {
       {/* Quick Actions */}
       <div className="animate-fade-in-up" style={{ animationDelay: '0.01s' }}>
         <DashboardQuickActions overdueCount={overdueExpenses.count} />
+      </div>
+
+      {/* Expense Heatmap */}
+      <div className="animate-fade-in-up" style={{ animationDelay: '0.02s' }}>
+        <ExpenseHeatmap
+          userId={user.id}
+          currency={currency}
+          initialView="month"
+        />
       </div>
 
       {/* KPIs Principales */}

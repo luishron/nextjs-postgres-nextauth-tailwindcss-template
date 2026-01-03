@@ -382,6 +382,55 @@ export async function getCategoryMonthlyTrend(
   return result;
 }
 
+/**
+ * Gets daily expense registration frequency for a date range
+ * Used for heatmap visualization (GitHub contributions style)
+ *
+ * @param userId - User ID
+ * @param startDate - Start date in YYYY-MM-DD format
+ * @param endDate - End date in YYYY-MM-DD format
+ * @returns Array of daily frequency data, sorted by date
+ */
+export async function getDailyExpenseFrequency(
+  userId: string,
+  startDate: string,
+  endDate: string
+): Promise<DailyExpenseFrequency[]> {
+  const supabase = await createClient();
+
+  const { data: expenses, error } = await supabase
+    .from('expenses')
+    .select('amount, date')
+    .eq('user_id', userId)
+    .gte('date', startDate)
+    .lte('date', endDate);
+
+  if (error) throw error;
+
+  // Group by date (YYYY-MM-DD)
+  const dailyData = new Map<string, { count: number; total: number }>();
+
+  (expenses || []).forEach((expense) => {
+    const dateKey = expense.date; // Already in YYYY-MM-DD format
+
+    const existing = dailyData.get(dateKey) || { count: 0, total: 0 };
+    existing.count++;
+    existing.total += parseFloat(expense.amount);
+    dailyData.set(dateKey, existing);
+  });
+
+  // Convert to array and sort by date
+  const result = Array.from(dailyData.entries())
+    .map(([date, data]) => ({
+      date,
+      count: data.count,
+      total: data.total
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  return result;
+}
+
 //==============================================================================
 // FUNCIONES DE QUERIES - Métodos de Pago
 //==============================================================================
@@ -892,6 +941,12 @@ export type CategorySummary = {
   total: number;
   count: number;
   percentage: number;
+};
+
+export type DailyExpenseFrequency = {
+  date: string;        // Format: 'YYYY-MM-DD'
+  count: number;       // Number of expenses registered
+  total: number;       // Total amount spent
 };
 
 /**

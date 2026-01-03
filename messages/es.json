@@ -456,6 +456,25 @@
           "singular": "ingreso",
           "plural": "ingresos"
         }
+      },
+      "heatmap": {
+        "title": "Hábito de registro",
+        "subtitle": "{activeDays} de {totalDays} días activos ({consistency}% consistencia)",
+        "view": {
+          "month": "Mes",
+          "quarter": "Trimestre",
+          "year": "Año"
+        },
+        "tooltip": {
+          "expenses": "{count, plural, =0 {Sin gastos} one {1 gasto} other {# gastos}}"
+        },
+        "cell": {
+          "ariaLabel": "{date}: {count, plural, =0 {Sin gastos} one {1 gasto} other {# gastos}}"
+        },
+        "legend": {
+          "less": "Menos",
+          "more": "Más"
+        }
       }
     },
     "onboarding": {
