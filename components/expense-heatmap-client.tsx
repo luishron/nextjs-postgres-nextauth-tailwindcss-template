@@ -18,9 +18,7 @@ import {
   eachWeekOfInterval,
   format,
   parseISO,
-  startOfWeek,
   endOfWeek,
-  isSameMonth,
   getMonth,
 } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -38,11 +36,6 @@ type DayData = {
   count: number;
   total: number;
   dayOfWeek: number;
-};
-
-type WeekData = {
-  days: (DayData | null)[]; // null for days outside the range
-  weekStart: Date;
 };
 
 export function ExpenseHeatmapClient({
@@ -151,12 +144,13 @@ export function ExpenseHeatmapClient({
     return labels;
   }, [gridData]);
 
-  // Calculate color intensity based on count
+  // GitHub-style color intensity (NO borders, only background)
   const getIntensityClass = (count: number): string => {
-    if (count === 0) return 'bg-transparent border border-muted/30 dark:border-muted/20';
-    if (count <= 2) return 'bg-primary/30 border border-primary/40';
-    if (count <= 4) return 'bg-primary/60 border border-primary/70';
-    return 'bg-primary border border-primary'; // 5+
+    if (count === 0) return 'bg-muted/20 dark:bg-muted/10';
+    if (count <= 2) return 'bg-primary/25';
+    if (count <= 4) return 'bg-primary/50';
+    if (count <= 6) return 'bg-primary/75';
+    return 'bg-primary'; // 7+
   };
 
   // Calculate statistics
@@ -175,15 +169,15 @@ export function ExpenseHeatmapClient({
     };
   }, [allDays]);
 
-  // Day labels (Mon-Sun) - i18n
+  // Day labels - GitHub only shows Mon, Wed, Fri
   const dayLabels = [
     t('days.mon'),
-    t('days.tue'),
+    '', // Tuesday hidden
     t('days.wed'),
-    t('days.thu'),
+    '', // Thursday hidden
     t('days.fri'),
-    t('days.sat'),
-    t('days.sun'),
+    '', // Saturday hidden
+    '', // Sunday hidden
   ];
 
   return (
@@ -268,10 +262,11 @@ export function ExpenseHeatmapClient({
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <div className="flex gap-1">
-                <div className="w-3 h-3 rounded-sm bg-muted/30 border border-muted/30" />
-                <div className="w-3 h-3 rounded-sm bg-primary/30 border border-primary/40" />
-                <div className="w-3 h-3 rounded-sm bg-primary/60 border border-primary/70" />
-                <div className="w-3 h-3 rounded-sm bg-primary border border-primary" />
+                <div className="w-[11px] h-[11px] rounded-sm bg-muted/20" />
+                <div className="w-[11px] h-[11px] rounded-sm bg-primary/25" />
+                <div className="w-[11px] h-[11px] rounded-sm bg-primary/50" />
+                <div className="w-[11px] h-[11px] rounded-sm bg-primary/75" />
+                <div className="w-[11px] h-[11px] rounded-sm bg-primary" />
               </div>
               <span>{t('emptyState.hint')}</span>
             </div>
@@ -280,102 +275,103 @@ export function ExpenseHeatmapClient({
           <TooltipProvider>
             {/* Heatmap grid - GitHub style */}
             <div className="overflow-x-auto pb-2">
-            <div className="inline-block min-w-full">
-              {/* Month labels (horizontal) */}
-              <div className="flex mb-1">
-                <div className="w-8 flex-shrink-0" /> {/* Space for day labels */}
-                <div className="flex gap-[2px] relative">
-                  {monthLabels.map((label, index) => (
-                    <div
-                      key={index}
-                      className="text-[10px] text-muted-foreground absolute"
-                      style={{
-                        left: `${label.colIndex * 14}px`, // 12px cell + 2px gap
-                      }}
-                    >
-                      {label.text}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Grid: 7 rows (days of week) × N columns (weeks) */}
-              <div className="flex gap-1 mt-5">
-                {/* Day labels (vertical) */}
-                <div className="flex flex-col gap-[2px] w-8 flex-shrink-0">
-                  {dayLabels.map((label, index) => (
-                    <div
-                      key={index}
-                      className="h-3 flex items-center justify-end pr-1 text-[10px] text-muted-foreground"
-                    >
-                      {label}
-                    </div>
-                  ))}
+              <div className="inline-block min-w-full">
+                {/* Month labels (horizontal) */}
+                <div className="flex mb-2">
+                  <div className="w-[30px] flex-shrink-0" /> {/* Space for day labels */}
+                  <div className="flex gap-1 relative h-4">
+                    {monthLabels.map((label, index) => (
+                      <div
+                        key={index}
+                        className="text-xs text-muted-foreground absolute font-medium"
+                        style={{
+                          left: `${label.colIndex * 14}px`, // 11px cell + 3px gap
+                        }}
+                      >
+                        {label.text}
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Heatmap cells */}
-                <div className="flex gap-[2px]">
-                  {gridData.map((week, weekIndex) => (
-                    <div key={weekIndex} className="flex flex-col gap-[2px]">
-                      {week.days.map((day, dayIndex) => (
-                        <div key={dayIndex}>
-                          {day ? (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <button
-                                  className={`
-                                    w-3 h-3 rounded-sm transition-all duration-200
-                                    hover:ring-2 hover:ring-primary hover:scale-125 hover:z-10
-                                    focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:scale-125
-                                    ${getIntensityClass(day.count)}
-                                  `}
-                                  aria-label={t('cell.ariaLabel', {
-                                    date: format(parseISO(day.date), 'PPP', {
-                                      locale: es,
-                                    }),
-                                    count: day.count,
-                                  })}
-                                />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <div className="text-xs">
-                                  <p className="font-semibold">
-                                    {format(parseISO(day.date), 'PPP', { locale: es })}
-                                  </p>
-                                  <p className="text-muted-foreground">
-                                    {t('tooltip.expenses', { count: day.count })}
-                                  </p>
-                                  {day.total > 0 && (
-                                    <p className="font-medium text-primary">
-                                      {formatCurrency(day.total, currency)}
-                                    </p>
-                                  )}
-                                </div>
-                              </TooltipContent>
-                            </Tooltip>
-                          ) : (
-                            <div className="w-3 h-3" /> // Empty space for days outside range
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Legend */}
-              <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
-                <span>{t('legend.less')}</span>
+                {/* Grid: 7 rows (days of week) × N columns (weeks) */}
                 <div className="flex gap-1">
-                  <div className="w-3 h-3 rounded-sm bg-muted/30 dark:bg-muted/10" />
-                  <div className="w-3 h-3 rounded-sm bg-primary/30" />
-                  <div className="w-3 h-3 rounded-sm bg-primary/60" />
-                  <div className="w-3 h-3 rounded-sm bg-primary" />
+                  {/* Day labels (vertical) - only Mon, Wed, Fri like GitHub */}
+                  <div className="flex flex-col gap-1 w-[30px] flex-shrink-0 pr-2">
+                    {dayLabels.map((label, index) => (
+                      <div
+                        key={index}
+                        className="h-[11px] flex items-center justify-end text-[11px] text-muted-foreground"
+                      >
+                        {label}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Heatmap cells */}
+                  <div className="flex gap-1">
+                    {gridData.map((week, weekIndex) => (
+                      <div key={weekIndex} className="flex flex-col gap-1">
+                        {week.days.map((day, dayIndex) => (
+                          <div key={dayIndex}>
+                            {day ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    className={`
+                                      w-[11px] h-[11px] rounded-sm transition-all duration-150
+                                      hover:ring-2 hover:ring-ring hover:ring-offset-1
+                                      focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none
+                                      ${getIntensityClass(day.count)}
+                                    `}
+                                    aria-label={t('cell.ariaLabel', {
+                                      date: format(parseISO(day.date), 'PPP', {
+                                        locale: es,
+                                      }),
+                                      count: day.count,
+                                    })}
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <div className="text-xs space-y-1">
+                                    <p className="font-semibold">
+                                      {format(parseISO(day.date), 'PPP', { locale: es })}
+                                    </p>
+                                    <p className="text-muted-foreground">
+                                      {t('tooltip.expenses', { count: day.count })}
+                                    </p>
+                                    {day.total > 0 && (
+                                      <p className="font-medium text-primary">
+                                        {formatCurrency(day.total, currency)}
+                                      </p>
+                                    )}
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              <div className="w-[11px] h-[11px]" /> // Empty space for days outside range
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <span>{t('legend.more')}</span>
+
+                {/* Legend */}
+                <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
+                  <span>{t('legend.less')}</span>
+                  <div className="flex gap-1">
+                    <div className="w-[11px] h-[11px] rounded-sm bg-muted/20 dark:bg-muted/10" />
+                    <div className="w-[11px] h-[11px] rounded-sm bg-primary/25" />
+                    <div className="w-[11px] h-[11px] rounded-sm bg-primary/50" />
+                    <div className="w-[11px] h-[11px] rounded-sm bg-primary/75" />
+                    <div className="w-[11px] h-[11px] rounded-sm bg-primary" />
+                  </div>
+                  <span>{t('legend.more')}</span>
+                </div>
               </div>
             </div>
-          </div>
           </TooltipProvider>
         )}
       </CardContent>
