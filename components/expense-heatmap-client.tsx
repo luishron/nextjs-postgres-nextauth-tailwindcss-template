@@ -82,23 +82,48 @@ export function ExpenseHeatmapClient({ data, currency }: ExpenseHeatmapClientPro
     const totalDays = cells.length;
     const activeDays = cells.filter((c) => c && c.count > 0).length;
     const totalExpenses = cells.reduce((sum, c) => sum + (c?.count || 0), 0);
+    const totalAmount = cells.reduce((sum, c) => sum + (c?.total || 0), 0);
 
-    // Calculate streak
-    let streak = 0;
+    // Calculate current streak (from end)
+    let currentStreak = 0;
     for (let i = cells.length - 1; i >= 0; i--) {
       if (cells[i] && cells[i]!.count > 0) {
-        streak++;
+        currentStreak++;
       } else {
         break;
       }
     }
 
+    // Calculate longest streak
+    let longestStreak = 0;
+    let tempStreak = 0;
+    for (let i = 0; i < cells.length; i++) {
+      if (cells[i] && cells[i]!.count > 0) {
+        tempStreak++;
+        longestStreak = Math.max(longestStreak, tempStreak);
+      } else {
+        tempStreak = 0;
+      }
+    }
+
+    // Find most active day
+    let mostActiveDay: { date: string; count: number } | null = null;
+    cells.forEach((cell) => {
+      if (cell && (!mostActiveDay || cell.count > mostActiveDay.count)) {
+        mostActiveDay = { date: cell.date, count: cell.count };
+      }
+    });
+
     return {
       activeDays,
       totalDays,
       totalExpenses,
-      streak,
+      totalAmount,
+      currentStreak,
+      longestStreak,
+      mostActiveDay,
       consistency: totalDays > 0 ? Math.round((activeDays / totalDays) * 100) : 0,
+      averagePerActiveDay: activeDays > 0 ? Math.round(totalExpenses / activeDays * 10) / 10 : 0,
     };
   }, [cells]);
 
@@ -120,9 +145,9 @@ export function ExpenseHeatmapClient({ data, currency }: ExpenseHeatmapClientPro
           <div>
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               {t('title')}
-              {stats.streak >= 3 && (
+              {stats.currentStreak >= 3 && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 text-xs font-medium">
-                  🔥 {stats.streak} {stats.streak === 1 ? 'día' : 'días'}
+                  🔥 {stats.currentStreak} {stats.currentStreak === 1 ? 'día' : 'días'}
                 </span>
               )}
             </CardTitle>
@@ -151,11 +176,11 @@ export function ExpenseHeatmapClient({ data, currency }: ExpenseHeatmapClientPro
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <div className="flex gap-1">
-                <div className="w-[11px] h-[11px] rounded-sm bg-muted/20" />
-                <div className="w-[11px] h-[11px] rounded-sm bg-primary/25" />
-                <div className="w-[11px] h-[11px] rounded-sm bg-primary/50" />
-                <div className="w-[11px] h-[11px] rounded-sm bg-primary/75" />
-                <div className="w-[11px] h-[11px] rounded-sm bg-primary" />
+                <div className="w-3 h-3 md:w-3.5 md:h-3.5 lg:w-4 lg:h-4 rounded-sm bg-muted/20" />
+                <div className="w-3 h-3 md:w-3.5 md:h-3.5 lg:w-4 lg:h-4 rounded-sm bg-primary/25" />
+                <div className="w-3 h-3 md:w-3.5 md:h-3.5 lg:w-4 lg:h-4 rounded-sm bg-primary/50" />
+                <div className="w-3 h-3 md:w-3.5 md:h-3.5 lg:w-4 lg:h-4 rounded-sm bg-primary/75" />
+                <div className="w-3 h-3 md:w-3.5 md:h-3.5 lg:w-4 lg:h-4 rounded-sm bg-primary" />
               </div>
               <span>{t('emptyState.hint')}</span>
             </div>
@@ -164,13 +189,15 @@ export function ExpenseHeatmapClient({ data, currency }: ExpenseHeatmapClientPro
           <TooltipProvider>
             <div className="overflow-x-auto pb-2">
               {/* Month labels */}
-              <div className="flex mb-2 ml-[34px]">
-                <div className="relative h-4" style={{ width: '52 * 14px' }}>
+              <div className="flex mb-2 ml-[34px] md:ml-[38px] lg:ml-[42px]">
+                <div className="relative h-4 w-full">
                   {monthLabels.map((label, idx) => (
                     <span
                       key={idx}
                       className="absolute text-xs text-muted-foreground font-medium"
-                      style={{ left: `${label.column * 14}px` }}
+                      style={{
+                        left: `calc(${label.column} * (11px + 4px))`,
+                      }}
                     >
                       {label.text}
                     </span>
@@ -181,9 +208,12 @@ export function ExpenseHeatmapClient({ data, currency }: ExpenseHeatmapClientPro
               {/* Grid container */}
               <div className="flex gap-1">
                 {/* Day labels */}
-                <div className="flex flex-col gap-1 w-[30px] pr-1">
+                <div className="flex flex-col gap-1 w-[30px] md:w-[34px] lg:w-[38px] pr-1">
                   {dayLabels.map((label, idx) => (
-                    <div key={idx} className="h-[11px] flex items-center justify-end text-[11px] text-muted-foreground">
+                    <div
+                      key={idx}
+                      className="h-[11px] md:h-[13px] lg:h-[15px] xl:h-4 flex items-center justify-end text-[11px] md:text-xs text-muted-foreground"
+                    >
                       {label}
                     </div>
                   ))}
@@ -193,9 +223,9 @@ export function ExpenseHeatmapClient({ data, currency }: ExpenseHeatmapClientPro
                 <div
                   className="grid gap-1"
                   style={{
-                    gridTemplateColumns: 'repeat(52, 11px)',
-                    gridTemplateRows: 'repeat(7, 11px)',
-                    gridAutoFlow: 'column', // Fill by column (week)
+                    gridTemplateColumns: 'repeat(52, minmax(11px, 1fr))',
+                    gridTemplateRows: 'repeat(7, minmax(11px, 1fr))',
+                    gridAutoFlow: 'column',
                   }}
                 >
                   {cells.map((cell, idx) => (
@@ -205,7 +235,8 @@ export function ExpenseHeatmapClient({ data, currency }: ExpenseHeatmapClientPro
                           <TooltipTrigger asChild>
                             <button
                               className={`
-                                w-[11px] h-[11px] rounded-sm transition-all duration-150
+                                w-[11px] h-[11px] md:w-[13px] md:h-[13px] lg:w-[15px] lg:h-[15px] xl:w-4 xl:h-4
+                                rounded-sm transition-all duration-150
                                 hover:ring-2 hover:ring-ring hover:ring-offset-1
                                 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none
                                 ${getIntensityClass(cell.count)}
@@ -230,7 +261,7 @@ export function ExpenseHeatmapClient({ data, currency }: ExpenseHeatmapClientPro
                           </TooltipContent>
                         </Tooltip>
                       ) : (
-                        <div className="w-[11px] h-[11px] rounded-sm bg-muted/20 dark:bg-muted/10" />
+                        <div className="w-[11px] h-[11px] md:w-[13px] md:h-[13px] lg:w-[15px] lg:h-[15px] xl:w-4 xl:h-4 rounded-sm bg-muted/20 dark:bg-muted/10" />
                       )}
                     </div>
                   ))}
@@ -241,11 +272,11 @@ export function ExpenseHeatmapClient({ data, currency }: ExpenseHeatmapClientPro
               <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
                 <span>{t('legend.less')}</span>
                 <div className="flex gap-1">
-                  <div className="w-[11px] h-[11px] rounded-sm bg-muted/20 dark:bg-muted/10" />
-                  <div className="w-[11px] h-[11px] rounded-sm bg-primary/25" />
-                  <div className="w-[11px] h-[11px] rounded-sm bg-primary/50" />
-                  <div className="w-[11px] h-[11px] rounded-sm bg-primary/75" />
-                  <div className="w-[11px] h-[11px] rounded-sm bg-primary" />
+                  <div className="w-[11px] h-[11px] md:w-[13px] md:h-[13px] lg:w-[15px] lg:h-[15px] xl:w-4 xl:h-4 rounded-sm bg-muted/20 dark:bg-muted/10" />
+                  <div className="w-[11px] h-[11px] md:w-[13px] md:h-[13px] lg:w-[15px] lg:h-[15px] xl:w-4 xl:h-4 rounded-sm bg-primary/25" />
+                  <div className="w-[11px] h-[11px] md:w-[13px] md:h-[13px] lg:w-[15px] lg:h-[15px] xl:w-4 xl:h-4 rounded-sm bg-primary/50" />
+                  <div className="w-[11px] h-[11px] md:w-[13px] md:h-[13px] lg:w-[15px] lg:h-[15px] xl:w-4 xl:h-4 rounded-sm bg-primary/75" />
+                  <div className="w-[11px] h-[11px] md:w-[13px] md:h-[13px] lg:w-[15px] lg:h-[15px] xl:w-4 xl:h-4 rounded-sm bg-primary" />
                 </div>
                 <span>{t('legend.more')}</span>
               </div>
