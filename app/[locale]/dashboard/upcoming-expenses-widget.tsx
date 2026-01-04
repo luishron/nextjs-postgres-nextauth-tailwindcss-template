@@ -1,6 +1,8 @@
 'use client';
 
-import { Clock, CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Clock, CheckCircle2, Loader2, Tag } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,14 +16,56 @@ import {
 import type { Expense, Category } from '@/lib/db';
 import { formatCurrency } from '@/lib/utils/formatting';
 import type { CurrencyCode } from '@/lib/config/currencies';
+import { useToast } from '@/hooks/use-toast';
+import { markExpenseAsPaid } from './actions';
+import { cn } from '@/lib/utils';
 
 interface UpcomingExpensesWidgetProps {
   expenses: Expense[];
   categories: Category[];
   currency: CurrencyCode;
+  currentBalance: number;
 }
 
-export function UpcomingExpensesWidget({ expenses, categories, currency }: UpcomingExpensesWidgetProps) {
+export function UpcomingExpensesWidget({ expenses, categories, currency, currentBalance }: UpcomingExpensesWidgetProps) {
+  const [payingId, setPayingId] = useState<number | null>(null);
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handlePay = async (expense: Expense) => {
+    setPayingId(expense.id);
+
+    try {
+      const result = await markExpenseAsPaid(expense.id);
+
+      if (result.error) {
+        toast({
+          title: 'Error al pagar gasto',
+          description: result.error,
+          variant: 'destructive'
+        });
+      } else {
+        toast({
+          title: (
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <span>Gasto pagado</span>
+            </div>
+          ) as any,
+          description: `${expense.description} - ${formatCurrency(expense.amount, currency)}`
+        });
+        router.refresh();
+      }
+    } catch (error) {
+      toast({
+        title: 'Error inesperado',
+        variant: 'destructive'
+      });
+    } finally {
+      setPayingId(null);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     // Parsear la fecha como local sin conversión de zona horaria
     const [year, month, day] = dateString.split('-').map(Number);
@@ -34,7 +78,7 @@ export function UpcomingExpensesWidget({ expenses, categories, currency }: Upcom
 
   const getCategoryName = (categoryId: number) => {
     const category = categories.find((c) => c.id === categoryId);
-    return category ? `${category.icon || ''} ${category.name}`.trim() : 'Sin categoría';
+    return category ? category.name : 'Sin categoría';
   };
 
   const getDaysUntil = (dateString: string) => {
@@ -129,7 +173,8 @@ export function UpcomingExpensesWidget({ expenses, categories, currency }: Upcom
                     <p className="font-medium text-sm group-hover:text-primary transition-colors">
                       {expense.description || 'Sin descripción'}
                     </p>
-                    <Badge variant="outline" className="text-xs group-hover:border-primary/50 transition-colors">
+                    <Badge variant="outline" className="text-xs group-hover:border-primary/50 transition-colors flex items-center gap-1">
+                      <Tag className="h-3 w-3" />
                       {getCategoryName(expense.category_id)}
                     </Badge>
                   </div>
@@ -142,10 +187,24 @@ export function UpcomingExpensesWidget({ expenses, categories, currency }: Upcom
                     </Badge>
                   </div>
                 </div>
-                <div className="relative text-right ml-4">
-                  <p className="font-semibold group-hover:text-primary transition-colors">
+                <div className="relative flex items-center gap-3 ml-4">
+                  <p className="font-semibold text-sm group-hover:text-primary transition-colors">
                     {formatCurrency(expense.amount, currency)}
                   </p>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handlePay(expense)}
+                    disabled={payingId === expense.id}
+                    className="h-9 px-3 text-xs min-w-[60px]"
+                    aria-label={`Marcar ${expense.description} como pagado`}
+                  >
+                    {payingId === expense.id ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      'Pagar'
+                    )}
+                  </Button>
                 </div>
               </div>
             );
@@ -160,6 +219,34 @@ export function UpcomingExpensesWidget({ expenses, categories, currency }: Upcom
               </Button>
             </div>
           )}
+
+          {/* Balance summary */}
+          {expenses.length > 0 && (() => {
+            const totalPending = expenses.slice(0, 7).reduce((sum, e) => sum + Number(e.amount), 0);
+            const balanceAfterPaying = currentBalance - totalPending;
+
+            return (
+              <div className="mt-4 pt-4 border-t space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Balance actual:</span>
+                  <span className="font-medium">
+                    {formatCurrency(currentBalance, currency)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Después de pagar todo:</span>
+                  <span className={cn(
+                    "font-medium",
+                    balanceAfterPaying >= 0
+                      ? "text-transaction-income"
+                      : "text-transaction-expense"
+                  )}>
+                    {formatCurrency(balanceAfterPaying, currency)}
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </CardContent>
     </Card>

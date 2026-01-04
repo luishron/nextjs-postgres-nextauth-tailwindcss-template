@@ -8,9 +8,72 @@ Personal expense management web application built with Next.js 15, TypeScript, S
 
 **Version:** 0.1.0-beta
 **Status:** 🚧 Beta
-**Last Updated:** January 2, 2026
+**Last Updated:** January 4, 2026
 
 ## Recent Changes
+
+### Quick Actions en Dashboard (Jan 4, 2026) ✅ COMPLETED
+
+**Feature:** Botones de acción rápida "Resolver Gasto" en UpcomingExpensesWidget del dashboard.
+
+**Objetivo:**
+Reducir fricción para marcar gastos como pagados sin navegar a la página de gastos completa.
+
+**Cambios Implementados:**
+
+1. **UpcomingExpensesWidget Interactive** (`app/[locale]/dashboard/upcoming-expenses-widget.tsx`):
+   - Convertido de read-only a interactive component
+   - Botón "Pagar" inline en cada gasto pendiente
+   - Loading state con spinner (Loader2) durante procesamiento
+   - Toast notifications con título y descripción usando `useToast()`
+   - Balance footer mostrando:
+     - Balance actual del mes
+     - Balance proyectado después de pagar todos los gastos visibles
+     - Color semántico (verde/rojo) según balance positivo/negativo
+
+2. **Dashboard Page** (`app/[locale]/dashboard/page.tsx`):
+   - Agregado prop `currentBalance` desde `monthlySummary.balance`
+   - Pasado a UpcomingExpensesWidget para cálculos
+
+**Arquitectura:**
+- ✅ Reutiliza server action `markExpenseAsPaid()` existente
+- ✅ Usa hook `useToast()` para notificaciones (shadcn/ui)
+- ✅ `router.refresh()` para actualizar UI después de pagar
+- ✅ Cálculo simple de balance: `currentBalance - totalPendingExpenses`
+- ✅ WCAG AA compliant (aria-labels, touch targets ≥ 44px)
+
+**Patrón de Implementación:**
+```typescript
+// Client component con estado local
+const [payingId, setPayingId] = useState<number | null>(null);
+const { toast } = useToast();
+
+const handlePay = async (expense: Expense) => {
+  setPayingId(expense.id);
+  const result = await markExpenseAsPaid(expense.id);
+  if (!result.error) {
+    toast({ title: 'Gasto pagado', description: expense.description });
+    router.refresh();
+  }
+  setPayingId(null);
+};
+```
+
+**Decisiones de Producto:**
+- ✅ MVP: Solo botón "Marcar como pagado" (alto valor, bajo riesgo)
+- ⏸️ V2: Posponer fecha (postponed - sin evidencia de demanda)
+- ❌ NO: Detección automática de recurrentes (scope creep)
+
+**Métricas a Trackear:**
+- % de gastos pagados desde dashboard vs /gastos
+- Tiempo promedio para resolver un gasto
+- Tasa de uso del botón "Pagar"
+
+**Status:**
+- ✅ Implementado y funcional
+- ✅ Build exitoso sin errores de TypeScript
+- ✅ Accesibilidad WCAG AA compliant
+- ✅ Reutiliza infraestructura existente (sin breaking changes)
 
 ### Multi-Currency System Implementation (Jan 2, 2026) ✅ COMPLETED
 

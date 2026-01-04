@@ -191,6 +191,7 @@ export default async function DashboardPage() {
           expenses={upcomingExpenses}
           categories={categories}
           currency={currency}
+          currentBalance={currentMonthSummary.balance}
         />
 
         <TopCategoriesChart
