@@ -1023,9 +1023,8 @@ export async function getAttentionRequiredExpenses(
     .select('*')
     .eq('user_id', userId)
     .neq('payment_status', 'pagado')
-    .gte('date', monthStart)  // Solo mes actual
-    .lte('date', monthEnd)    // Solo mes actual
-    .or(`date.lt.${todayStr},date.lte.${futureDateStr}`)  // Vencido O próximo
+    // TODOS los vencidos (sin límite de mes) O próximos 7 días del mes actual
+    .or(`date.lt.${todayStr},and(date.gte.${todayStr},date.lte.${futureDateStr},date.gte.${monthStart},date.lte.${monthEnd})`)
     .order('date', { ascending: true });
 
   if (error) throw error;
