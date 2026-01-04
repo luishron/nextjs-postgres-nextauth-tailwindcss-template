@@ -112,6 +112,32 @@ export async function markExpenseAsPaid(expenseId: number): Promise<ActionResult
   });
 }
 
+export async function postponeExpenseDate(
+  expenseId: number,
+  newDate: string
+): Promise<ActionResult> {
+  return withAuth(async () => {
+    // Validar formato YYYY-MM-DD
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(newDate)) {
+      throw new Error('Formato de fecha inválido');
+    }
+
+    // Validar fecha futura
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const targetDate = new Date(newDate);
+    targetDate.setHours(0, 0, 0, 0);
+
+    if (targetDate <= today) {
+      throw new Error('La fecha debe ser futura');
+    }
+
+    await updateExpenseInDb(expenseId, { date: newDate });
+    revalidateGastos();
+  });
+}
+
 export async function deleteCategory(formData: FormData): Promise<ActionResult> {
   return withAuth(async () => {
     const validation = validateFormData(deleteCategorySchema, formData);

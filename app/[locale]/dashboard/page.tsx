@@ -6,14 +6,14 @@ import { getUser } from '@/lib/auth';
 import {
   getMonthlySummary,
   getOverdueExpenses,
-  getUpcomingDueExpenses,
+  getAttentionRequiredExpenses,
   getTopCategoriesByMonth,
   getNextMonthProjection,
   getCategoriesByUser
 } from '@/lib/db';
 import { DashboardKPIs } from './dashboard-kpis';
 import { MonthlyComparisonCard } from './monthly-comparison-card';
-import { UpcomingExpensesWidget } from './upcoming-expenses-widget';
+import { AttentionRequiredWidget } from './attention-required-widget';
 import { TopCategoriesChart } from './top-categories-chart';
 import { getTranslations } from 'next-intl/server';
 import { getUserCurrency } from '@/lib/utils/currency-helpers';
@@ -49,7 +49,7 @@ export default async function DashboardPage() {
     currentMonthSummary,
     previousMonthSummary,
     overdueExpenses,
-    upcomingExpenses,
+    attentionRequiredExpenses,
     topCategories,
     nextMonthProjection,
     categories
@@ -58,7 +58,7 @@ export default async function DashboardPage() {
     getMonthlySummary(user.id, currentYear, currentMonth),
     getMonthlySummary(user.id, previousYear, previousMonth),
     getOverdueExpenses(user.id),
-    getUpcomingDueExpenses(user.id, 10),
+    getAttentionRequiredExpenses(user.id, 7),
     getTopCategoriesByMonth(user.id, currentYear, currentMonth, 5),
     getNextMonthProjection(user.id),
     getCategoriesByUser(user.id)
@@ -185,10 +185,10 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {/* Grid de 2 columnas: Próximos gastos y Top categorías */}
+      {/* Grid de 2 columnas: Atención requerida y Top categorías */}
       <div className="grid gap-6 md:grid-cols-2 animate-fade-in-up" style={{ animationDelay: '0.07s' }}>
-        <UpcomingExpensesWidget
-          expenses={upcomingExpenses}
+        <AttentionRequiredWidget
+          expenses={attentionRequiredExpenses}
           categories={categories}
           currency={currency}
           currentBalance={currentMonthSummary.balance}

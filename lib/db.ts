@@ -993,6 +993,60 @@ export async function getUpcomingDueExpenses(
 }
 
 /**
+ * Obtiene gastos que requieren atención en el mes actual
+ * (vencidos + próximos a vencer en los próximos daysAhead días)
+ */
+export async function getAttentionRequiredExpenses(
+  userId: string,
+  daysAhead: number = 7
+): Promise<Expense[]> {
+  const supabase = await createClient();
+
+  // Boundaries del mes actual
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth(); // 0-indexed
+
+  const monthStart = new Date(currentYear, currentMonth, 1)
+    .toISOString().split('T')[0];
+  const monthEnd = new Date(currentYear, currentMonth + 1, 0)
+    .toISOString().split('T')[0];
+
+  // Today + daysAhead
+  const todayStr = today.toISOString().split('T')[0];
+  const futureDate = new Date(today);
+  futureDate.setDate(today.getDate() + daysAhead);
+  const futureDateStr = futureDate.toISOString().split('T')[0];
+
+  const { data, error } = await supabase
+    .from('expenses')
+    .select('*')
+    .eq('user_id', userId)
+    .neq('payment_status', 'pagado')
+    .gte('date', monthStart)  // Solo mes actual
+    .lte('date', monthEnd)    // Solo mes actual
+    .or(`date.lt.${todayStr},date.lte.${futureDateStr}`)  // Vencido O próximo
+    .order('date', { ascending: true });
+
+  if (error) throw error;
+
+  // Sort in-memory: vencidos primero
+  const expenses = data || [];
+  const todayTime = new Date(todayStr).getTime();
+
+  return expenses.sort((a, b) => {
+    const aDate = new Date(a.date).getTime();
+    const bDate = new Date(b.date).getTime();
+    const aOverdue = aDate < todayTime;
+    const bOverdue = bDate < todayTime;
+
+    if (aOverdue && !bOverdue) return -1;
+    if (!aOverdue && bOverdue) return 1;
+    return aDate - bDate;
+  });
+}
+
+/**
  * Obtiene top categorías con mayor gasto en un mes
  */
 export async function getTopCategoriesByMonth(
