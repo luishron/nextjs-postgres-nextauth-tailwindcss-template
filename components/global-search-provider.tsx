@@ -76,7 +76,8 @@ export function GlobalSearchTrigger() {
   return (
     <button
       onClick={open}
-      className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+      className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 min-h-[44px] text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+      aria-label="Open search (Cmd+K)"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

@@ -22,6 +22,7 @@ export async function User() {
           variant="outline"
           size="icon"
           className="overflow-hidden rounded-full"
+          aria-label="Open user menu"
         >
           <Image
             src={user?.user_metadata?.avatar_url ?? '/placeholder-user.jpg'}

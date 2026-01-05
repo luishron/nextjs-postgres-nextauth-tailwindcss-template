@@ -92,7 +92,7 @@ function DesktopNav({ t, brandName }: { t: any; brandName: string }) {
       <div className="flex h-full flex-col gap-2">
         {/* Logo/Brand - Estilo shadcn limpio */}
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
+          <Link href="/" className="flex items-center gap-2 font-semibold min-h-[44px] py-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <Wallet className="h-4 w-4 text-primary-foreground" />
             </div>
@@ -157,7 +157,7 @@ function MobileNav({ t, brandName }: { t: any; brandName: string }) {
         <div className="flex h-full flex-col">
           {/* Logo/Brand - Estilo shadcn limpio */}
           <div className="flex h-14 items-center border-b px-4">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
+            <Link href="/" className="flex items-center gap-2 font-semibold min-h-[44px] py-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <Wallet className="h-4 w-4 text-primary-foreground" />
               </div>
@@ -175,7 +175,7 @@ function MobileNav({ t, brandName }: { t: any; brandName: string }) {
                     key={href}
                     href={href}
                     className={cn(
-                      'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
+                      'flex items-center gap-3 rounded-lg px-3 py-3 min-h-[44px] text-muted-foreground transition-all hover:text-primary',
                       isActive ? 'bg-muted text-primary' : 'transparent'
                     )}
                   >

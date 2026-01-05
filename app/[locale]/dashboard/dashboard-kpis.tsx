@@ -113,7 +113,7 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses, cu
           <div className="flex items-center gap-1">
             <button
               onClick={toggleHideIncome}
-              className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-md hover:bg-muted"
+              className="text-muted-foreground hover:text-foreground transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md hover:bg-muted"
               aria-label={hideIncome ? t('kpis.monthlyIncome.show') : t('kpis.monthlyIncome.hide')}
             >
               {hideIncome ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -145,7 +145,7 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses, cu
           <div className="flex items-center gap-1">
             <button
               onClick={toggleHideBalance}
-              className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-md hover:bg-muted"
+              className="text-muted-foreground hover:text-foreground transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md hover:bg-muted"
               aria-label={hideBalance ? t('kpis.monthlyBalance.show') : t('kpis.monthlyBalance.hide')}
             >
               {hideBalance ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

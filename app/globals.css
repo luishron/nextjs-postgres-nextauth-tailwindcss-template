@@ -410,6 +410,35 @@ input[type='search']::-ms-clear {
     background-size: 1000px 100%;
     animation: shimmer 2s infinite;
   }
+
+  /* Focus Visible - WCAG 2.4.7 (AA) Compliance */
+  /* Ensure all interactive elements have visible focus indicators */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible,
+  [role="tab"]:focus-visible,
+  [role="menuitem"]:focus-visible,
+  [role="link"]:focus-visible,
+  [role="switch"]:focus-visible,
+  [tabindex]:focus-visible {
+    @apply ring-2 ring-ring ring-offset-2 ring-offset-background outline-none;
+  }
+
+  /* Specific focus styles for components */
+  .focus-ring-primary:focus-visible {
+    @apply ring-primary;
+  }
+
+  .focus-ring-destructive:focus-visible {
+    @apply ring-destructive;
+  }
+
+  .focus-ring-success:focus-visible {
+    @apply ring-success;
+  }
 }
 
 /* Accessibility - Reduce Motion */
