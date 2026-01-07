@@ -341,7 +341,57 @@ export function AddExpenseDialog() {
 }
 ```
 
-### 13. Styling
+### 13. Specialized Agents
+
+**When building features, use specialized agents for better results:**
+
+#### shadcn-component-builder 🎨
+**Use for:** Creating/modifying UI components with shadcn/ui
+- Mobile-first responsive design (320px → 1440px+)
+- WCAG 2.1 AA compliance (touch targets ≥ 44px, ARIA labels)
+- Tallify Design System integration
+- CVA variants and composition patterns
+- shadcn MCP integration (list/get components)
+
+**Invoke when:**
+- Adding new shadcn/ui components
+- Creating custom components
+- Fixing accessibility violations
+- Refactoring for mobile-first design
+
+```bash
+# Available in .claude/agents/shadcn-component-builder.md
+```
+
+#### docs-maintainer 📚
+**Use for:** Maintaining accurate, up-to-date documentation
+- Detects outdated documentation
+- Identifies missing docs for new features
+- Validates cross-references
+- Ensures version consistency
+
+**Invoke when:**
+- After implementing new features
+- After significant code changes
+- Before major releases
+
+#### playwright-qa-tester 🧪
+**Use for:** Automated testing and QA validation
+- End-to-end testing with Playwright
+- Accessibility validation (WCAG 2.1 AA)
+- UX/UI flow analysis
+- Regression testing
+
+**Invoke when:**
+- After completing features
+- Before deployments
+- When accessibility compliance needs verification
+
+**Note:** These agents are proactive tools. Don't hesitate to use them to maintain quality standards.
+
+---
+
+### 14. Styling
 
 **Design System:** See [`/docs/design/design-system.md`](./docs/design/design-system.md)
 
