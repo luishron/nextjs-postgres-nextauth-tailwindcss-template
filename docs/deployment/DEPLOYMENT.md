@@ -2,7 +2,7 @@
 
 Esta guía explica cómo hacer deploy de la aplicación a producción con **migraciones automáticas de base de datos**.
 
-**IMPORTANTE:** Asegúrate de que la migración crítica `0001_add_user_plan_enum_and_triggers.sql` esté aplicada para que el registro de usuarios funcione correctamente. Ver `MIGRATION-GUIDE.md` para detalles.
+**IMPORTANTE:** Asegúrate de que la migración crítica `0001_add_user_plan_enum_and_triggers.sql` esté aplicada para que el registro de usuarios funcione correctamente. Ver [MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md) para detalles.
 
 ## Tabla de Contenidos
 

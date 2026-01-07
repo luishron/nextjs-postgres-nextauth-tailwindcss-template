@@ -112,11 +112,11 @@ The Gastos application has achieved substantial WCAG 2.1 AA compliance and is **
 |----------|--------|--------------|
 | README.md | PASS | 95% |
 | CLAUDE.md | PASS | 100% |
-| PRD.md | PASS | 90% |
-| ACCESSIBILITY-AUDIT.md | PASS | 100% |
-| RE-AUDIT-COMPARISON.md | PASS | 100% |
-| DEPLOYMENT.md | PASS | 95% |
-| MIGRATION-GUIDE.md | PASS | 100% |
+| product/PRD.md | PASS | 90% |
+| ACCESSIBILITY-COMPLIANCE.md | PASS | 100% |
+| archive/audits/RE-AUDIT-COMPARISON.md | PASS | 100% |
+| deployment/DEPLOYMENT.md | PASS | 95% |
+| deployment/MIGRATION-GUIDE.md | PASS | 100% |
 
 ---
 

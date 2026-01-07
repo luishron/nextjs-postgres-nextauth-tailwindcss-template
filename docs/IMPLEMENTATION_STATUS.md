@@ -349,7 +349,7 @@ El proyecto Tallify ha completado las fases core de desarrollo: dashboard, UX/UI
 
 **Estado:** Completada el 25 de Diciembre, 2025
 
-**Archivo de auditoría:** `/docs/ACCESSIBILITY-AUDIT.md`
+**Archivo de auditoría:** `/docs/ACCESSIBILITY-COMPLIANCE.md`
 
 #### Touch Targets (WCAG 2.5.5 - AAA)
 

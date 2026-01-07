@@ -494,12 +494,12 @@ LIMIT 10;
 
 ## Related Documentation
 
-- [Migration Guide](../MIGRATION-GUIDE.md) - **CRITICAL**: How to apply the user registration fix migration
+- [Migration Guide](./deployment/MIGRATION-GUIDE.md) - **CRITICAL**: How to apply the user registration fix migration
 - [Database Setup Guide](./setup/SUPABASE.md)
-- [Deployment Guide](./DEPLOYMENT.md) - Production deployment with automatic migrations
-- [Design System](./design-system.md)
+- [Deployment Guide](./deployment/DEPLOYMENT.md) - Production deployment with automatic migrations
+- [Design System](./design/design-system.md)
 - [Component Guide](./COMPONENT_GUIDE.md)
-- [Accessibility Audit](./ACCESSIBILITY-AUDIT.md)
+- [Accessibility Audit](./ACCESSIBILITY-COMPLIANCE.md)
 
 ---
 

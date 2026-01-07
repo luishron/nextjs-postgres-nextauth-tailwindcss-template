@@ -208,7 +208,7 @@ async function createExpense(formData: FormData) {
 
 **Reglas de estilo:**
 - ✅ Tailwind CSS con design tokens de `globals.css`
-- ✅ Paleta Tallify (ver [design-system.md](./docs/design-system.md))
+- ✅ Paleta Tallify (ver [design-system.md](./docs/design/design-system.md))
 - ✅ Touch targets ≥ 44px (WCAG 2.1 AA)
 - ✅ Contraste de colores ≥ 4.5:1
 - ✅ Dark mode support (automático con design tokens)
@@ -292,7 +292,7 @@ Todos los componentes DEBEN cumplir WCAG 2.1 Nivel AA:
 - [ ] Focus visible en todos los elementos
 - [ ] Semantic HTML (`<nav>`, `<main>`, `<header>`, etc.)
 
-Ver [ACCESSIBILITY-AUDIT.md](./docs/ACCESSIBILITY-AUDIT.md) para más detalles.
+Ver [ACCESSIBILITY-COMPLIANCE.md](./docs/ACCESSIBILITY-COMPLIANCE.md) para más detalles.
 
 ### Formato de Código
 
@@ -534,9 +534,9 @@ Usa la etiqueta `enhancement`:
 ### Documentación del Proyecto
 
 - **[README.md](./README.md)** - Visión general y setup
-- **[design-system.md](./docs/design-system.md)** - Sistema de diseño Tallify
+- **[design-system.md](./docs/design/design-system.md)** - Sistema de diseño Tallify
 - **[COMPONENT_GUIDE.md](./docs/COMPONENT_GUIDE.md)** - Guía de componentes
-- **[ACCESSIBILITY-AUDIT.md](./docs/ACCESSIBILITY-AUDIT.md)** - Auditoría de accesibilidad
+- **[ACCESSIBILITY-COMPLIANCE.md](./docs/ACCESSIBILITY-COMPLIANCE.md)** - Auditoría de accesibilidad
 - **[IMPLEMENTATION_STATUS.md](./docs/IMPLEMENTATION_STATUS.md)** - Estado de features
 - **[CLAUDE.md](./CLAUDE.md)** - Guía para Claude Code
 

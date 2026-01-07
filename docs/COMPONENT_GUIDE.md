@@ -1110,7 +1110,7 @@ Todos los componentes usan design tokens definidos en `/app/globals.css`.
 </div>
 ```
 
-Ver [design-system.md](./design-system.md) para paleta completa.
+Ver [design-system.md](./design/design-system.md) para paleta completa.
 
 ---
 
@@ -1130,14 +1130,14 @@ Al crear o modificar componentes, verificar:
 - [ ] **Semantic HTML** (nav, main, button, etc.)
 - [ ] **Screen reader** friendly (roles, labels, descriptions)
 
-Ver [ACCESSIBILITY-AUDIT.md](./ACCESSIBILITY-AUDIT.md) para detalles completos.
+Ver [ACCESSIBILITY-COMPLIANCE.md](./ACCESSIBILITY-COMPLIANCE.md) para detalles completos.
 
 ---
 
 ## 📚 Recursos Adicionales
 
-- **[design-system.md](./design-system.md)** - Sistema de diseño Tallify completo
-- **[ACCESSIBILITY-AUDIT.md](./ACCESSIBILITY-AUDIT.md)** - Auditoría de accesibilidad
+- **[design-system.md](./design/design-system.md)** - Sistema de diseño Tallify completo
+- **[ACCESSIBILITY-COMPLIANCE.md](./ACCESSIBILITY-COMPLIANCE.md)** - Auditoría de accesibilidad
 - **[shadcn/ui Docs](https://ui.shadcn.com/)** - Documentación oficial de shadcn/ui
 - **[Tailwind CSS](https://tailwindcss.com/docs)** - Documentación de Tailwind
 - **[Lucide Icons](https://lucide.dev/)** - Catálogo de iconos

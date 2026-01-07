@@ -222,7 +222,7 @@ El dashboard ahora ofrece una vista completa de tu situación financiera:
 - **Responsive Design:** Mobile-first (320px-1920px+)
 - **Documentación completa:** 9 documentos actualizados/creados
 
-Ver: `/docs/ACCESSIBILITY-AUDIT.md` y `/docs/IMPLEMENTATION_STATUS.md` para más detalles.
+Ver: `/docs/ACCESSIBILITY-COMPLIANCE.md` y `/docs/IMPLEMENTATION_STATUS.md` para más detalles.
 
 ---
 
@@ -342,7 +342,7 @@ pnpm db:migrate
 
 **Importante:** Las migraciones de Drizzle incluyen todos los cambios de schema, triggers y funciones. La migración crítica `0001_add_user_plan_enum_and_triggers.sql` corrige el sistema de registro de usuarios.
 
-Ver `/docs/DEPLOYMENT.md` y `MIGRATION-GUIDE.md` para configuración en producción.
+Ver `/docs/deployment/DEPLOYMENT.md` y `/docs/deployment/MIGRATION-GUIDE.md` para configuración en producción.
 
 5. **Iniciar servidor de desarrollo**
 
@@ -832,47 +832,82 @@ Card visual de categoría:
 
 ### Esquema de Tablas
 
-#### `users`
+#### `user_profiles`
 ```sql
-CREATE TABLE users (
-  id TEXT PRIMARY KEY,
+CREATE TYPE user_plan AS ENUM ('free', 'pro', 'plus', 'admin');
+
+CREATE TABLE user_profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT UNIQUE NOT NULL,
-  name TEXT,
+  full_name TEXT,
   avatar_url TEXT,
-  created_at TIMESTAMP DEFAULT NOW()
+  plan user_plan NOT NULL DEFAULT 'free',
+  preferences JSONB DEFAULT '{"currency": "MXN", "theme": "system"}'::jsonb,
+  timezone TEXT DEFAULT 'America/Mexico_City',
+  onboarding_completed BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Automatic profile creation trigger
+CREATE FUNCTION handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.user_profiles (id, email, full_name, plan, preferences)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
+    'free',
+    '{"currency": "MXN", "theme": "system"}'::jsonb
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 ```
+
+**Key Fields:**
+- `plan`: User subscription tier (ENUM type for type safety)
+- `preferences`: JSONB with currency, theme, and other user settings
+- `timezone`: Used for intelligent currency inference
+- `onboarding_completed`: Tracks if user finished onboarding flow
 
 #### `categories`
 ```sql
 CREATE TABLE categories (
   id SERIAL PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   color TEXT NOT NULL DEFAULT '#6366f1',
   icon TEXT,
   description TEXT,
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+CREATE INDEX idx_categories_user_id ON categories(user_id);
 ```
 
 #### `expenses`
 ```sql
 CREATE TABLE expenses (
   id SERIAL PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
   category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
   amount NUMERIC(10, 2) NOT NULL,
   description TEXT,
   date DATE NOT NULL,
-  payment_method TEXT,
+  payment_method_id INTEGER REFERENCES payment_methods(id) ON DELETE SET NULL,
   payment_status TEXT DEFAULT 'pendiente'
     CHECK (payment_status IN ('pagado', 'pendiente', 'vencido')),
   notes TEXT,
-  is_recurring INTEGER DEFAULT 0,
-  recurrence_frequency TEXT,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+  is_recurring INTEGER DEFAULT 0 CHECK (is_recurring IN (0, 1)),
+  recurrence_frequency TEXT CHECK (recurrence_frequency IN ('weekly', 'monthly', 'yearly')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX idx_expenses_user_id ON expenses(user_id);
@@ -881,11 +916,16 @@ CREATE INDEX idx_expenses_date ON expenses(date);
 CREATE INDEX idx_expenses_payment_status ON expenses(payment_status);
 ```
 
+**Notes on Expenses:**
+- `payment_method_id`: Integer reference to `payment_methods` table
+- `is_recurring`: Integer (0 or 1) for database compatibility
+- Payment status auto-updated to 'vencido' if date < today and status != 'pagado'
+
 #### `payment_methods`
 ```sql
 CREATE TABLE payment_methods (
   id SERIAL PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   type TEXT NOT NULL CHECK (type IN ('tarjeta_credito', 'tarjeta_debito', 'efectivo', 'transferencia', 'otro')),
   bank TEXT,
@@ -893,7 +933,7 @@ CREATE TABLE payment_methods (
   icon TEXT,
   color TEXT NOT NULL DEFAULT '#6366f1',
   is_default BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX idx_payment_methods_user_id ON payment_methods(user_id);
@@ -903,7 +943,7 @@ CREATE INDEX idx_payment_methods_user_id ON payment_methods(user_id);
 ```sql
 CREATE TABLE income_categories (
   id SERIAL PRIMARY KEY,
-  user_id UUID NOT NULL,
+  user_id UUID NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   color TEXT NOT NULL DEFAULT '#10B981',
   icon TEXT,
@@ -918,13 +958,13 @@ CREATE INDEX idx_income_categories_user_id ON income_categories(user_id);
 ```sql
 CREATE TABLE incomes (
   id SERIAL PRIMARY KEY,
-  user_id UUID NOT NULL,
+  user_id UUID NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
   source TEXT NOT NULL,
   amount NUMERIC(10, 2) NOT NULL,
   date DATE NOT NULL,
   description TEXT,
   category_id INTEGER REFERENCES income_categories(id) ON DELETE SET NULL,
-  payment_method TEXT,
+  payment_method_id INTEGER REFERENCES payment_methods(id) ON DELETE SET NULL,
   is_recurring INTEGER DEFAULT 0 CHECK (is_recurring IN (0, 1)),
   recurrence_frequency TEXT CHECK (recurrence_frequency IN ('weekly', 'monthly', 'yearly')),
   notes TEXT,
@@ -939,14 +979,22 @@ CREATE INDEX idx_incomes_recurring ON incomes(user_id, is_recurring) WHERE is_re
 ### Relaciones
 
 ```
-users (1) ──< (N) categories
-users (1) ──< (N) expenses
-users (1) ──< (N) payment_methods
-users (1) ──< (N) income_categories
-users (1) ──< (N) incomes
+auth.users (1) ──< (1) user_profiles
+user_profiles (1) ──< (N) categories
+user_profiles (1) ──< (N) expenses
+user_profiles (1) ──< (N) payment_methods
+user_profiles (1) ──< (N) income_categories
+user_profiles (1) ──< (N) incomes
 categories (1) ──< (N) expenses
 income_categories (1) ──< (N) incomes
+payment_methods (1) ──< (N) expenses
+payment_methods (1) ──< (N) incomes
 ```
+
+**Key Relationships:**
+- All user data is scoped by `user_profiles.id` (UUID from auth.users)
+- All foreign keys use `ON DELETE CASCADE` to automatically clean up user data
+- Payment methods are now properly referenced via `payment_method_id` (not text)
 
 ### Row Level Security (RLS)
 
@@ -971,54 +1019,67 @@ CREATE POLICY "Users can delete own data" ON expenses
 
 ## 🗺️ Roadmap
 
-### ✅ v1.0.0 - MVP Base (Completado)
-- [x] Sistema de autenticación con GitHub OAuth
-- [x] CRUD de gastos
-- [x] Categorías personalizables
+### ✅ v0.1.0-beta - Initial Beta Release (Completed - Jan 2026)
+- [x] Sistema de autenticación con Magic Links
+- [x] CRUD de gastos con estados inteligentes
+- [x] Categorías personalizables con iconos y colores
 - [x] Métodos de pago configurables
 - [x] Gastos recurrentes con generación virtual
 - [x] Estados de pago (pendiente, pagado, vencido)
-
-### ✅ v2.0.0 - Dashboard e Ingresos (Completado)
 - [x] Dashboard inteligente con KPIs
 - [x] Resumen mensual (anterior, actual, proyección)
-- [x] Widget de próximos gastos a vencer
+- [x] Widget de próximos gastos a vencer con quick actions
 - [x] Top categorías con gráficos
 - [x] Gestión de ingresos con CRUD completo
 - [x] Categorías de ingresos separadas
 - [x] Ingresos recurrentes
 - [x] Cálculo de balance (ingresos - gastos)
-- [x] Tabla de gastos mejorada con ordenamiento inteligente
-- [x] Estadísticas en tiempo real
-- [x] Estados vacíos con onboarding
+- [x] Sistema multi-currency (20 monedas)
+- [x] Inferencia inteligente de moneda por timezone
+- [x] Página de configuración con preferencias de usuario
+- [x] Landing page profesional con 10 secciones
+- [x] Sistema de diseño Tallify (Design System)
+- [x] Componentes UI custom (TransactionItem, FilterBar, SearchBar, etc.)
+- [x] WCAG 2.1 AA Compliance (89.2%)
+- [x] Responsive design (mobile-first)
+- [x] Dark mode completo
 
-### v2.1.0 - Reportes y Exportación
+### v0.1.1 - Accessibility Patch (Planned - Jan 12, 2026)
+- [ ] Fix remaining touch target violations (12 elements)
+- [ ] Add ARIA labels to carousel buttons (2 elements)
+- [ ] Target: 95%+ WCAG AA compliance
+- [ ] Estimated: 2-3 hours
+
+### v0.2.0 - Reportes y Exportación (Planned - Q1 2026)
 - [ ] Exportación a CSV/Excel de gastos e ingresos
 - [ ] Gráficas de tendencias temporales
 - [ ] Reporte PDF mensual
 - [ ] Análisis de patrones de gasto
 - [ ] Comparativa año a año
 
-### v2.2.0 - Presupuestos
+### v0.3.0 - Presupuestos (Planned - Q1 2026)
 - [ ] Definir presupuesto por categoría
 - [ ] Alertas de sobre-gasto
 - [ ] Progreso visual del presupuesto
 - [ ] Presupuesto mensual global
 - [ ] Notificaciones de límites
 
-### v2.3.0 - Mejoras de Recurrentes
+### v0.4.0 - Mejoras de Recurrentes (Planned - Q2 2026)
 - [ ] Edición de monto por instancia
 - [ ] Pausar/reanudar recurrentes
 - [ ] Historial de cambios
 - [ ] Predicción de gastos futuros
 - [ ] Ajuste automático por inflación
 
-### v3.0.0 - Metas y Ahorro
-- [ ] Definir metas de ahorro
-- [ ] Tracking de progreso de metas
-- [ ] Sugerencias de ahorro basadas en IA
+### v1.0.0 - Production Release (Planned - Q3 2026)
+- [ ] 100% WCAG 2.1 AA compliance
+- [ ] Comprehensive test coverage (>80%)
+- [ ] Performance optimizations
+- [ ] Security audit
+- [ ] Metas de ahorro con tracking
 - [ ] Proyecciones financieras avanzadas
-- [ ] Análisis de viabilidad de metas
+- [ ] API pública para integraciones
+- [ ] Mobile app (React Native)
 
 ---
 
@@ -1031,19 +1092,17 @@ CREATE POLICY "Users can delete own data" ON expenses
 - **[README.md](./README.md)** - Este archivo, visión general del proyecto
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Guía para contribuir al proyecto
 - **[CLAUDE.md](./CLAUDE.md)** - Guía para trabajar con Claude Code
-- **[MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md)** - Guía completa para aplicar migraciones de base de datos (CRÍTICO para producción)
+- **[docs/deployment/MIGRATION-GUIDE.md](./docs/deployment/MIGRATION-GUIDE.md)** - Guía completa para aplicar migraciones de base de datos (CRÍTICO para producción)
 
 ### Product & Strategy
 
-- **[docs/PRD.md](./docs/PRD.md)** - Product Requirements Document (visión, user personas, métricas, roadmap)
+- **[docs/product/PRD.md](./docs/product/PRD.md)** - Product Requirements Document (visión, user personas, métricas, roadmap)
 
 ### Diseño y Componentes
 
-- **[docs/design-system.md](./docs/design-system.md)** - Sistema de diseño Tallify (colores, tipografía, animaciones)
+- **[docs/design/design-system.md](./docs/design/design-system.md)** - Sistema de diseño Tallify (colores, tipografía, animaciones)
 - **[docs/COMPONENT_GUIDE.md](./docs/COMPONENT_GUIDE.md)** - Catálogo de componentes UI con ejemplos
-- **[docs/ACCESSIBILITY-AUDIT.md](./docs/ACCESSIBILITY-AUDIT.md)** - Auditoría WCAG 2.1 AA compliance
-- **[docs/ui-improvements.md](./docs/ui-improvements.md)** - Mejoras UI implementadas
-- **[docs/card-improvements-plan.md](./docs/card-improvements-plan.md)** - Plan de mejora de cards
+- **[docs/ACCESSIBILITY-COMPLIANCE.md](./docs/ACCESSIBILITY-COMPLIANCE.md)** - Auditoría WCAG 2.1 AA compliance
 
 ### Desarrollo y Features
 
@@ -1054,7 +1113,7 @@ CREATE POLICY "Users can delete own data" ON expenses
 - **[docs/setup/SUPABASE.md](./docs/setup/SUPABASE.md)** - Setup de base de datos Supabase
 - **[docs/setup/GITHUB_OAUTH.md](./docs/setup/GITHUB_OAUTH.md)** - Configuración de GitHub OAuth (Opcional - para OAuth via Supabase Auth)
 - **[docs/AUTHENTICATION.md](./docs/AUTHENTICATION.md)** - Sistema de autenticación con Magic Links
-- **[docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)** - Guía de deployment en producción
+- **[docs/deployment/DEPLOYMENT.md](./docs/deployment/DEPLOYMENT.md)** - Guía de deployment en producción
 - **[.env.example](./.env.example)** - Template de variables de entorno
 
 ---
