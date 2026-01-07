@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle
+} from '@/components/ui/responsive-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -151,22 +151,22 @@ export function QuickAddFAB({
       </button>
 
       {/* Diálogo mejorado */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[500px] gap-6">
-          <DialogHeader className="space-y-3">
+      <ResponsiveDialog open={open} onOpenChange={setOpen}>
+        <ResponsiveDialogContent className="sm:max-w-[500px] gap-6">
+          <ResponsiveDialogHeader className="space-y-3">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-primary/80
                             flex items-center justify-center shadow-lg shadow-primary/30">
                 <PlusCircle className="h-6 w-6 text-white" />
               </div>
               <div>
-                <DialogTitle className="text-2xl">Agregar Gasto</DialogTitle>
-                <DialogDescription className="text-base">
+                <ResponsiveDialogTitle className="text-2xl">Agregar Gasto</ResponsiveDialogTitle>
+                <ResponsiveDialogDescription className="text-base">
                   Registra un gasto en segundos ⚡
-                </DialogDescription>
+                </ResponsiveDialogDescription>
               </div>
             </div>
-          </DialogHeader>
+          </ResponsiveDialogHeader>
           <form onSubmit={handleSubmit} className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="quick-description">¿Qué compraste?</Label>
@@ -314,7 +314,7 @@ export function QuickAddFAB({
               )}
             </div>
 
-            <DialogFooter>
+            <ResponsiveDialogFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -326,10 +326,10 @@ export function QuickAddFAB({
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? 'Guardando...' : 'Guardar'}
               </Button>
-            </DialogFooter>
+            </ResponsiveDialogFooter>
           </form>
-        </DialogContent>
-      </Dialog>
+        </ResponsiveDialogContent>
+      </ResponsiveDialog>
     </>
   );
 }

@@ -186,7 +186,7 @@ export function SearchBar({
               <button
                 type="button"
                 onClick={handleClear}
-                className="h-8 w-8 rounded-full hover:bg-muted/80 flex items-center justify-center transition-colors"
+                className="h-11 w-11 rounded-full hover:bg-muted/80 flex items-center justify-center transition-colors"
                 aria-label="Limpiar búsqueda"
               >
                 <X className="h-4 w-4 text-muted-foreground" />

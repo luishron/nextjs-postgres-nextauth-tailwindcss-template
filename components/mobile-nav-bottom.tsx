@@ -163,7 +163,7 @@ export function MobileNavBottom() {
 
                 <div
                   className={cn(
-                    'relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300',
+                    'relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-300',
                     isActive
                       ? 'bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/30 scale-110'
                       : 'bg-muted/50 hover:bg-muted'
@@ -191,7 +191,7 @@ export function MobileNavBottom() {
               'text-muted-foreground hover:text-foreground active:scale-95 hover:bg-accent/50'
             )}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted/50 hover:bg-muted transition-all duration-300">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted/50 hover:bg-muted transition-all duration-300">
               <MoreHorizontal className="h-5 w-5" />
             </div>
             <span className="leading-tight">Más</span>
@@ -233,7 +233,7 @@ export function MobileNavBottom() {
                         aria-label={`${label}: ${description}`}
                         aria-current={isActive ? 'page' : undefined}
                         className={cn(
-                          'w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300',
+                          'w-full flex items-center gap-4 p-4 rounded-2xl min-h-[44px] transition-all duration-300',
                           'hover:bg-accent/80 active:scale-[0.97]',
                           'border-2 border-transparent',
                           isActive
