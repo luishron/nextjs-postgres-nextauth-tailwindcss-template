@@ -160,11 +160,6 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="animate-fade-in-up w-full max-w-full min-w-0" style={{ animationDelay: '0.01s' }}>
-        <DashboardQuickActions overdueCount={overdueExpenses.count} />
-      </div>
-
       {/* KPIs Principales */}
       <div className="animate-fade-in-up w-full max-w-full min-w-0" style={{ animationDelay: '0.03s' }}>
         <DashboardKPIs

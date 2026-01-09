@@ -24,7 +24,7 @@ import {
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Analytics } from '@vercel/analytics/react';
 import { User as UserButton } from './user';
 import Providers from './providers';
@@ -181,6 +181,9 @@ function MobileNav({ t, brandName }: { t: any; brandName: string }) {
       </SheetTrigger>
       <SheetContent side="left" className="p-0">
         <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
+        <SheetDescription className="sr-only">
+          Navegación principal de la aplicación con acceso a todas las secciones
+        </SheetDescription>
         <div className="flex h-full flex-col">
           {/* Logo/Brand - Estilo shadcn limpio */}
           <div className="flex h-14 items-center border-b px-4">
