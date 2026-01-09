@@ -199,7 +199,7 @@ export function AttentionRequiredWidget({
   // Empty state
   if (expenses.length === 0) {
     return (
-      <Card>
+      <Card className="max-w-full min-w-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -225,7 +225,7 @@ export function AttentionRequiredWidget({
   const balanceAfterPaying = currentBalance - totalPending;
 
   return (
-    <Card>
+    <Card className="max-w-full min-w-0">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -246,7 +246,7 @@ export function AttentionRequiredWidget({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
+        <div className="space-y-3 max-w-full">
           {expenses.slice(0, 5).map((expense, index) => {
             const urgency = getUrgencyBadge(expense.date);
             const isOverdue = urgency.color.includes('destructive');
@@ -255,13 +255,13 @@ export function AttentionRequiredWidget({
               <div
                 key={expense.id}
                 className={cn(
-                  'group relative flex items-center justify-between p-3 rounded-lg border border-border',
+                  'group relative flex items-center justify-between p-3 rounded-lg border border-border max-w-full',
                   'hover:border-primary/30 hover:bg-muted/30 hover:shadow-md transition-all duration-300',
                   isOverdue && 'border-l-4 border-l-destructive'
                 )}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="relative flex-1">
+                <div className="relative flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="font-medium text-sm group-hover:text-primary transition-colors">
                       {expense.description || 'Sin descripción'}
@@ -282,8 +282,8 @@ export function AttentionRequiredWidget({
                   </div>
                 </div>
 
-                <div className="relative flex items-center gap-2 ml-4">
-                  <p className="font-semibold text-sm group-hover:text-primary transition-colors">
+                <div className="relative flex items-center gap-2 ml-4 flex-shrink-0">
+                  <p className="font-semibold text-sm group-hover:text-primary transition-colors whitespace-nowrap">
                     {formatCurrency(expense.amount, currency)}
                   </p>
 
@@ -293,7 +293,7 @@ export function AttentionRequiredWidget({
                     variant="ghost"
                     onClick={() => handlePay(expense)}
                     disabled={payingId === expense.id}
-                    className="h-11 px-3 text-xs min-w-[60px]"
+                    className="h-11 px-3 text-xs min-w-[60px] flex-shrink-0"
                     aria-label={`Marcar ${expense.description} como pagado`}
                   >
                     {payingId === expense.id ? (
@@ -310,7 +310,7 @@ export function AttentionRequiredWidget({
                         size="sm"
                         variant="outline"
                         disabled={postponingId === expense.id}
-                        className="h-11 px-3 text-xs min-w-[90px]"
+                        className="h-11 px-3 text-xs min-w-[90px] flex-shrink-0"
                         aria-label={`Posponer ${expense.description}`}
                       >
                         {postponingId === expense.id ? (

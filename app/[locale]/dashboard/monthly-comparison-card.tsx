@@ -52,7 +52,7 @@ export function MonthlyComparisonCard({
   };
 
   return (
-    <Card>
+    <Card className="max-w-full min-w-0">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calendar className="h-5 w-5" />
@@ -63,9 +63,9 @@ export function MonthlyComparisonCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-full min-w-0">
           {/* Mes Anterior */}
-          <div className={`rounded-lg border p-4 ${
+          <div className={`rounded-lg border p-4 max-w-full min-w-0 ${
             !hasPreviousData ? 'bg-muted/30' : 'bg-card'
           }`}>
             <div className="text-sm font-medium text-muted-foreground mb-2">
@@ -106,7 +106,7 @@ export function MonthlyComparisonCard({
           </div>
 
           {/* Mes Actual */}
-          <div className="group relative rounded-lg border p-4 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:border-primary/30 hover:shadow-md transition-all">
+          <div className="group relative rounded-lg border p-4 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:border-primary/30 hover:shadow-md transition-all max-w-full min-w-0">
             <div className="flex items-center justify-between mb-2">
               <div className="text-sm font-medium text-primary">
                 {`${getMonthName(currentMonth.month)} ${currentMonth.year}`}
@@ -152,7 +152,7 @@ export function MonthlyComparisonCard({
           </div>
 
           {/* Próximo Mes (Proyección) */}
-          <div className="rounded-lg border border-dashed border-muted-foreground/30 p-4 bg-muted/20">
+          <div className="rounded-lg border border-dashed border-muted-foreground/30 p-4 bg-muted/20 max-w-full min-w-0">
             <div className="text-sm font-medium text-muted-foreground mb-2">
               Próximo Mes
               <span className="ml-2 text-xs bg-muted px-2 py-0.5 rounded">

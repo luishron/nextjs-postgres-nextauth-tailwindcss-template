@@ -92,40 +92,42 @@ export default async function GastosPage({
   );
 
   return (
-    <div className="flex flex-col gap-4 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Gastos</h1>
+    <div className="flex flex-col gap-4 animate-fade-in w-full max-w-full min-w-0">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between w-full max-w-full min-w-0">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl sm:text-3xl font-bold">Gastos</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Gestiona tus gastos vencidos y pendientes
           </p>
         </div>
-        <Button variant="outline" asChild>
+        <Button variant="outline" asChild className="flex-shrink-0">
           <Link href="/dashboard/expenses/pagados" className="gap-2">
             <History className="h-4 w-4" />
-            <span>Ver Pagados ({paidCount})</span>
+            <span className="hidden sm:inline">Ver Pagados</span>
+            <span className="sm:hidden">Pagados</span>
+            <span>({paidCount})</span>
           </Link>
         </Button>
       </div>
 
       {/* Cards de estadísticas */}
       {activeExpenses.length > 0 && (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border-2 border-destructive bg-card p-3 sm:p-4 animate-scale-in" style={{ animationDelay: '0.02s' }}>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 w-full max-w-full min-w-0">
+          <div className="rounded-lg border-2 border-destructive bg-card p-3 sm:p-4 animate-scale-in max-w-full min-w-0" style={{ animationDelay: '0.02s' }}>
             <div className="text-xs font-medium text-destructive">Vencidos</div>
             <div className="text-xl sm:text-2xl font-bold text-destructive">
               {formatCurrency(stats.overdue, currency)}
             </div>
             <div className="text-xs text-muted-foreground">{stats.overdueCount} gastos</div>
           </div>
-          <div className="rounded-lg border-2 border-warning bg-card p-3 sm:p-4 animate-scale-in" style={{ animationDelay: '0.04s' }}>
+          <div className="rounded-lg border-2 border-warning bg-card p-3 sm:p-4 animate-scale-in max-w-full min-w-0" style={{ animationDelay: '0.04s' }}>
             <div className="text-xs font-medium text-warning">Pendientes</div>
             <div className="text-xl sm:text-2xl font-bold text-warning">
               {formatCurrency(stats.pending, currency)}
             </div>
             <div className="text-xs text-muted-foreground">{stats.pendingCount} gastos</div>
           </div>
-          <div className="rounded-lg border-2 border-success bg-card p-3 sm:p-4 animate-scale-in" style={{ animationDelay: '0.06s' }}>
+          <div className="rounded-lg border-2 border-success bg-card p-3 sm:p-4 animate-scale-in max-w-full min-w-0" style={{ animationDelay: '0.06s' }}>
             <div className="text-xs font-medium text-success">Pagados</div>
             <div className="text-xl sm:text-2xl font-bold text-success">
               {formatCurrency(paidTotal, currency)}
@@ -135,15 +137,15 @@ export default async function GastosPage({
         </div>
       )}
 
-      <Tabs defaultValue="todos" className="w-full">
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <TabsList>
+      <Tabs defaultValue="todos" className="w-full max-w-full min-w-0">
+        <div className="flex flex-col gap-3 w-full max-w-full min-w-0">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between w-full max-w-full min-w-0">
+            <TabsList className="flex-shrink-0">
               <TabsTrigger value="todos">Todos</TabsTrigger>
               <TabsTrigger value="recurrentes">Recurrentes</TabsTrigger>
               <TabsTrigger value="unicos">Únicos</TabsTrigger>
             </TabsList>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <Button size="sm" variant="outline" className="h-8 gap-1">
                 <Download className="h-3.5 w-3.5" />
                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">

@@ -24,7 +24,7 @@ import {
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { Analytics } from '@vercel/analytics/react';
 import { User as UserButton } from './user';
 import Providers from './providers';
@@ -67,7 +67,7 @@ export default async function DashboardLayout({
       <GlobalSearchProvider data={searchData}>
         <main className="flex min-h-screen w-full flex-col bg-muted/40">
           <DesktopNav t={t} brandName={brandT('name')} />
-          <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-60">
+          <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-60 overflow-x-hidden">
             <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
               <MobileNav t={t} brandName={brandT('name')} />
               <DashboardBreadcrumb t={t} brandName={brandT('name')} />
@@ -75,7 +75,7 @@ export default async function DashboardLayout({
               <div className="ml-auto" />
               <UserButton />
             </header>
-            <main className="grid flex-1 items-start gap-2 p-3 pb-20 sm:p-4 sm:pb-0 sm:px-6 sm:py-0 md:gap-4">
+            <main className="grid flex-1 items-start gap-2 p-3 pb-20 sm:p-4 sm:pb-0 sm:px-6 sm:py-0 md:gap-4 overflow-x-hidden">
               {children}
             </main>
           </div>
@@ -180,6 +180,7 @@ function MobileNav({ t, brandName }: { t: any; brandName: string }) {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="p-0">
+        <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
         <div className="flex h-full flex-col">
           {/* Logo/Brand - Estilo shadcn limpio */}
           <div className="flex h-14 items-center border-b px-4">

@@ -23,19 +23,19 @@ export default async function IngresosPage() {
   const incomes = await getIncomesByUser(user.id);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Ingresos</h1>
+    <div className="flex flex-col gap-4 max-w-full">
+      <div className="flex items-center justify-between max-w-full">
+        <h1 className="text-2xl sm:text-3xl font-bold">Ingresos</h1>
       </div>
 
-      <Tabs defaultValue="todos" className="w-full">
-        <div className="flex items-center justify-between">
-          <TabsList>
+      <Tabs defaultValue="todos" className="w-full max-w-full">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between max-w-full overflow-x-auto">
+          <TabsList className="flex-shrink-0">
             <TabsTrigger value="todos">Todos</TabsTrigger>
             <TabsTrigger value="recurrentes">Recurrentes</TabsTrigger>
             <TabsTrigger value="unicos">Únicos</TabsTrigger>
           </TabsList>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {categories.length === 0 ? (
               <Link href="/dashboard/income/categories">
                 <Button size="sm" className="h-8 gap-1">

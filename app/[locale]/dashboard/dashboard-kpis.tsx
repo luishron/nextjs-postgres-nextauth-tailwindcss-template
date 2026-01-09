@@ -82,9 +82,9 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses, cu
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 max-w-full min-w-0">
       {/* Total Gastos del Mes */}
-      <div className="rounded-lg border bg-card p-6 shadow-sm">
+      <div className="rounded-lg border bg-card p-6 shadow-sm max-w-full min-w-0">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-medium text-muted-foreground">
             {t('kpis.monthlyExpenses.label')}
@@ -105,7 +105,7 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses, cu
       </div>
 
       {/* Total Ingresos del Mes */}
-      <div className="rounded-lg border bg-card p-6 shadow-sm">
+      <div className="rounded-lg border bg-card p-6 shadow-sm max-w-full min-w-0">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-medium text-muted-foreground">
             {t('kpis.monthlyIncome.label')}
@@ -137,7 +137,7 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses, cu
       </div>
 
       {/* Balance del Mes */}
-      <div className="rounded-lg border bg-card p-6 shadow-sm">
+      <div className="rounded-lg border bg-card p-6 shadow-sm max-w-full min-w-0">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-medium text-muted-foreground">
             {t('kpis.monthlyBalance.label')}
@@ -171,7 +171,7 @@ export function DashboardKPIs({ currentMonth, previousMonth, overdueExpenses, cu
       </div>
 
       {/* Gastos Vencidos */}
-      <div className={`rounded-lg border bg-card p-6 shadow-sm transition-colors ${
+      <div className={`rounded-lg border bg-card p-6 shadow-sm transition-colors max-w-full min-w-0 ${
         overdueExpenses.count > 0 ? 'border-destructive/20 bg-destructive/[0.02]' : ''
       }`}>
         <div className="flex items-center justify-between mb-3">

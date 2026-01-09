@@ -29,9 +29,9 @@ export default async function ConfiguracionPage() {
   }
 
   return (
-    <div className="container max-w-4xl py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Configuración</h1>
+    <div className="container max-w-4xl px-4 py-6 sm:px-6 sm:py-8 md:px-8 w-full max-w-full min-w-0">
+      <div className="mb-8 max-w-full">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Configuración</h1>
         <p className="text-muted-foreground mt-2">
           Administra tu cuenta y preferencias personales
         </p>

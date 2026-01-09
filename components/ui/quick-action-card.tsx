@@ -121,12 +121,12 @@ export function QuickActionsContainer({
   ...props
 }: QuickActionsContainerProps) {
   return (
-    <div className={cn('space-y-3', className)} {...props}>
+    <div className={cn('space-y-3 max-w-full', className)} {...props}>
       {title && (
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       )}
 
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide max-w-full -mx-3 px-3">
         {children}
       </div>
     </div>

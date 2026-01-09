@@ -58,7 +58,7 @@ export function TopCategoriesChart({ categories, monthName, currency }: TopCateg
 
   if (categories.length === 0) {
     return (
-      <Card>
+      <Card className="max-w-full min-w-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <PieChart className="h-5 w-5" />
@@ -87,10 +87,10 @@ export function TopCategoriesChart({ categories, monthName, currency }: TopCateg
   }
 
   return (
-    <Card>
+    <Card className="max-w-full min-w-0">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between max-w-full">
+          <div className="min-w-0">
             <CardTitle className="flex items-center gap-2">
               <PieChart className="h-5 w-5" />
               Top Categorías del Mes
@@ -99,9 +99,9 @@ export function TopCategoriesChart({ categories, monthName, currency }: TopCateg
               Categorías con mayor gasto en {monthName}
             </CardDescription>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {/* Selector de vista */}
-            <div className="flex items-center border rounded-md">
+            <div className="flex items-center border rounded-md flex-shrink-0">
               <Button
                 variant={viewMode === 'list' ? 'default' : 'ghost'}
                 size="sm"
@@ -119,7 +119,7 @@ export function TopCategoriesChart({ categories, monthName, currency }: TopCateg
                 <PieChart className="h-4 w-4" />
               </Button>
             </div>
-            <Button variant="outline" size="sm" asChild>
+            <Button variant="outline" size="sm" asChild className="flex-shrink-0">
               <Link href="/dashboard/categories">Ver todas</Link>
             </Button>
           </div>
@@ -128,16 +128,16 @@ export function TopCategoriesChart({ categories, monthName, currency }: TopCateg
       <CardContent>
         {viewMode === 'list' ? (
           // Vista de lista con barras (actual)
-          <div className="space-y-4">
+          <div className="space-y-4 max-w-full">
             {categories.map((category, index) => (
-              <div key={category.categoryId} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-muted-foreground">
+              <div key={category.categoryId} className="space-y-2 max-w-full">
+                <div className="flex items-center justify-between max-w-full">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <span className="text-2xl font-bold text-muted-foreground flex-shrink-0">
                       #{index + 1}
                     </span>
-                    <div>
-                      <p className="font-medium text-sm">
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm truncate">
                         {category.categoryIcon && `${category.categoryIcon} `}
                         {category.categoryName}
                       </p>
@@ -146,17 +146,17 @@ export function TopCategoriesChart({ categories, monthName, currency }: TopCateg
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold">
+                  <div className="text-right flex-shrink-0 ml-2">
+                    <p className="font-bold whitespace-nowrap">
                       {formatCurrency(category.total, currency)}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground whitespace-nowrap">
                       {category.percentage.toFixed(1)}%
                     </p>
                   </div>
                 </div>
                 {/* Barra de progreso */}
-                <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                <div className="w-full bg-muted rounded-full h-2 overflow-hidden max-w-full">
                   <div
                     className="h-full transition-all duration-500"
                     style={{
