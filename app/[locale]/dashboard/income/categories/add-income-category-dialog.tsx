@@ -19,26 +19,12 @@ import { saveIncomeCategory } from '../../actions';
 import { useRouter } from 'next/navigation';
 import { COLORS } from '@/lib/constants/colors';
 import { useToast } from '@/hooks/use-toast';
-
-const ICONS = [
-  '💼',
-  '💡',
-  '📈',
-  '🎁',
-  '💰',
-  '🏦',
-  '📊',
-  '💵',
-  '🎯',
-  '⭐',
-  '🚀',
-  '💎'
-];
+import { CategoryIconPicker } from '@/components/ui/category-icon-picker';
 
 export function AddIncomeCategoryDialog() {
   const [open, setOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState(COLORS[0].value);
-  const [selectedIcon, setSelectedIcon] = useState('💰');
+  const [selectedIcon, setSelectedIcon] = useState('DollarSign');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -64,7 +50,7 @@ export function AddIncomeCategoryDialog() {
       // Reset form before closing
       e.currentTarget.reset();
       setSelectedColor(COLORS[0].value);
-      setSelectedIcon('💰');
+      setSelectedIcon('DollarSign');
       setIsSubmitting(false);
       setOpen(false);
       router.refresh();
@@ -120,25 +106,11 @@ export function AddIncomeCategoryDialog() {
             </div>
           </div>
 
-          <div className="grid gap-2">
-            <Label>Icono</Label>
-            <div className="grid grid-cols-6 gap-2">
-              {ICONS.map((icon) => (
-                <button
-                  key={icon}
-                  type="button"
-                  onClick={() => setSelectedIcon(icon)}
-                  className={`h-10 rounded-md border-2 text-2xl transition-all ${
-                    selectedIcon === icon
-                      ? 'border-foreground bg-accent scale-110'
-                      : 'border-transparent hover:bg-accent/50 hover:scale-105'
-                  }`}
-                >
-                  {icon}
-                </button>
-              ))}
-            </div>
-          </div>
+          <CategoryIconPicker
+            value={selectedIcon}
+            onChange={setSelectedIcon}
+            color={selectedColor}
+          />
 
           <div className="grid gap-2">
             <Label htmlFor="description">Descripción (opcional)</Label>
@@ -148,17 +120,6 @@ export function AddIncomeCategoryDialog() {
               placeholder="Describe esta categoría de ingresos..."
               rows={3}
             />
-          </div>
-
-          <div className="rounded-lg border p-4">
-            <p className="text-sm font-medium mb-2">Vista previa:</p>
-            <div
-              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-white"
-              style={{ backgroundColor: selectedColor }}
-            >
-              <span className="text-xl">{selectedIcon}</span>
-              <span>Categoría de Ingreso</span>
-            </div>
           </div>
 
           <DialogFooter>

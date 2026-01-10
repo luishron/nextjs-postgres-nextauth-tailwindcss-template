@@ -5,6 +5,7 @@ import { CardFinance } from '@/components/ui/card-finance';
 import { MoneyDisplay } from '@/components/ui/money-display';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { CategoryIcon } from '@/components/ui/category-icon';
 
 type CategoryWithData = {
   id: number;
@@ -92,7 +93,6 @@ export function CategoryCardCompact({ category }: CategoryCardCompactProps) {
                 'relative flex items-center justify-center',
                 'h-20 w-20 sm:h-24 sm:w-24',
                 'rounded-3xl',
-                'text-5xl sm:text-6xl',
                 'transition-all duration-700 ease-out',
                 'group-hover/card:rotate-6 group-hover/card:scale-110',
                 // Subtle inner shadow for depth
@@ -100,11 +100,15 @@ export function CategoryCardCompact({ category }: CategoryCardCompactProps) {
               )}
               style={{
                 backgroundColor: `${category.color}15`,
-                color: category.color,
                 boxShadow: `inset 0 2px 8px ${category.color}20`
               }}
             >
-              {category.icon || '📦'}
+              <CategoryIcon
+                icon={category.icon}
+                color={category.color}
+                size={48}
+                fallback="Package"
+              />
             </div>
 
             {/* Animated pulse ring */}

@@ -18,6 +18,7 @@ import { deleteCategory } from '../actions';
 import { useRouter } from 'next/navigation';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { CategoryIcon } from '@/components/ui/category-icon';
 import { formatShortDate } from '@/lib/utils/date-grouping';
 
 type CategoryWithData = {
@@ -79,13 +80,17 @@ export function CategoryCard({ category }: { category: CategoryWithData }) {
                   }}
                 />
                 <div
-                  className="relative flex h-16 w-16 items-center justify-center rounded-xl text-3xl transition-transform group-hover:scale-110"
+                  className="relative flex h-16 w-16 items-center justify-center rounded-xl transition-transform group-hover:scale-110"
                   style={{
                     backgroundColor: `${category.color}20`,
-                    color: category.color
                   }}
                 >
-                  {category.icon || '📦'}
+                  <CategoryIcon
+                    icon={category.icon}
+                    color={category.color}
+                    size={28}
+                    fallback="Package"
+                  />
                 </div>
               </div>
 

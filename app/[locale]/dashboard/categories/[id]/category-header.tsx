@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ChevronRight, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CategoryIcon } from '@/components/ui/category-icon';
 
 type Category = {
   id: number;
@@ -44,10 +45,15 @@ export function CategoryHeader({ category }: { category: Category }) {
       {/* Category display */}
       <div className="flex items-start gap-4">
         <div
-          className="flex h-16 w-16 items-center justify-center rounded-lg text-3xl text-white flex-shrink-0"
+          className="flex h-16 w-16 items-center justify-center rounded-lg flex-shrink-0"
           style={{ backgroundColor: category.color }}
         >
-          {category.icon || '📦'}
+          <CategoryIcon
+            icon={category.icon}
+            color="white"
+            size={28}
+            fallback="Package"
+          />
         </div>
         <div className="flex-1">
           <h1 className="text-3xl font-bold">{category.name}</h1>

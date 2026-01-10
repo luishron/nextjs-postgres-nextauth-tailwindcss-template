@@ -392,7 +392,57 @@ export function AddExpenseDialog() {
 
 ---
 
-### 14. Styling
+### 14. Icon System ⭐ MANDATORY
+
+**NEVER use emojis in the codebase.** Always use lucide-react icons.
+
+#### Category Icons
+
+All category icons use lucide-react with dual backward compatibility:
+
+```typescript
+// Display category icon
+import { CategoryIcon } from '@/components/ui/category-icon';
+
+<CategoryIcon
+  icon={category.icon}  // "Utensils" (new) or "🍔" (legacy)
+  color={category.color}
+  size={20}
+  fallback="Package"
+/>
+```
+
+#### Icon Selection
+
+Use `CategoryIconPicker` for icon selection:
+
+```typescript
+import { CategoryIconPicker } from '@/components/ui/category-icon-picker';
+
+<CategoryIconPicker
+  value={selectedIcon}
+  onChange={setSelectedIcon}
+  color={categoryColor}
+/>
+```
+
+#### Available Icons
+
+~50 curated lucide-react icons in `/lib/constants/curated-category-icons.ts`:
+- Organized by category (comida, transporte, hogar, etc.)
+- Searchable by name and keywords
+- Mobile-first picker with WCAG 2.1 AA compliance
+
+#### Migration Note
+
+Existing categories may still have emoji icons (backward compatible).
+New categories automatically use lucide-react icon names.
+
+**Rule:** Never hardcode emojis. Use text or lucide-react icons instead.
+
+---
+
+### 15. Styling
 
 **Design System:** See [`/docs/design/design-system.md`](./docs/design/design-system.md)
 

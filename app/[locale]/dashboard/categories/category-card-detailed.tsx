@@ -25,6 +25,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { formatShortDate } from '@/lib/utils/date-grouping';
 import { cn } from '@/lib/utils';
+import { CategoryIcon } from '@/components/ui/category-icon';
 
 type CategoryWithData = {
   id: number;
@@ -158,13 +159,17 @@ export function CategoryCardDetailed({ category }: CategoryCardDetailedProps) {
                   }}
                 />
                 <div
-                  className="relative flex h-16 w-16 items-center justify-center rounded-xl text-3xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
+                  className="relative flex h-16 w-16 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
                   style={{
                     backgroundColor: `${category.color}20`,
-                    color: category.color
                   }}
                 >
-                  {category.icon || '📦'}
+                  <CategoryIcon
+                    icon={category.icon}
+                    color={category.color}
+                    size={28}
+                    fallback="Package"
+                  />
                 </div>
               </div>
 

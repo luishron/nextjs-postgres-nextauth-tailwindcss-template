@@ -11,6 +11,7 @@ import {
 import { Trash2 } from 'lucide-react';
 import { deleteIncomeCategory } from '../../actions';
 import { useRouter } from 'next/navigation';
+import { CategoryIcon } from '@/components/ui/category-icon';
 
 type IncomeCategory = {
   id: number;
@@ -39,10 +40,15 @@ export function IncomeCategoryCard({ category }: { category: IncomeCategory }) {
       <CardHeader>
         <div className="flex items-start justify-between">
           <div
-            className="flex h-12 w-12 items-center justify-center rounded-lg text-2xl text-white"
+            className="flex h-12 w-12 items-center justify-center rounded-lg"
             style={{ backgroundColor: category.color }}
           >
-            {category.icon || '💰'}
+            <CategoryIcon
+              icon={category.icon}
+              color="white"
+              size={24}
+              fallback="DollarSign"
+            />
           </div>
           <Button
             variant="ghost"
