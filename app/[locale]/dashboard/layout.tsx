@@ -31,7 +31,6 @@ import Providers from './providers';
 import { NavItem } from './nav-item';
 import { NavSection } from './nav-section';
 import { MobileNavBottom } from '@/components/mobile-nav-bottom';
-import { QuickAddFAB } from './quick-add-fab';
 import { getCategoriesByUser, getPaymentMethodsByUser, getExpensesByUser, getIncomesByUser } from '@/lib/db';
 import { getUser } from '@/lib/auth';
 import { GlobalSearchProvider, GlobalSearchTrigger } from '@/components/global-search-provider';
@@ -80,9 +79,6 @@ export default async function DashboardLayout({
             </main>
           </div>
           <MobileNavBottom />
-
-          {/* Quick Add Flotante */}
-          <QuickAddFAB categories={categories} paymentMethods={paymentMethods} />
 
           <Analytics />
         </main>

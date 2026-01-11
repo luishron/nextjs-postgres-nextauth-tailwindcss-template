@@ -51,7 +51,7 @@ export function ViewToggle({
       <ToggleGroupItem
         value="compact"
         aria-label="Vista compacta"
-        className="h-10 w-10"
+        className="h-11 w-11"
       >
         <LayoutGrid className="h-4 w-4" />
       </ToggleGroupItem>
@@ -59,7 +59,7 @@ export function ViewToggle({
       <ToggleGroupItem
         value="detailed"
         aria-label="Vista detallada"
-        className="h-10 w-10"
+        className="h-11 w-11"
       >
         <LayoutList className="h-4 w-4" />
       </ToggleGroupItem>

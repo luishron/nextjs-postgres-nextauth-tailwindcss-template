@@ -15,7 +15,7 @@ export const Chip = React.forwardRef<HTMLButtonElement, ChipProps>(
         ref={ref}
         onClick={onClick}
         className={cn(
-          'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200',
+          'inline-flex items-center gap-1.5 rounded-full px-3 py-2.5 min-h-[44px] text-sm font-medium transition-all duration-200',
           'border-2 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
           selected
             ? 'border-primary bg-primary text-primary-foreground shadow-md scale-105'

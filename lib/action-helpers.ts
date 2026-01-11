@@ -1,6 +1,7 @@
 import 'server-only';
 import { getUser } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { PAYMENT_METHOD_TYPE, type PaymentMethodType } from '@/lib/constants/enums';
 
 //==============================================================================
 // TIPOS
@@ -119,22 +120,12 @@ export function revalidateDashboard(): void {
 // HELPERS DE VALIDACIÓN DE DATOS
 //==============================================================================
 
-/**
- * Tipos de método de pago válidos
- */
-export const PAYMENT_METHOD_TYPES = [
-  'tarjeta_credito',
-  'tarjeta_debito',
-  'efectivo',
-  'transferencia',
-  'otro',
-] as const;
-
-export type PaymentMethodType = typeof PAYMENT_METHOD_TYPES[number];
+// Re-export PaymentMethodType for backwards compatibility
+export type { PaymentMethodType };
 
 /**
  * Valida que un tipo de método de pago sea válido
  */
 export function isValidPaymentMethodType(type: string): type is PaymentMethodType {
-  return PAYMENT_METHOD_TYPES.includes(type as PaymentMethodType);
+  return Object.values(PAYMENT_METHOD_TYPE).includes(type as PaymentMethodType);
 }

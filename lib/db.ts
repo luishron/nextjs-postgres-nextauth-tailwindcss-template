@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getMonthlySummaryGeneric, calculateExpenseStats } from '@/lib/db-helpers';
 import type { CurrencyCode } from '@/lib/config/currencies';
 import type { UserPlan } from './profiles';
+import type { PaymentStatus, PaymentMethodType } from '@/lib/constants/enums';
 
 //==============================================================================
 // TYPES - Tipos TypeScript para las tablas
@@ -20,14 +21,8 @@ export type Category = {
   created_at?: string;
 };
 
-export type PaymentStatus = 'pagado' | 'pendiente' | 'vencido';
-
-export type PaymentMethodType =
-  | 'tarjeta_credito'
-  | 'tarjeta_debito'
-  | 'efectivo'
-  | 'transferencia'
-  | 'otro';
+// Re-export types from enums for backwards compatibility
+export type { PaymentStatus, PaymentMethodType };
 
 export type PaymentMethod = {
   id: number;
@@ -273,13 +268,28 @@ export async function createCategory(category: InsertCategory): Promise<Category
 
 export async function updateCategory(
   id: number,
-  category: Partial<InsertCategory>
+  category: Partial<InsertCategory>,
+  userId: string
 ): Promise<Category> {
   const supabase = await createClient();
+
+  // Verificar que la categoría existe y pertenece al usuario
+  const { data: existing, error: fetchError } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !existing) {
+    throw new Error('Categoría no encontrada o no tienes permisos para actualizarla');
+  }
+
   const { data, error } = await supabase
     .from('categories')
     .update(category)
     .eq('id', id)
+    .eq('user_id', userId)
     .select()
     .single();
 
@@ -287,12 +297,26 @@ export async function updateCategory(
   return data;
 }
 
-export async function deleteCategoryById(id: number): Promise<void> {
+export async function deleteCategoryById(id: number, userId: string): Promise<void> {
   const supabase = await createClient();
+
+  // Verificar que la categoría existe y pertenece al usuario
+  const { data: category, error: fetchError } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !category) {
+    throw new Error('Categoría no encontrada o no tienes permisos para eliminarla');
+  }
+
   const { error } = await supabase
     .from('categories')
     .delete()
-    .eq('id', id);
+    .eq('id', id)
+    .eq('user_id', userId);
 
   if (error) throw error;
 }
@@ -457,32 +481,37 @@ export async function createPaymentMethod(
 
 export async function updatePaymentMethod(
   id: number,
-  paymentMethod: Partial<InsertPaymentMethod>
+  paymentMethod: Partial<InsertPaymentMethod>,
+  userId: string
 ): Promise<PaymentMethod> {
   const supabase = await createClient();
 
+  // Verificar que el método de pago existe y pertenece al usuario
+  const { data: current, error: fetchError } = await supabase
+    .from('payment_methods')
+    .select('user_id')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !current) {
+    throw new Error('Método de pago no encontrado o no tienes permisos para actualizarlo');
+  }
+
   // Si se marca como default, desmarcar todos los demás
   if (paymentMethod.is_default) {
-    // Obtener el user_id del payment method que se está actualizando
-    const { data: current } = await supabase
+    await supabase
       .from('payment_methods')
-      .select('user_id')
-      .eq('id', id)
-      .single();
-
-    if (current) {
-      await supabase
-        .from('payment_methods')
-        .update({ is_default: false })
-        .eq('user_id', current.user_id)
-        .neq('id', id);
-    }
+      .update({ is_default: false })
+      .eq('user_id', current.user_id)
+      .neq('id', id);
   }
 
   const { data, error } = await supabase
     .from('payment_methods')
     .update(paymentMethod)
     .eq('id', id)
+    .eq('user_id', userId)
     .select()
     .single();
 
@@ -490,12 +519,26 @@ export async function updatePaymentMethod(
   return data;
 }
 
-export async function deletePaymentMethodById(id: number): Promise<void> {
+export async function deletePaymentMethodById(id: number, userId: string): Promise<void> {
   const supabase = await createClient();
+
+  // Verificar que el método de pago existe y pertenece al usuario
+  const { data: paymentMethod, error: fetchError } = await supabase
+    .from('payment_methods')
+    .select('id')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !paymentMethod) {
+    throw new Error('Método de pago no encontrado o no tienes permisos para eliminarlo');
+  }
+
   const { error } = await supabase
     .from('payment_methods')
     .delete()
-    .eq('id', id);
+    .eq('id', id)
+    .eq('user_id', userId);
 
   if (error) throw error;
 }
@@ -565,13 +608,28 @@ export async function createExpense(expense: InsertExpense): Promise<Expense> {
 
 export async function updateExpense(
   id: number,
-  expense: Partial<InsertExpense>
+  expense: Partial<InsertExpense>,
+  userId: string
 ): Promise<Expense> {
   const supabase = await createClient();
+
+  // Verificar que el expense existe y pertenece al usuario
+  const { data: existing, error: fetchError } = await supabase
+    .from('expenses')
+    .select('id')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !existing) {
+    throw new Error('Gasto no encontrado o no tienes permisos para actualizarlo');
+  }
+
   const { data, error } = await supabase
     .from('expenses')
     .update(expense)
     .eq('id', id)
+    .eq('user_id', userId)
     .select()
     .single();
 
@@ -579,12 +637,26 @@ export async function updateExpense(
   return data;
 }
 
-export async function deleteExpenseById(id: number): Promise<void> {
+export async function deleteExpenseById(id: number, userId: string): Promise<void> {
   const supabase = await createClient();
+
+  // Verificar que el expense existe y pertenece al usuario
+  const { data: expense, error: fetchError } = await supabase
+    .from('expenses')
+    .select('id')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !expense) {
+    throw new Error('Gasto no encontrado o no tienes permisos para eliminarlo');
+  }
+
   const { error } = await supabase
     .from('expenses')
     .delete()
-    .eq('id', id);
+    .eq('id', id)
+    .eq('user_id', userId);
 
   if (error) throw error;
 }
@@ -647,13 +719,28 @@ export async function createIncome(income: InsertIncome): Promise<Income> {
 
 export async function updateIncome(
   id: number,
-  income: Partial<InsertIncome>
+  income: Partial<InsertIncome>,
+  userId: string
 ): Promise<Income> {
   const supabase = await createClient();
+
+  // Verificar que el ingreso existe y pertenece al usuario
+  const { data: existing, error: fetchError } = await supabase
+    .from('incomes')
+    .select('id')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !existing) {
+    throw new Error('Ingreso no encontrado o no tienes permisos para actualizarlo');
+  }
+
   const { data, error } = await supabase
     .from('incomes')
     .update(income)
     .eq('id', id)
+    .eq('user_id', userId)
     .select()
     .single();
 
@@ -661,9 +748,26 @@ export async function updateIncome(
   return data;
 }
 
-export async function deleteIncomeById(id: number): Promise<void> {
+export async function deleteIncomeById(id: number, userId: string): Promise<void> {
   const supabase = await createClient();
-  const { error } = await supabase.from('incomes').delete().eq('id', id);
+
+  // Verificar que el ingreso existe y pertenece al usuario
+  const { data: income, error: fetchError } = await supabase
+    .from('incomes')
+    .select('id')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !income) {
+    throw new Error('Ingreso no encontrado o no tienes permisos para eliminarlo');
+  }
+
+  const { error } = await supabase
+    .from('incomes')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', userId);
 
   if (error) throw error;
 }
@@ -702,13 +806,28 @@ export async function createIncomeCategory(
 
 export async function updateIncomeCategory(
   id: number,
-  category: Partial<InsertIncomeCategory>
+  category: Partial<InsertIncomeCategory>,
+  userId: string
 ): Promise<IncomeCategory> {
   const supabase = await createClient();
+
+  // Verificar que la categoría de ingreso existe y pertenece al usuario
+  const { data: existing, error: fetchError } = await supabase
+    .from('income_categories')
+    .select('id')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !existing) {
+    throw new Error('Categoría de ingreso no encontrada o no tienes permisos para actualizarla');
+  }
+
   const { data, error } = await supabase
     .from('income_categories')
     .update(category)
     .eq('id', id)
+    .eq('user_id', userId)
     .select()
     .single();
 
@@ -716,12 +835,26 @@ export async function updateIncomeCategory(
   return data;
 }
 
-export async function deleteIncomeCategoryById(id: number): Promise<void> {
+export async function deleteIncomeCategoryById(id: number, userId: string): Promise<void> {
   const supabase = await createClient();
+
+  // Verificar que la categoría de ingreso existe y pertenece al usuario
+  const { data: category, error: fetchError } = await supabase
+    .from('income_categories')
+    .select('id')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !category) {
+    throw new Error('Categoría de ingreso no encontrada o no tienes permisos para eliminarla');
+  }
+
   const { error } = await supabase
     .from('income_categories')
     .delete()
-    .eq('id', id);
+    .eq('id', id)
+    .eq('user_id', userId);
 
   if (error) throw error;
 }

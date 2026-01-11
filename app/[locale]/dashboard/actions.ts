@@ -70,7 +70,7 @@ export async function saveExpense(formData: FormData): Promise<ActionResult> {
 }
 
 export async function updateExpense(formData: FormData): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     const validation = validateFormData(updateExpenseSchema, formData);
 
     if (!validation.success) {
@@ -89,25 +89,25 @@ export async function updateExpense(formData: FormData): Promise<ActionResult> {
       is_recurring: data.isRecurring ? 1 : 0,
       recurrence_frequency: data.isRecurring ? data.recurrenceFrequency : null,
       notes: data.notes
-    });
+    }, userId);
 
     revalidateGastos();
   });
 }
 
 export async function deleteExpense(formData: FormData): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     const id = Number(formData.get('id'));
-    await deleteExpenseById(id);
+    await deleteExpenseById(id, userId);
     revalidateGastos();
   });
 }
 
 export async function markExpenseAsPaid(expenseId: number): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     await updateExpenseInDb(expenseId, {
       payment_status: 'pagado'
-    });
+    }, userId);
     revalidateGastos();
   });
 }
@@ -116,7 +116,7 @@ export async function postponeExpenseDate(
   expenseId: number,
   newDate: string
 ): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     // Validar formato YYYY-MM-DD
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(newDate)) {
@@ -133,13 +133,13 @@ export async function postponeExpenseDate(
       throw new Error('La fecha debe ser futura');
     }
 
-    await updateExpenseInDb(expenseId, { date: newDate });
+    await updateExpenseInDb(expenseId, { date: newDate }, userId);
     revalidateGastos();
   });
 }
 
 export async function deleteCategory(formData: FormData): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     const validation = validateFormData(deleteCategorySchema, formData);
 
     if (!validation.success) {
@@ -148,13 +148,13 @@ export async function deleteCategory(formData: FormData): Promise<ActionResult> 
 
     const data = validation.data;
 
-    await deleteCategoryById(data.id);
+    await deleteCategoryById(data.id, userId);
     revalidateCategorias();
   });
 }
 
 export async function updateCategory(formData: FormData): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     const validation = validateFormData(updateCategorySchema, formData);
 
     if (!validation.success) {
@@ -168,7 +168,7 @@ export async function updateCategory(formData: FormData): Promise<ActionResult> 
       color: data.color,
       icon: data.icon || null,
       description: data.description || null
-    });
+    }, userId);
 
     revalidateCategorias();
   });
@@ -253,7 +253,7 @@ export async function savePaymentMethod(formData: FormData): Promise<ActionResul
 }
 
 export async function updatePaymentMethod(formData: FormData): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     const validation = validateFormData(updatePaymentMethodSchema, formData);
 
     if (!validation.success) {
@@ -274,14 +274,14 @@ export async function updatePaymentMethod(formData: FormData): Promise<ActionRes
       icon: null,
       color: data.color,
       is_default: data.isDefault
-    });
+    }, userId);
 
     revalidateMetodosPago();
   });
 }
 
 export async function deletePaymentMethod(formData: FormData): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     const validation = validateFormData(deletePaymentMethodSchema, formData);
 
     if (!validation.success) {
@@ -290,7 +290,7 @@ export async function deletePaymentMethod(formData: FormData): Promise<ActionRes
 
     const data = validation.data;
 
-    await deletePaymentMethodById(data.id);
+    await deletePaymentMethodById(data.id, userId);
     revalidateMetodosPago();
   });
 }
@@ -327,7 +327,7 @@ export async function saveIncome(formData: FormData): Promise<ActionResult> {
 }
 
 export async function updateIncome(formData: FormData): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     const validation = validateFormData(updateIncomeSchema, formData);
 
     if (!validation.success) {
@@ -346,14 +346,14 @@ export async function updateIncome(formData: FormData): Promise<ActionResult> {
       is_recurring: data.isRecurring ? 1 : 0,
       recurrence_frequency: data.isRecurring ? data.recurrenceFrequency : null,
       notes: null
-    });
+    }, userId);
 
     revalidateIngresos();
   });
 }
 
 export async function deleteIncome(formData: FormData): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     const validation = validateFormData(deleteIncomeSchema, formData);
 
     if (!validation.success) {
@@ -362,7 +362,7 @@ export async function deleteIncome(formData: FormData): Promise<ActionResult> {
 
     const data = validation.data;
 
-    await deleteIncomeById(data.id);
+    await deleteIncomeById(data.id, userId);
     revalidateIngresos();
   });
 }
@@ -394,7 +394,7 @@ export async function saveIncomeCategory(formData: FormData): Promise<ActionResu
 }
 
 export async function updateIncomeCategoryAction(formData: FormData): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     const validation = validateFormData(updateCategorySchema, formData);
 
     if (!validation.success) {
@@ -408,14 +408,14 @@ export async function updateIncomeCategoryAction(formData: FormData): Promise<Ac
       color: data.color,
       icon: data.icon || null,
       description: data.description || null
-    });
+    }, userId);
 
     revalidateIngresos();
   });
 }
 
 export async function deleteIncomeCategory(formData: FormData): Promise<ActionResult> {
-  return withAuth(async () => {
+  return withAuth(async (userId) => {
     const validation = validateFormData(deleteCategorySchema, formData);
 
     if (!validation.success) {
@@ -424,7 +424,7 @@ export async function deleteIncomeCategory(formData: FormData): Promise<ActionRe
 
     const data = validation.data;
 
-    await deleteIncomeCategoryById(data.id);
+    await deleteIncomeCategoryById(data.id, userId);
     revalidateIngresos();
   });
 }

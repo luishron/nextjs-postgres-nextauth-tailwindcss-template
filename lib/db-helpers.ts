@@ -74,45 +74,7 @@ export async function getMonthlySummaryGeneric(
 }
 
 /**
- * Helper recursivo para calcular el total de una lista de registros
- * @param records Array de registros con campo 'amount'
- * @param index Índice actual en la recursión
- * @returns Total acumulado
- */
-export function calculateTotalRecursive(
-  records: Array<{ amount: string }>,
-  index: number = 0
-): number {
-  // Caso base: si llegamos al final del array
-  if (index >= records.length) {
-    return 0;
-  }
-
-  // Caso recursivo: suma el elemento actual + el total del resto
-  return parseFloat(records[index].amount) + calculateTotalRecursive(records, index + 1);
-}
-
-/**
- * Suma recursiva optimizada con tail call
- */
-export function sumAmountsRecursive(
-  records: Array<{ amount: string }>,
-  index: number = 0,
-  accumulator: number = 0
-): number {
-  if (index >= records.length) {
-    return accumulator;
-  }
-
-  return sumAmountsRecursive(
-    records,
-    index + 1,
-    accumulator + parseFloat(records[index].amount)
-  );
-}
-
-/**
- * Calcula estadísticas de un mes usando reduce (más eficiente que reduce nativo)
+ * Calcula estadísticas de un mes usando reduce
  */
 export type ExpenseStats = {
   totalSpent: number;
@@ -163,37 +125,3 @@ export function calculateExpenseStats(
   );
 }
 
-//==============================================================================
-// HELPERS PARA GROUPING
-//==============================================================================
-
-/**
- * Agrupa registros por un campo clave
- */
-export function groupBy<T, K extends keyof T>(
-  array: T[],
-  key: K
-): Map<T[K], T[]> {
-  return array.reduce((map, item) => {
-    const groupKey = item[key];
-    const group = map.get(groupKey) || [];
-    group.push(item);
-    map.set(groupKey, group);
-    return map;
-  }, new Map<T[K], T[]>());
-}
-
-/**
- * Agrupa y suma montos por categoría
- */
-export function groupAndSumByCategory(
-  expenses: Array<{ category_id: number; amount: string }>
-): Map<number, { total: number; count: number }> {
-  return expenses.reduce((map, expense) => {
-    const current = map.get(expense.category_id) || { total: 0, count: 0 };
-    current.total += parseFloat(expense.amount);
-    current.count += 1;
-    map.set(expense.category_id, current);
-    return map;
-  }, new Map<number, { total: number; count: number }>());
-}

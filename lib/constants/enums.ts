@@ -36,7 +36,8 @@ export const PAYMENT_METHOD_TYPE = {
   CASH: 'efectivo',
   DEBIT_CARD: 'tarjeta_debito',
   CREDIT_CARD: 'tarjeta_credito',
-  TRANSFER: 'transferencia'
+  TRANSFER: 'transferencia',
+  OTHER: 'otro'
 } as const;
 
 export type PaymentMethodType = typeof PAYMENT_METHOD_TYPE[keyof typeof PAYMENT_METHOD_TYPE];
