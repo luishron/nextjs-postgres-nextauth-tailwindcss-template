@@ -21,11 +21,13 @@ import { PAYMENT_STATUS } from '@/lib/constants/enums';
 import { Receipt, Package, SlidersHorizontal } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 interface ExpensesListWiseProps {
   expenses: SelectExpense[];
   categories: Category[];
   paymentMethods: PaymentMethod[];
+  currency: CurrencyCode;
   hideActions?: boolean;
   showEditOnly?: boolean;
 }
@@ -34,6 +36,7 @@ export function ExpensesListWise({
   expenses,
   categories,
   paymentMethods,
+  currency,
   hideActions = false,
   showEditOnly = false,
 }: ExpensesListWiseProps) {
@@ -363,7 +366,7 @@ export function ExpensesListWise({
               date={group.date}
               showTotal
               total={group.total || 0}
-              currency="$"
+              currency={currency}
               sticky
               showDivider={index > 0}
               animationIndex={index}

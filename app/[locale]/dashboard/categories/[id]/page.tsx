@@ -8,7 +8,8 @@ import {
   getCategoriesByUser,
   getPaymentMethodsByUser
 } from '@/lib/db';
-import { getCategoryBudgetStatus } from '@/lib/category-limits-supabase';
+import { getUserCurrency } from '@/lib/utils/currency-helpers';
+import { getCategoryBudgetStatus } from '@/lib/db';
 import { CategoryHeader } from './category-header';
 import { CategoryStatsCards } from './category-stats-cards';
 import { CategoryTrendChart } from './category-trend-chart';
@@ -35,14 +36,15 @@ export default async function CategoryDetailsPage({
   }
 
   // Fetch all data in parallel
-  const [category, expenses, statistics, monthlyTrend, allCategories, paymentMethods] =
+  const [category, expenses, statistics, monthlyTrend, allCategories, paymentMethods, currency] =
     await Promise.all([
       getCategoryById(user.id, categoryId),
       getExpensesByCategoryId(user.id, categoryId),
       getCategoryStatistics(user.id, categoryId),
       getCategoryMonthlyTrend(user.id, categoryId, 6),
       getCategoriesByUser(user.id),
-      getPaymentMethodsByUser(user.id)
+      getPaymentMethodsByUser(user.id),
+      getUserCurrency()
     ]);
 
   // Fetch budget status separately with error handling
@@ -75,7 +77,7 @@ export default async function CategoryDetailsPage({
       <CategoryStatsCards statistics={statistics} />
 
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-        <CategoryTrendChart data={monthlyTrend} category={category} />
+        <CategoryTrendChart data={monthlyTrend} category={category} currency={currency} />
 
         <Card>
           <CardHeader>

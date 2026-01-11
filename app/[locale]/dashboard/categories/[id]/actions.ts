@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import {
   setCategoryMonthlyLimit,
   disableCategoryLimit
-} from '@/lib/category-limits-supabase';
+} from '@/lib/db';
 
 export async function setCategoryLimitAction(
   categoryId: number,

@@ -1,5 +1,6 @@
 import { getUser } from '@/lib/auth';
 import { getIncomesByUser, getIncomeCategoriesByUser } from '@/lib/db';
+import { getUserCurrency } from '@/lib/utils/currency-helpers';
 import { redirect } from 'next/navigation';
 import { IncomesList } from '../incomes-list';
 import { AddIncomeDialog } from '../add-income-dialog';
@@ -14,6 +15,9 @@ export default async function RecurringIncomesPage() {
   const allIncomes = await getIncomesByUser(user.id);
   const recurringIncomes = allIncomes.filter((income) => income.is_recurring === 1);
   const incomeCategories = await getIncomeCategoriesByUser(user.id);
+
+  // Obtener moneda del usuario
+  const currency = await getUserCurrency();
 
   return (
     <div className="space-y-4">
@@ -55,6 +59,7 @@ export default async function RecurringIncomesPage() {
         <IncomesList
           incomes={recurringIncomes}
           categories={incomeCategories}
+          currency={currency}
         />
       )}
     </div>

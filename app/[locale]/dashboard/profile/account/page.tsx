@@ -20,7 +20,7 @@ export default async function AccountPage() {
     admin: { label: 'Admin', variant: 'destructive' as const }
   };
 
-  const planBadge = planBadges[(profile?.role as keyof typeof planBadges) || 'free'];
+  const planBadge = planBadges[(profile?.plan as keyof typeof planBadges) || 'free'];
 
   return (
     <div className="space-y-6">

@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import * as LucideIcons from 'lucide-react';
+import { formatCurrency } from '@/lib/utils/formatting';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 /**
  * TransactionItem - Componente estilo Wise para mostrar transacciones
@@ -71,8 +73,8 @@ export interface TransactionItemProps
   subtitle?: string;
   /** Monto de la transacción (positivo para ingresos, negativo para gastos) */
   amount: number;
-  /** Símbolo de moneda */
-  currency?: string;
+  /** Código de moneda */
+  currency?: CurrencyCode;
   /** Estado de la transacción */
   status?: 'paid' | 'pending' | 'overdue' | 'cancelled';
   /** Badge personalizado (reemplaza el status badge) */
@@ -96,7 +98,7 @@ export function TransactionItem({
   title,
   subtitle,
   amount,
-  currency = '$',
+  currency = 'USD',
   status,
   badge,
   variant = 'default',
@@ -154,14 +156,9 @@ export function TransactionItem({
 
   // Formatear monto
   const formatAmount = (value: number) => {
-    const absValue = Math.abs(value);
-    const formatted = new Intl.NumberFormat('es-MX', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(absValue);
-
+    const formatted = formatCurrency(Math.abs(value), currency);
     const sign = value > 0 ? '+' : value < 0 ? '-' : '';
-    return `${sign}${currency}${formatted}`;
+    return `${sign}${formatted}`;
   };
 
   return (

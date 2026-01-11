@@ -22,6 +22,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { formatCurrency } from '@/lib/utils/formatting';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 type Category = {
   id: number;
@@ -40,10 +41,12 @@ type ViewMode = 'line' | 'bar';
 
 export function CategoryTrendChart({
   data,
-  category
+  category,
+  currency
 }: {
   data: MonthlyData[];
   category: Category;
+  currency: CurrencyCode;
 }) {
   const [viewMode, setViewMode] = useState<ViewMode>('line');
 
@@ -61,6 +64,14 @@ export function CategoryTrendChart({
     average: item.count > 0 ? item.total / item.count : 0
   }));
 
+  // Formatear valores del eje Y de manera compacta
+  const formatYAxisTick = (value: number) => {
+    return new Intl.NumberFormat('es-MX', {
+      notation: 'compact',
+      compactDisplay: 'short'
+    }).format(value);
+  };
+
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -68,13 +79,13 @@ export function CategoryTrendChart({
         <div className="bg-background border rounded-lg shadow-lg p-3">
           <p className="font-medium text-sm mb-2">{data.month}</p>
           <p className="text-sm font-bold text-primary mb-1">
-            Total: {formatCurrency(data.total)}
+            Total: {formatCurrency(data.total, currency)}
           </p>
           <p className="text-xs text-muted-foreground mb-1">
             Gastos: {data.count}
           </p>
           <p className="text-xs text-muted-foreground">
-            Promedio: {formatCurrency(data.average)}
+            Promedio: {formatCurrency(data.average, currency)}
           </p>
         </div>
       );
@@ -123,17 +134,21 @@ export function CategoryTrendChart({
               variant={viewMode === 'line' ? 'default' : 'ghost'}
               size="icon"
               onClick={() => setViewMode('line')}
-              className="h-8 w-8"
+              className="h-11 w-11"
+              aria-label="Cambiar a gráfico de línea"
             >
               <LineChartIcon className="h-4 w-4" />
+              <span className="sr-only">Cambiar a gráfico de línea</span>
             </Button>
             <Button
               variant={viewMode === 'bar' ? 'default' : 'ghost'}
               size="icon"
               onClick={() => setViewMode('bar')}
-              className="h-8 w-8"
+              className="h-11 w-11"
+              aria-label="Cambiar a gráfico de barras"
             >
               <BarChart3 className="h-4 w-4" />
+              <span className="sr-only">Cambiar a gráfico de barras</span>
             </Button>
           </div>
         </div>
@@ -151,12 +166,7 @@ export function CategoryTrendChart({
               <YAxis
                 className="text-xs"
                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                tickFormatter={(value) =>
-                  new Intl.NumberFormat('es-MX', {
-                    notation: 'compact',
-                    compactDisplay: 'short'
-                  }).format(value)
-                }
+                tickFormatter={formatYAxisTick}
               />
               <Tooltip content={<CustomTooltip />} />
               <Line
@@ -179,12 +189,7 @@ export function CategoryTrendChart({
               <YAxis
                 className="text-xs"
                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                tickFormatter={(value) =>
-                  new Intl.NumberFormat('es-MX', {
-                    notation: 'compact',
-                    compactDisplay: 'short'
-                  }).format(value)
-                }
+                tickFormatter={formatYAxisTick}
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="total" fill={category.color} radius={[4, 4, 0, 0]} />

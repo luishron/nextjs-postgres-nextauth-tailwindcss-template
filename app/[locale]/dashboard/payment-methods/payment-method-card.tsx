@@ -75,9 +75,11 @@ export function PaymentMethodCard({
               variant="ghost"
               size="icon"
               onClick={handleDelete}
-              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+              className="h-11 w-11 text-muted-foreground hover:text-destructive"
+              aria-label="Eliminar método de pago"
             >
               <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Eliminar método de pago</span>
             </Button>
           </div>
         </div>

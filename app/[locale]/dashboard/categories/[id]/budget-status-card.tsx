@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, TrendingUp, DollarSign } from 'lucide-react';
-import type { CategoryBudgetStatus } from '@/lib/category-limits-supabase';
+import type { CategoryBudgetStatus } from '@/lib/db';
 
 type BudgetStatusCardProps = {
   status: CategoryBudgetStatus;

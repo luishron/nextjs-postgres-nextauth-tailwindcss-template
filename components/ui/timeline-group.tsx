@@ -3,6 +3,8 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { getRelativeDateLabel, formatDateTime } from '@/lib/utils/date-grouping';
+import { formatCurrency } from '@/lib/utils/formatting';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 /**
  * TimelineGroup - Componente estilo Wise para agrupar transacciones por fecha
@@ -28,8 +30,8 @@ export interface TimelineGroupProps extends React.HTMLAttributes<HTMLDivElement>
   showTotal?: boolean;
   /** Total calculado */
   total?: number;
-  /** Símbolo de moneda */
-  currency?: string;
+  /** Código de moneda */
+  currency?: CurrencyCode;
   /** Header sticky */
   sticky?: boolean;
   /** Mostrar separador superior */
@@ -45,7 +47,7 @@ export function TimelineGroup({
   children,
   showTotal = false,
   total = 0,
-  currency = '$',
+  currency = 'USD',
   sticky = true,
   showDivider = true,
   animationIndex = 0,
@@ -64,18 +66,13 @@ export function TimelineGroup({
   const formattedTotal = React.useMemo(() => {
     if (!showTotal) return null;
 
-    const formatted = new Intl.NumberFormat('es-MX', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(Math.abs(total));
-
+    const formatted = formatCurrency(Math.abs(total), currency);
     const sign = total > 0 ? '+' : total < 0 ? '-' : '';
     const colorClass = total > 0 ? 'text-success' : total < 0 ? 'text-destructive' : 'text-muted-foreground';
 
     return (
       <span className={cn('font-semibold text-sm tabular-nums', colorClass)}>
         {sign}
-        {currency}
         {formatted}
       </span>
     );

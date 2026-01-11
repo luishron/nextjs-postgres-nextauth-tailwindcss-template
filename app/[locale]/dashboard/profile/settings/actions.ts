@@ -8,7 +8,7 @@ import { isValidCurrency, type CurrencyCode } from '@/lib/config/currencies';
 /**
  * Actualiza el perfil del usuario (nombre, avatar, timezone, idioma)
  */
-export async function updateUserProfile(formData: FormData): Promise<ActionResult> {
+export async function updateUserProfileAction(formData: FormData): Promise<ActionResult> {
   return withAuth(async (userId) => {
     const fullName = formData.get('fullName') as string;
     const timezone = formData.get('timezone') as string;

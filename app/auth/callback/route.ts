@@ -33,7 +33,7 @@ export async function GET(request: Request) {
         // Create user profile for first-time users
         await createUserProfile({
           id: user.id,
-          role: 'free',
+          plan: 'free',
           onboarding_completed: false,
           preferences: {
             currency: 'USD',

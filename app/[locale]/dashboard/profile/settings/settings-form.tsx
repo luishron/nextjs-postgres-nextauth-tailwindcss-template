@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CurrencySelector } from './currency-selector';
-import { updateUserProfile, updateUserPreferences } from './actions';
+import { updateUserProfileAction, updateUserPreferences } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, User as UserIcon, Settings, CreditCard } from 'lucide-react';
 import { type CurrencyCode, DEFAULT_CURRENCY } from '@/lib/config/currencies';
@@ -50,7 +50,7 @@ export function SettingsForm({ profile, user }: SettingsFormProps) {
       const formData = new FormData();
       formData.append('fullName', fullName);
 
-      const result = await updateUserProfile(formData);
+      const result = await updateUserProfileAction(formData);
 
       if (result.error) {
         toast({

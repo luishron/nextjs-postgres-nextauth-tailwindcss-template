@@ -180,6 +180,7 @@ export default async function GastosPage({
             expenses={activeExpenses}
             categories={categories}
             paymentMethods={paymentMethods}
+            currency={currency}
           />
         </TabsContent>
 

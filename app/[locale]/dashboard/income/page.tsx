@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { getUser } from '@/lib/auth';
 import { getIncomesByUser, getIncomeCategoriesByUser } from '@/lib/db';
+import { getUserCurrency } from '@/lib/utils/currency-helpers';
 import Link from 'next/link';
 import { AddIncomeDialog } from './add-income-dialog';
 import { IncomesList } from './incomes-list';
@@ -21,6 +22,9 @@ export default async function IngresosPage() {
 
   // Obtener ingresos del usuario
   const incomes = await getIncomesByUser(user.id);
+
+  // Obtener moneda del usuario
+  const currency = await getUserCurrency();
 
   return (
     <div className="flex flex-col gap-4 max-w-full">
@@ -87,7 +91,7 @@ export default async function IngresosPage() {
                 )}
               </div>
             ) : (
-              <IncomesList incomes={incomes} categories={categories} />
+              <IncomesList incomes={incomes} categories={categories} currency={currency} />
             )}
           </div>
         </TabsContent>

@@ -15,13 +15,16 @@ import { useRouter } from 'next/navigation';
 import type { Income, IncomeCategory } from '@/lib/db';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { formatCurrency } from '@/lib/utils/formatting';
+import type { CurrencyCode } from '@/lib/config/currencies';
 
 interface IncomesListProps {
   incomes: Income[];
   categories: IncomeCategory[];
+  currency: CurrencyCode;
 }
 
-export function IncomesList({ incomes, categories }: IncomesListProps) {
+export function IncomesList({ incomes, categories, currency }: IncomesListProps) {
   const [editingIncome, setEditingIncome] = useState<Income | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [incomeToDelete, setIncomeToDelete] = useState<number | null>(null);
@@ -71,14 +74,11 @@ export function IncomesList({ incomes, categories }: IncomesListProps) {
             </div>
             <div className="flex items-center gap-2">
               <p className="font-bold text-green-600 text-lg">
-                {new Intl.NumberFormat('es-MX', {
-                  style: 'currency',
-                  currency: 'USD'
-                }).format(parseFloat(income.amount))}
+                {formatCurrency(income.amount, currency)}
               </p>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button variant="ghost" size="icon" className="h-11 w-11">
                     <MoreHorizontal className="h-4 w-4" />
                     <span className="sr-only">Abrir menú</span>
                   </Button>

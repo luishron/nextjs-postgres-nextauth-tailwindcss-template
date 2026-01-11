@@ -45,8 +45,9 @@ export default async function PagadosPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/dashboard/expenses">
+            <Link href="/dashboard/expenses" aria-label="Volver a gastos">
               <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Volver a gastos</span>
             </Link>
           </Button>
           <div>

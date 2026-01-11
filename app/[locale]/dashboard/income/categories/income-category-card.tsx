@@ -54,9 +54,11 @@ export function IncomeCategoryCard({ category }: { category: IncomeCategory }) {
             variant="ghost"
             size="icon"
             onClick={handleDelete}
-            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+            className="h-11 w-11 text-muted-foreground hover:text-destructive"
+            aria-label="Eliminar categoría"
           >
             <Trash2 className="h-4 w-4" />
+            <span className="sr-only">Eliminar categoría</span>
           </Button>
         </div>
         <CardTitle className="line-clamp-1">{category.name}</CardTitle>
