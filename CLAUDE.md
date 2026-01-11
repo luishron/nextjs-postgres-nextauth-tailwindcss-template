@@ -10,7 +10,7 @@ Personal expense management web application built with Next.js 15, TypeScript, S
 **Status:** 🚧 Beta
 **Last Updated:** January 10, 2026
 
-**Tech Stack:** Next.js 15 (App Router), TypeScript 5.7, Supabase (PostgreSQL + RLS), Drizzle ORM, Tailwind CSS + shadcn/ui, Zustand
+**Tech Stack:** Next.js 15 (App Router), TypeScript 5.7, Supabase (PostgreSQL + RLS), Drizzle ORM, Tailwind CSS + shadcn/ui
 
 **Architecture:** See [`/docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for detailed system design.
 
@@ -87,6 +87,7 @@ const formatted = formatCurrency(amount, currency);
 ```
 
 **Never:**
+- ❌ Hardcode translations (use i18n system)
 - ❌ Hardcode currency to 'USD'
 - ❌ Create local `formatCurrency()` functions
 - ❌ Use `Intl.NumberFormat` directly

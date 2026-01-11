@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { cache } from 'react';
 import { createClient } from '@/lib/supabase/server';
 import { getMonthlySummaryGeneric, calculateExpenseStats } from '@/lib/db-helpers';
 import type { CurrencyCode } from '@/lib/config/currencies';
@@ -161,7 +162,7 @@ export type SelectCategory = Category;
 // FUNCIONES DE QUERIES - User Profiles
 //==============================================================================
 
-export async function getUserProfile(userId: string): Promise<UserProfile | null> {
+export const getUserProfile = cache(async (userId: string): Promise<UserProfile | null> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('user_profiles')
@@ -174,7 +175,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     throw error;
   }
   return data;
-}
+});
 
 export async function createUserProfile(profile: InsertUserProfile): Promise<UserProfile> {
   const supabase = await createClient();
@@ -222,7 +223,7 @@ export async function completeOnboarding(userId: string): Promise<UserProfile> {
 // FUNCIONES DE QUERIES - Categorías
 //==============================================================================
 
-export async function getCategoriesByUser(userId: string): Promise<Category[]> {
+export const getCategoriesByUser = cache(async (userId: string): Promise<Category[]> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('categories')
@@ -232,7 +233,7 @@ export async function getCategoriesByUser(userId: string): Promise<Category[]> {
 
   if (error) throw error;
   return data || [];
-}
+});
 
 export async function getCategoryTotalExpenses(
   userId: string,
@@ -441,9 +442,9 @@ export async function getCategoryMonthlyTrend(
 // FUNCIONES DE QUERIES - Métodos de Pago
 //==============================================================================
 
-export async function getPaymentMethodsByUser(
+export const getPaymentMethodsByUser = cache(async (
   userId: string
-): Promise<PaymentMethod[]> {
+): Promise<PaymentMethod[]> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('payment_methods')
@@ -454,7 +455,7 @@ export async function getPaymentMethodsByUser(
 
   if (error) throw error;
   return data || [];
-}
+});
 
 export async function createPaymentMethod(
   paymentMethod: InsertPaymentMethod
@@ -547,7 +548,7 @@ export async function deletePaymentMethodById(id: number, userId: string): Promi
 // FUNCIONES DE QUERIES - Gastos
 //==============================================================================
 
-export async function getExpensesByUser(
+export const getExpensesByUser = cache(async (
   userId: string,
   options?: {
     search?: string;
@@ -559,7 +560,7 @@ export async function getExpensesByUser(
   expenses: Expense[];
   newOffset: number | null;
   totalExpenses: number;
-}> {
+}> => {
   const { search, isRecurring, offset = 0, limit = 10 } = options || {};
   const supabase = await createClient();
 
@@ -592,7 +593,7 @@ export async function getExpensesByUser(
     newOffset,
     totalExpenses: count || 0,
   };
-}
+});
 
 export async function createExpense(expense: InsertExpense): Promise<Expense> {
   const supabase = await createClient();
@@ -665,7 +666,7 @@ export async function deleteExpenseById(id: number, userId: string): Promise<voi
 // FUNCIONES DE QUERIES - Presupuestos
 //==============================================================================
 
-export async function getBudgetsByUser(userId: string): Promise<Budget[]> {
+export const getBudgetsByUser = cache(async (userId: string): Promise<Budget[]> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('budgets')
@@ -675,7 +676,7 @@ export async function getBudgetsByUser(userId: string): Promise<Budget[]> {
 
   if (error) throw error;
   return data || [];
-}
+});
 
 export async function createBudget(budget: InsertBudget): Promise<Budget> {
   const supabase = await createClient();
@@ -693,7 +694,7 @@ export async function createBudget(budget: InsertBudget): Promise<Budget> {
 // FUNCIONES DE QUERIES - Ingresos
 //==============================================================================
 
-export async function getIncomesByUser(userId: string): Promise<Income[]> {
+export const getIncomesByUser = cache(async (userId: string): Promise<Income[]> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('incomes')
@@ -703,7 +704,7 @@ export async function getIncomesByUser(userId: string): Promise<Income[]> {
 
   if (error) throw error;
   return data || [];
-}
+});
 
 export async function createIncome(income: InsertIncome): Promise<Income> {
   const supabase = await createClient();
@@ -776,9 +777,9 @@ export async function deleteIncomeById(id: number, userId: string): Promise<void
 // FUNCIONES DE QUERIES - Categorías de Ingresos
 //==============================================================================
 
-export async function getIncomeCategoriesByUser(
+export const getIncomeCategoriesByUser = cache(async (
   userId: string
-): Promise<IncomeCategory[]> {
+): Promise<IncomeCategory[]> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('income_categories')
@@ -788,7 +789,7 @@ export async function getIncomeCategoriesByUser(
 
   if (error) throw error;
   return data || [];
-}
+});
 
 export async function createIncomeCategory(
   category: InsertIncomeCategory
